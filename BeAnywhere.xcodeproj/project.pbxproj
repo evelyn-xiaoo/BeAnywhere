@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5A79AAD72CCC3883005541E4 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 5A79AAD62CCC3883005541E4 /* FirebaseAuth */; };
+		5A79AAD92CCC3883005541E4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 5A79AAD82CCC3883005541E4 /* FirebaseFirestore */; };
+		5A79AADB2CCC3883005541E4 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 5A79AADA2CCC3883005541E4 /* FirebaseStorage */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		ECBD18DE2CC8444B00D543E3 /* BeAnywhere.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BeAnywhere.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +42,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A79AAD72CCC3883005541E4 /* FirebaseAuth in Frameworks */,
+				5A79AAD92CCC3883005541E4 /* FirebaseFirestore in Frameworks */,
+				5A79AADB2CCC3883005541E4 /* FirebaseStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +87,9 @@
 			);
 			name = BeAnywhere;
 			packageProductDependencies = (
+				5A79AAD62CCC3883005541E4 /* FirebaseAuth */,
+				5A79AAD82CCC3883005541E4 /* FirebaseFirestore */,
+				5A79AADA2CCC3883005541E4 /* FirebaseStorage */,
 			);
 			productName = BeAnywhere;
 			productReference = ECBD18DE2CC8444B00D543E3 /* BeAnywhere.app */;
@@ -107,6 +119,9 @@
 			);
 			mainGroup = ECBD18D52CC8444B00D543E3;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5A79AAD52CCC3883005541E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = ECBD18DF2CC8444B00D543E3 /* Products */;
 			projectDirPath = "";
@@ -157,7 +172,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = evelynxiao.BeAnywhere;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IOS.BeAnywhere;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -184,7 +199,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = evelynxiao.BeAnywhere;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IOS.BeAnywhere;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -333,6 +348,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5A79AAD52CCC3883005541E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5A79AAD62CCC3883005541E4 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A79AAD52CCC3883005541E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		5A79AAD82CCC3883005541E4 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A79AAD52CCC3883005541E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		5A79AADA2CCC3883005541E4 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A79AAD52CCC3883005541E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = ECBD18D62CC8444B00D543E3 /* Project object */;
 }
