@@ -6,6 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		EC29A2E12CCDD6290052EC23 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = EC29A2E02CCDD6290052EC23 /* FirebaseAuth */; };
+		EC29A2E32CCDD6290052EC23 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = EC29A2E22CCDD6290052EC23 /* FirebaseFirestore */; };
+		EC29A2E52CCDD6290052EC23 /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = EC29A2E42CCDD6290052EC23 /* FirebaseFirestoreCombine-Community */; };
+		EC29A2E72CCDD6290052EC23 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = EC29A2E62CCDD6290052EC23 /* FirebaseStorage */; };
+		EC29A3152CCE02340052EC23 /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = EC29A3142CCE02340052EC23 /* CropViewController */; };
+		EC29A3172CCE02340052EC23 /* TOCropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = EC29A3162CCE02340052EC23 /* TOCropViewController */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		ECBD18DE2CC8444B00D543E3 /* BeAnywhere.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BeAnywhere.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +45,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC29A2E52CCDD6290052EC23 /* FirebaseFirestoreCombine-Community in Frameworks */,
+				EC29A2E72CCDD6290052EC23 /* FirebaseStorage in Frameworks */,
+				EC29A2E12CCDD6290052EC23 /* FirebaseAuth in Frameworks */,
+				EC29A3152CCE02340052EC23 /* CropViewController in Frameworks */,
+				EC29A3172CCE02340052EC23 /* TOCropViewController in Frameworks */,
+				EC29A2E32CCDD6290052EC23 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +93,12 @@
 			);
 			name = BeAnywhere;
 			packageProductDependencies = (
+				EC29A2E02CCDD6290052EC23 /* FirebaseAuth */,
+				EC29A2E22CCDD6290052EC23 /* FirebaseFirestore */,
+				EC29A2E42CCDD6290052EC23 /* FirebaseFirestoreCombine-Community */,
+				EC29A2E62CCDD6290052EC23 /* FirebaseStorage */,
+				EC29A3142CCE02340052EC23 /* CropViewController */,
+				EC29A3162CCE02340052EC23 /* TOCropViewController */,
 			);
 			productName = BeAnywhere;
 			productReference = ECBD18DE2CC8444B00D543E3 /* BeAnywhere.app */;
@@ -107,6 +128,10 @@
 			);
 			mainGroup = ECBD18D52CC8444B00D543E3;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				EC29A2DF2CCDD6290052EC23 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				EC29A3132CCE02340052EC23 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = ECBD18DF2CC8444B00D543E3 /* Products */;
 			projectDirPath = "";
@@ -333,6 +358,58 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EC29A2DF2CCDD6290052EC23 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.4.0;
+			};
+		};
+		EC29A3132CCE02340052EC23 /* XCRemoteSwiftPackageReference "TOCropViewController" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TimOliver/TOCropViewController";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EC29A2E02CCDD6290052EC23 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC29A2DF2CCDD6290052EC23 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		EC29A2E22CCDD6290052EC23 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC29A2DF2CCDD6290052EC23 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		EC29A2E42CCDD6290052EC23 /* FirebaseFirestoreCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC29A2DF2CCDD6290052EC23 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseFirestoreCombine-Community";
+		};
+		EC29A2E62CCDD6290052EC23 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC29A2DF2CCDD6290052EC23 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		EC29A3142CCE02340052EC23 /* CropViewController */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC29A3132CCE02340052EC23 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
+			productName = CropViewController;
+		};
+		EC29A3162CCE02340052EC23 /* TOCropViewController */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC29A3132CCE02340052EC23 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
+			productName = TOCropViewController;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = ECBD18D62CC8444B00D543E3 /* Project object */;
 }
