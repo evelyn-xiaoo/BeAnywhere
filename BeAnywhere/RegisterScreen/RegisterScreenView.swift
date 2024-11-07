@@ -11,10 +11,12 @@ class RegisterScreenView: UIView {
     var profileImage: UIButton!
     var textFieldName: UITextField!
     var textFieldEmail: UITextField!
+    var textFieldVenmo: UITextField!
     var textFieldUsername: UITextField!
     var textFieldPassword: UITextField!
     var textFieldVerifyPassword: UITextField!
     var buttonRegister: UIButton!
+    var optionalLabel: UILabel!
     
     override init(frame: CGRect){
         super.init(frame: frame)
@@ -24,6 +26,7 @@ class RegisterScreenView: UIView {
         setuptextFieldName()
         setuptextFieldEmail()
         setuptextFieldUsername()
+        setuptextFieldVenmo()
         setuptextFieldPassword()
         setuptextFieldVerifyPassword()
         setupbuttonRegister()
@@ -72,6 +75,14 @@ class RegisterScreenView: UIView {
         self.addSubview(textFieldUsername)
     }
     
+    func setuptextFieldVenmo(){
+        textFieldVenmo = UITextField()
+        textFieldVenmo.placeholder = "Venmo"
+        textFieldVenmo.borderStyle = .roundedRect
+        textFieldVenmo.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(textFieldVenmo)
+    }
+    
     func setuptextFieldPassword(){
         textFieldPassword = UITextField()
         textFieldPassword.placeholder = "Password"
@@ -83,6 +94,13 @@ class RegisterScreenView: UIView {
     }
     
     func setuptextFieldVerifyPassword(){
+        optionalLabel = UILabel()
+        optionalLabel.text = "Optional"
+        optionalLabel.font = .systemFont(ofSize: 12)
+        optionalLabel.textColor = .lightGray
+        optionalLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(optionalLabel)
+        
         textFieldVerifyPassword = UITextField()
         textFieldVerifyPassword.placeholder = "Verify Password"
         textFieldVerifyPassword.textContentType = .password
@@ -95,14 +113,14 @@ class RegisterScreenView: UIView {
     func setupbuttonRegister(){
         buttonRegister = UIButton(type: .system)
         buttonRegister.setTitle("Register", for: .normal)
-        
+        buttonRegister.titleLabel?.font = .boldSystemFont(ofSize: 16)
         buttonRegister.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(buttonRegister)
     }
     
     func initConstraints(){
         NSLayoutConstraint.activate([
-            profileImage.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 10),
+            profileImage.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 0),
             profileImage.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             profileImage.widthAnchor.constraint(equalToConstant: 125),
             profileImage.heightAnchor.constraint(equalTo: profileImage.widthAnchor),
@@ -110,6 +128,7 @@ class RegisterScreenView: UIView {
             textFieldName.topAnchor.constraint(equalTo: self.profileImage.bottomAnchor, constant: 16),
             textFieldName.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             textFieldName.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+            
             
             textFieldEmail.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 16),
             textFieldEmail.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
@@ -127,7 +146,15 @@ class RegisterScreenView: UIView {
             textFieldVerifyPassword.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             textFieldVerifyPassword.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
             
-            buttonRegister.topAnchor.constraint(equalTo: textFieldVerifyPassword.bottomAnchor, constant: 32),
+            
+            optionalLabel.topAnchor.constraint(equalTo: textFieldVerifyPassword.bottomAnchor, constant: 16),
+            optionalLabel.leadingAnchor.constraint(equalTo: textFieldVenmo.leadingAnchor, constant: 2),
+            
+            textFieldVenmo.topAnchor.constraint(equalTo: optionalLabel.bottomAnchor, constant: 2),
+            textFieldVenmo.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            textFieldVenmo.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+    
+            buttonRegister.topAnchor.constraint(equalTo: textFieldVenmo.bottomAnchor, constant: 32),
             buttonRegister.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
         ])
     }

@@ -19,7 +19,7 @@ class LoginScreenView: UIView {
     
     override init(frame: CGRect){
         super.init(frame: frame)
-        self.backgroundColor = mainBlue
+        self.backgroundColor = UIColor(red: 84/255, green: 84/255, blue: 84/255, alpha: 1)
 
         setupTitle()
         setuptextFieldEmail()
@@ -32,9 +32,9 @@ class LoginScreenView: UIView {
     
     func setupTitle(){
         title = UILabel()
-        title.text = "Be Anywhere"
+        title.text = "SPLIT"
         title.textColor = .white
-        title.font = UIFont(name: "Balloons!", size: 45)
+        title.font = UIFont(name: "Gaegu-Bold", size: 64)
         title.textAlignment = .center
         title.numberOfLines = 2
         title.translatesAutoresizingMaskIntoConstraints = false
@@ -69,7 +69,7 @@ class LoginScreenView: UIView {
         buttonLogin = UIButton(type: .system)
         buttonLogin.setTitle("Login", for: .normal)
         buttonLogin.setTitleColor(.white, for: .normal)
-        
+        buttonLogin.titleLabel?.font = .boldSystemFont(ofSize: 16)
         buttonLogin.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(buttonLogin)
     }
@@ -78,6 +78,7 @@ class LoginScreenView: UIView {
         buttonToRegister = UIButton(type: .system)
         buttonToRegister.setTitle("Create an account", for: .normal)
         buttonToRegister.setTitleColor(.white, for: .normal)
+        buttonToRegister.titleLabel?.font = .boldSystemFont(ofSize: 16)
         buttonToRegister.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(buttonToRegister)
     }
