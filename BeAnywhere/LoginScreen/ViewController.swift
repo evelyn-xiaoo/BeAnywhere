@@ -11,16 +11,16 @@ class ViewController: UIViewController {
     let loginView = LoginScreenView()
     let registerScreenController = RegisterScreenController()
     let profileController = ProfileScreenController()
+    
     override func loadView() {
         view = loginView
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.prefersLargeTitles = true
         loginView.buttonLogin.addTarget(self, action: #selector(onLoginTapped), for: .touchUpInside)
         loginView.buttonToRegister.addTarget(self, action: #selector(onRegisterNavTapped), for: .touchUpInside)
-        
-        title = "Login"
     }
     
     @objc func onLoginTapped(){
