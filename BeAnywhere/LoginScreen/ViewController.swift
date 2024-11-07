@@ -11,6 +11,7 @@ class ViewController: UIViewController {
     let loginView = LoginScreenView()
     let registerScreenController = RegisterScreenController()
     let profileController = ProfileScreenController()
+    
     override func loadView() {
         view = loginView
     }

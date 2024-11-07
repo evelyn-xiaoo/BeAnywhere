@@ -11,6 +11,8 @@ import FirebaseFirestore
 import PhotosUI
 import TOCropViewController
 import AVFoundation
+import FirebaseStorage
+
 
 
 class RegisterScreenController: UIViewController, PHPickerViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, TOCropViewControllerDelegate {
@@ -22,50 +24,52 @@ class RegisterScreenController: UIViewController, PHPickerViewControllerDelegate
     let profileController = ProfileScreenController()
         override func loadView() {
             view = registerView
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        navigationController?.navigationBar.prefersLargeTitles = true
+        registerView.buttonRegister.addTarget(self, action: #selector(onRegisterTapped), for: .touchUpInside)
+        
+        registerView.profileImage.menu = getMenuImagePicker()
+        
+    }
+    
+    @objc func onRegisterTapped(){
+        //MARK: creating a new user on Firebase...
+        
+        guard registerView.textFieldPassword.text == registerView.textFieldVerifyPassword.text else {
+            showAlertText(text: "Passwords do not match!")
+                return
+            }
+            
+        // Array to keep track of any empty fields
+        var emptyFields: [String] = []
+        
+        // Check each field and add to the emptyFields array if empty
+        if registerView.textFieldName.text?.isEmpty ?? true {
+            emptyFields.append("Name")
         }
-        override func viewDidLoad() {
-            super.viewDidLoad()
-            navigationController?.navigationBar.prefersLargeTitles = true
-            registerView.buttonRegister.addTarget(self, action: #selector(onRegisterTapped), for: .touchUpInside)
-            
-            registerView.profileImage.menu = getMenuImagePicker()
-            
+        if registerView.textFieldEmail.text?.isEmpty ?? true {
+            emptyFields.append("Email")
+        }
+        if registerView.textFieldUsername.text?.isEmpty ?? true {
+            emptyFields.append("Username")
+        }
+        if registerView.textFieldPassword.text?.isEmpty ?? true || registerView.textFieldVerifyPassword.text?.isEmpty ?? true {
+            emptyFields.append("Password")
         }
         
-        @objc func onRegisterTapped(){
-            //MARK: creating a new user on Firebase...
-            
-            guard registerView.textFieldPassword.text == registerView.textFieldVerifyPassword.text else {
-                showAlertText(text: "Passwords do not match!")
-                    return
-                }
-                
-            // Array to keep track of any empty fields
-            var emptyFields: [String] = []
-            
-            // Check each field and add to the emptyFields array if empty
-            if registerView.textFieldName.text?.isEmpty ?? true {
-                emptyFields.append("Name")
-            }
-            if registerView.textFieldEmail.text?.isEmpty ?? true {
-                emptyFields.append("Email")
-            }
-            if registerView.textFieldUsername.text?.isEmpty ?? true {
-                emptyFields.append("Username")
-            }
-            if registerView.textFieldPassword.text?.isEmpty ?? true {
-                emptyFields.append("Password")
-            }
-            
-            // If there are any empty fields, show an alert specifying which ones
-            if !emptyFields.isEmpty {
-                let fieldList = emptyFields.joined(separator: ", ")
-                showEmptyAlertText(text: "\(fieldList)")
-            } else {
-                // All checks passed, proceed with registration
-                registerNewAccount()
-            }
+        // If there are any empty fields, show an alert specifying which ones
+        if !emptyFields.isEmpty {
+            let fieldList = emptyFields.joined(separator: ", ")
+            showEmptyAlertText(text: "\(fieldList)")
+        } else {
+            // All checks passed, proceed with registration
+            uploadProfilePhotoToStorage()
+        }
     }
+    
+    
     
     func getMenuImagePicker() -> UIMenu {
         let menuItems = [
@@ -226,6 +230,21 @@ extension RegisterScreenController: UIPickerViewDelegate, UIPickerViewDataSource
         }
     }
     
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+        
+        if let image = info[.editedImage] as? UIImage{
+            self.registerView.profileImage.setImage(
+                image.withRenderingMode(.alwaysOriginal),
+                for: .normal
+            )
+            self.pickedImage = image
+        }else{
+            showAlertText(text: "Failed to take photo")
+        }
+    }
+    
+    
     /*
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true)
@@ -244,24 +263,6 @@ extension RegisterScreenController: UIPickerViewDelegate, UIPickerViewDataSource
             }
         }
     }
-    */
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        picker.dismiss(animated: true)
-        
-        if let image = info[.editedImage] as? UIImage{
-            self.registerView.profileImage.setImage(
-                image.withRenderingMode(.alwaysOriginal),
-                for: .normal
-            )
-            self.pickedImage = image
-        }else{
-            showAlertText(text: "Failed to take photo")
-        }
-    }
-    
-    
-    /*
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true) { // Dismiss the picker before presenting TOCropViewController
@@ -285,5 +286,31 @@ extension RegisterScreenController: UIPickerViewDelegate, UIPickerViewDataSource
         }
     }
      */
+    
+    func uploadProfilePhotoToStorage(){
+        var profilePhotoURL:URL?
+        
+        //MARK: Upload the profile photo if there is any...
+        if let image = pickedImage{
+            if let jpegData = image.jpegData(compressionQuality: 80){
+                let storageRef = Storage.storage().reference()
+                let imagesRepo = storageRef.child("imagesUsers")
+                let imageRef = imagesRepo.child("\(NSUUID().uuidString).jpg")
+                
+                let uploadTask = imageRef.putData(jpegData, completion: {(metadata, error) in
+                    if error == nil{
+                        imageRef.downloadURL(completion: {(url, error) in
+                            if error == nil{
+                                profilePhotoURL = url
+                                self.registerNewAccount(photoURL: profilePhotoURL)
+                            }
+                        })
+                    }
+                })
+            }
+        }else{
+            self.registerNewAccount(photoURL: profilePhotoURL)
+        }
+    }
     
 }

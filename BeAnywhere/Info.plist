@@ -10,6 +10,8 @@
 	<string>This app needs access to your camera to allow photo capture.</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>Gaegu-Bold.ttf</string>
+		<string>Gaegu-Regular.ttf</string>
 		<string>Balloons-YYVy.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
