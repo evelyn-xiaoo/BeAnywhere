@@ -10,7 +10,7 @@ import UIKit
 class ProfileScreenController: UIViewController {
 
     let profileView = ProfileScreenView()
-    var currentUser: User? = nil
+    var currentUser: FirestoreUser? = nil
     override func loadView() {
         view = profileView
     }

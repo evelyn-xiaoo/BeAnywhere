@@ -9,7 +9,9 @@ import Foundation
 import FirebaseAuth
 
 extension RegisterScreenController{
+    
     func registerNewAccount(){
+        showActivityIndicator()
         //MARK: create a Firebase user with email and password...
         if let name = registerView.textFieldName.text,
            let email = registerView.textFieldEmail.text,
@@ -17,12 +19,12 @@ extension RegisterScreenController{
             //Validations....
             
             if (!isValidEmail(email)) {
-                self.showErrorAlert(message: "Invalid email.")
+                showErrorAlert(message: "Invalid email.", controller: self)
                 return
             }
             
             if (name == "") {
-                self.showErrorAlert(message: "Text fields cannot be empty.")
+                showErrorAlert(message: "Text fields cannot be empty.", controller: self)
                 return
             }
 
@@ -30,18 +32,17 @@ extension RegisterScreenController{
             Auth.auth().createUser(withEmail: email, password: password, completion: {result, error in
                 if error == nil{
                     //MARK: the user creation is successful...
-                    self.profileController.currentUser = User(name: name, email: email)
-                    self.setNameOfTheUserInFirebaseAuth(name: name)
+                    self.uploadProfilePhotoToStorage(userId: Auth.auth().currentUser!.uid, email: email, name: name)
                     
-                    self.showSuccessAlert(message: "Successfully logged in!")
+                    
                 }else{
                     //MARK: there is a error creating the user...
                     
                     
                     if let errorObj = error {
-                        self.showErrorAlert(message: errorObj.localizedDescription)
+                        showErrorAlert(message: errorObj.localizedDescription, controller: self)
                     } else {
-                        self.showErrorAlert(message: "Unknown error occured.")
+                        showErrorAlert(message: "Unknown error occured.", controller: self)
                     }
                     
                 }
@@ -49,19 +50,74 @@ extension RegisterScreenController{
         }
     }
     
+    func uploadProfilePhotoToStorage(userId: String, email: String, name: String){
+            
+            //MARK: Upload the photo if there is any...
+            if let image = pickedImage{
+                if let jpegData = image.jpegData(compressionQuality: 80){
+                    let storageRef = storage.reference()
+                    let imagesRepo = storageRef.child("imagesUsers")
+                    let imageRef = imagesRepo.child("\(userId).jpg")
+                    
+                    let uploadTask = imageRef.putData(jpegData, completion: {(metadata, error) in
+                        if error == nil{
+                            imageRef.downloadURL(completion: {(url, error) in
+                                if error == nil,
+                                   let imageUrl = url{
+                                    self.setNameOfTheUserInFirebaseAuth(newUser: FirestoreUser(name: name, email: email, avatarURL: imageUrl.absoluteString))
+                                }
+                            })
+                        }
+                    })
+                }
+            } else {
+               
+                self.setNameOfTheUserInFirebaseAuth(newUser: FirestoreUser(name: name, email: email, avatarURL: ""))
+            }
+        }
+    
     //MARK: We set the name of the user after we create the account...
-    func setNameOfTheUserInFirebaseAuth(name: String){
-        let changeRequest = Auth.auth().currentUser?.createProfileChangeRequest()
-        changeRequest?.displayName = name
+    func setNameOfTheUserInFirebaseAuth(newUser: FirestoreUser){
+        let currentUser = Auth.auth().currentUser
+        let changeRequest = currentUser?.createProfileChangeRequest()
+        changeRequest?.displayName = newUser.name
+        if (newUser.avatarURL != ""){
+            changeRequest?.photoURL = URL(string: newUser.avatarURL)
+        }
         changeRequest?.commitChanges(completion: {(error) in
             if error == nil{
                 //MARK: the profile update is successful...
-                self.navigationController?.popViewController(animated: true)
-                self.navigationController?.pushViewController(self.profileController, animated: true)
+                self.saveUserDataToFirestore(newUser: newUser, userId: currentUser!.uid)
             }else{
                 //MARK: there was an error updating the profile...
                 print("Error occured: \(String(describing: error))")
             }
+           
         })
+    }
+    
+    func saveUserDataToFirestore(newUser: FirestoreUser, userId: String){
+        let collectionUsers = database
+            .collection(FirestoreUser.collectionName)
+                        .document(userId)
+                        
+                    do{
+                        try collectionUsers.setData(from: newUser, completion: {(error) in
+                            if error == nil{
+                                let homeController = ViewController()
+                                homeController.currentUser = newUser
+                                
+                                self.dismiss(animated: false)
+                                self.loginDelegate.delegateNavigateToHomeScreen()
+                                
+                                
+                                showSuccessAlert(message: "Successfully logged in!", controller: self)
+                            }
+                        })
+                    }catch{
+                        print("Error adding document!")
+                    }
+        
+        self.hideActivityIndicator()
     }
 }

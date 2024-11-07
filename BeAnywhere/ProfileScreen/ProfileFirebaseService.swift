@@ -9,7 +9,5 @@ import Foundation
 import FirebaseAuth
 
 extension ProfileScreenController{
-    func logoutCurrentAccount() {
-        // MARK: Will be done soon
-    }
+    
 }

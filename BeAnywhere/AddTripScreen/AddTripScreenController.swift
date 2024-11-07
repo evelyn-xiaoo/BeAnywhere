@@ -1,74 +1,45 @@
 //
-//  RegisterScreenController.swift
+//  HomeScreenController.swift
 //  BeAnywhere
 //
-//  Created by Jimin Kim on 10/25/24.
+//  Created by Jimin Kim on 11/3/24.
 //
 
 import UIKit
-import FirebaseAuth
-import FirebaseFirestore
 import PhotosUI
-import AVFoundation
-import FirebaseStorage
 
-class RegisterScreenController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+    let addTripView = AddTripScreenView()
+    var currentUser: FirestoreUser? = nil
+    var groupMembers: [FirestoreUser] = []
     
-    var delegate: RegisterScreenView!
-    var pickedImage: UIImage?
-    var loginDelegate: LoginScreenController!
+    var pickedTripImage: UIImage?
     
-    let registerView = RegisterScreenView()
+    override func loadView() {
+        view = addTripView
+    }
     
-    let childProgressView = ProgressSpinnerViewController()
-    
-    let database = Firestore.firestore()
-    let storage = Storage.storage()
-        override func loadView() {
-            view = registerView
-        }
-        override func viewDidLoad() {
-            super.viewDidLoad()
-            navigationController?.navigationBar.prefersLargeTitles = true
-            registerView.buttonRegister.addTarget(self, action: #selector(onRegisterTapped), for: .touchUpInside)
-            
-            registerView.profileImage.menu = getMenuImagePicker()
-            
-        }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "New Group"
         
-        @objc func onRegisterTapped(){
-            //MARK: creating a new user on Firebase...
-            
-            guard registerView.textFieldPassword.text == registerView.textFieldVerifyPassword.text else {
-                showAlertText(text: "Passwords do not match!", controller: self)
-                    return
-                }
-                
-            // Array to keep track of any empty fields
-            var emptyFields: [String] = []
-            
-            // Check each field and add to the emptyFields array if empty
-            if registerView.textFieldName.text?.isEmpty ?? true {
-                emptyFields.append("Name")
-            }
-            if registerView.textFieldEmail.text?.isEmpty ?? true {
-                emptyFields.append("Email")
-            }
-            if registerView.textFieldUsername.text?.isEmpty ?? true {
-                emptyFields.append("Username")
-            }
-            if registerView.textFieldPassword.text?.isEmpty ?? true {
-                emptyFields.append("Password")
-            }
-            
-            // If there are any empty fields, show an alert specifying which ones
-            if !emptyFields.isEmpty {
-                let fieldList = emptyFields.joined(separator: ", ")
-                showEmptyAlertText(text: "\(fieldList)", controller: self)
-            } else {
-                // All checks passed, proceed with registration
-                registerNewAccount()
-            }
+        addTripView.currentTripLabel.text = "Current trips"
+       
+        //MARK: setting the delegate and data source...
+        addTripView.memberTable.dataSource = self
+        addTripView.memberTable.delegate = self
+        //MARK: removing the separator line...
+        addTripView.memberTable.separatorStyle = .none
+        
+        let confirmButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(confirmNewGroup))
+        
+        navigationItem.rightBarButtonItems = [confirmButton]
+        addTripView.tripImage.menu = getMenuImagePicker()
+    }
+    
+    @objc func confirmNewGroup(){
+        
     }
     
     func getMenuImagePicker() -> UIMenu {
@@ -151,10 +122,31 @@ class RegisterScreenController: UIViewController, UIImagePickerControllerDelegat
             completion(false) // Access denied or restricted
         }
     }
-
 }
 
-extension RegisterScreenController: UIPickerViewDelegate, UIPickerViewDataSource, PHPickerViewControllerDelegate{
+extension AddTripScreenController: UITableViewDelegate, UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return groupMembers.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableViewUsers, for: indexPath) as! UserBoxTableViewCell
+        cell.userNameLabel.text = groupMembers[indexPath.row].name
+        
+        if let avatarImageUrl = URL(string: groupMembers[indexPath.row].avatarURL) {
+            cell.avatarImage.loadRemoteImage(from: avatarImageUrl)
+        }
+        
+     
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // MARK: on current trip box click -> navigate to trip details page
+    }
+}
+
+extension AddTripScreenController: UIPickerViewDelegate, UIPickerViewDataSource, PHPickerViewControllerDelegate{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
@@ -175,11 +167,11 @@ extension RegisterScreenController: UIPickerViewDelegate, UIPickerViewDataSource
                 item.loadObject(ofClass: UIImage.self, completionHandler: { (image, error) in
                     DispatchQueue.main.async{
                         if let uwImage = image as? UIImage{
-                            self.registerView.profileImage.setImage(
+                            self.addTripView.tripImage.setImage(
                                 uwImage.withRenderingMode(.alwaysOriginal),
                                 for: .normal
                             )
-                            self.pickedImage = uwImage
+                            self.pickedTripImage = uwImage
                         }
                     }
                 })
@@ -191,28 +183,13 @@ extension RegisterScreenController: UIPickerViewDelegate, UIPickerViewDataSource
         picker.dismiss(animated: true)
         
         if let image = info[.editedImage] as? UIImage{
-            self.registerView.profileImage.setImage(
+            self.addTripView.tripImage.setImage(
                 image.withRenderingMode(.alwaysOriginal),
                 for: .normal
             )
-            self.pickedImage = image
+            self.pickedTripImage = image
         }else{
             showAlertText(text: "Failed to take photo", controller: self)
         }
-    }
-}
-
-
-extension RegisterScreenController:ProgressSpinnerDelegate{
-    func showActivityIndicator(){
-        addChild(childProgressView)
-        view.addSubview(childProgressView.view)
-        childProgressView.didMove(toParent: self)
-    }
-    
-    func hideActivityIndicator(){
-        childProgressView.willMove(toParent: nil)
-        childProgressView.view.removeFromSuperview()
-        childProgressView.removeFromParent()
     }
 }
