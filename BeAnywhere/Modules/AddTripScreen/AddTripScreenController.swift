@@ -7,12 +7,19 @@
 
 import UIKit
 import PhotosUI
+import FirebaseFirestore
+import FirebaseStorage
 
 class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     let addTripView = AddTripScreenView()
-    var currentUser: FirestoreUser? = nil
     var groupMembers: [FirestoreUser] = []
+    let searchSheetController = UserSearchBottmSheetController()
+    let childProgressView = ProgressSpinnerViewController()
+        var searchSheetNavController: UINavigationController!
+    let notificationCenter = NotificationCenter.default
+    let database = Firestore.firestore()
+    let storage = Storage.storage()
     
     var pickedTripImage: UIImage?
     
@@ -23,8 +30,6 @@ class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "New Group"
-        
-        addTripView.currentTripLabel.text = "Current trips"
        
         //MARK: setting the delegate and data source...
         addTripView.memberTable.dataSource = self
@@ -36,10 +41,55 @@ class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate
         
         navigationItem.rightBarButtonItems = [confirmButton]
         addTripView.tripImage.menu = getMenuImagePicker()
+        
+        addTripView.addMemberButton.addTarget(self, action: #selector(onFindButtonTapped), for: .touchUpInside)
+        
+        // MARK: setup notification observer
+        notificationCenter.addObserver(
+                    self,
+                    selector: #selector(notificationReceivedForMemberAdded(notification:)),
+                    name: Notification.Name(NotificationConfigs.UserSelectedObserverName),
+                    object: nil)
     }
     
+    // MARK: adds the selected group member in the form and closes the sheet
+    @objc func notificationReceivedForMemberAdded(notification: Notification){
+        groupMembers.append(notification.object as! FirestoreUser)
+        addTripView.memberTable.reloadData()
+        dismiss(animated: true)
+        }
+    
     @objc func confirmNewGroup(){
+        let newFoodTripName: String? = addTripView.textFieldName.text
+        let newFoodTripLocation: String? = addTripView.textFieldLocation.text
         
+        if let newFoodTripLocation, let newFoodTripName{
+            do {
+                let newTrip: FoodTrip = FoodTrip(id: "", groupName: newFoodTripName, location: newFoodTripLocation, members: groupMembers, photoURL: nil)
+                
+                try saveFoodTrip(newTrip)
+            } catch {
+                showErrorAlert(message: "Failed to create new trip. Please try again.", controller: self)
+            }
+            
+        }
+    }
+    
+    func setupSearchBottomSheet(){
+            //MARK: setting up bottom search sheet...
+            searchSheetNavController = UINavigationController(rootViewController: searchSheetController)
+            
+            // MARK: setting up modal style...
+            searchSheetNavController.modalPresentationStyle = .pageSheet
+            
+            if let bottomSearchSheet = searchSheetNavController.sheetPresentationController{
+                bottomSearchSheet.detents = [.medium(), .large()]
+                bottomSearchSheet.prefersGrabberVisible = true
+            }
+    }
+    @objc func onFindButtonTapped(){
+        setupSearchBottomSheet()
+        present(searchSheetNavController, animated: true)
     }
     
     func getMenuImagePicker() -> UIMenu {
@@ -191,5 +241,19 @@ extension AddTripScreenController: UIPickerViewDelegate, UIPickerViewDataSource,
         }else{
             showAlertText(text: "Failed to take photo", controller: self)
         }
+    }
+}
+
+extension AddTripScreenController:ProgressSpinnerDelegate{
+    func showActivityIndicator(){
+        addChild(childProgressView)
+        view.addSubview(childProgressView.view)
+        childProgressView.didMove(toParent: self)
+    }
+    
+    func hideActivityIndicator(){
+        childProgressView.willMove(toParent: nil)
+        childProgressView.view.removeFromSuperview()
+        childProgressView.removeFromParent()
     }
 }

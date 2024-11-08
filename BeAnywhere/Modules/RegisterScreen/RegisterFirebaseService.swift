@@ -15,7 +15,9 @@ extension RegisterScreenController{
         //MARK: create a Firebase user with email and password...
         if let name = registerView.textFieldName.text,
            let email = registerView.textFieldEmail.text,
-           let password = registerView.textFieldPassword.text{
+           let password = registerView.textFieldPassword.text,
+           let username = registerView.textFieldUsername.text,
+           let venmo = registerView.textFieldVenmo.text{
             //Validations....
             
             if (!isValidEmail(email)) {
@@ -32,7 +34,7 @@ extension RegisterScreenController{
             Auth.auth().createUser(withEmail: email, password: password, completion: {result, error in
                 if error == nil{
                     //MARK: the user creation is successful...
-                    self.uploadProfilePhotoToStorage(userId: Auth.auth().currentUser!.uid, email: email, name: name)
+                    self.uploadProfilePhotoToStorage(userId: Auth.auth().currentUser!.uid, email: email, name: name, username: username, venmo: venmo)
                     
                     
                 }else{
@@ -50,7 +52,7 @@ extension RegisterScreenController{
         }
     }
     
-    func uploadProfilePhotoToStorage(userId: String, email: String, name: String){
+    func uploadProfilePhotoToStorage(userId: String, email: String, name: String, username: String, venmo: String){
             
             //MARK: Upload the photo if there is any...
             if let image = pickedImage{
@@ -64,7 +66,8 @@ extension RegisterScreenController{
                             imageRef.downloadURL(completion: {(url, error) in
                                 if error == nil,
                                    let imageUrl = url{
-                                    self.setNameOfTheUserInFirebaseAuth(newUser: FirestoreUser(name: name, email: email, avatarURL: imageUrl.absoluteString))
+                                    self.setNameOfTheUserInFirebaseAuth(newUser: FirestoreUser(id: userId, name: name, email: email, avatarURL: imageUrl.absoluteString, venmo: venmo, username: username
+                                                                                              ))
                                 }
                             })
                         }
@@ -72,7 +75,7 @@ extension RegisterScreenController{
                 }
             } else {
                
-                self.setNameOfTheUserInFirebaseAuth(newUser: FirestoreUser(name: name, email: email, avatarURL: ""))
+                self.setNameOfTheUserInFirebaseAuth(newUser: FirestoreUser(id: userId, name: name, email: email, avatarURL: "", venmo: venmo, username: username))
             }
         }
     

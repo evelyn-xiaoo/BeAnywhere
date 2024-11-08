@@ -48,7 +48,7 @@ class ProfileScreenView: UIView {
     
     func setupProfilePic() {
         profilePic = UIImageView()
-        //profilePic.image = UIImage(systemName: "person.circle")
+        profilePic.image = UIImage(systemName: "person.circle")
         profilePic.layer.cornerRadius = 20
         profilePic.translatesAutoresizingMaskIntoConstraints = false
         userInfo.addArrangedSubview(profilePic)

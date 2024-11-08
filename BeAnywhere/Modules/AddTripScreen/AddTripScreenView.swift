@@ -14,7 +14,6 @@ class AddTripScreenView: UIView {
     var textFieldLocation: UITextField!
     var addMemberButton: UIButton!
     var memberTable: UITableView!
-    var currentTripLabel: UILabel!
     var tripImageLabel: UILabel!
     var membersLabel: UILabel!
     
@@ -81,13 +80,11 @@ class AddTripScreenView: UIView {
     }
     
     func setUpLabels() {
-        currentTripLabel = UILabel()
         tripImageLabel = UILabel()
         membersLabel = UILabel()
         
-        let appLabels: [UILabel] = [currentTripLabel, tripImageLabel, membersLabel]
+        let appLabels: [UILabel] = [ tripImageLabel, membersLabel]
         
-        currentTripLabel.font = UIFont.boldSystemFont(ofSize: 15)
         membersLabel.font = UIFont.boldSystemFont(ofSize: 15)
         tripImageLabel.font = UIFont.boldSystemFont(ofSize: 13)
         tripImageLabel.text = "Trip Image"
@@ -104,7 +101,7 @@ class AddTripScreenView: UIView {
     
     func setupTableViewTrips(){
         memberTable = UITableView()
-        memberTable.register(TripBoxTableViewCell.self, forCellReuseIdentifier: TableConfigs.tableViewUsers)
+        memberTable.register(UserBoxTableViewCell.self, forCellReuseIdentifier: TableConfigs.tableViewUsers)
         memberTable.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(memberTable)
     }
@@ -134,9 +131,8 @@ class AddTripScreenView: UIView {
             membersLabel.topAnchor.constraint(equalTo: textFieldLocation.bottomAnchor, constant: 16),
             
             memberTable.topAnchor.constraint(equalTo: membersLabel.bottomAnchor, constant: 16),
-            memberTable.leadingAnchor.constraint(equalTo: currentTripLabel.leadingAnchor, constant: 5),
-            memberTable.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
             memberTable.bottomAnchor.constraint(equalTo: addMemberButton.topAnchor, constant: -8),
+            memberTable.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor),
             
             addMemberButton.widthAnchor.constraint(equalToConstant: 48),
             addMemberButton.heightAnchor.constraint(equalToConstant: 48),

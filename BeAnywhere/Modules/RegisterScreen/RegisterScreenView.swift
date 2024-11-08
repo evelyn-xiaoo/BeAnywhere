@@ -51,7 +51,7 @@ class RegisterScreenView: UIView {
     
     func setuptextFieldName(){
         textFieldName = UITextField()
-        textFieldName.placeholder = "Name"
+        textFieldName.placeholder = "Full name"
         textFieldName.keyboardType = .default
         textFieldName.borderStyle = .roundedRect
         textFieldName.translatesAutoresizingMaskIntoConstraints = false

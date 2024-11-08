@@ -11,16 +11,14 @@ import FirebaseFirestore
 
 class LoginScreenController: UIViewController {
     let loginView = LoginScreenView()
-<<<<<<< HEAD:BeAnywhere/LoginScreen/LoginScreenController.swift
     let firebaseAuth = Auth.auth()
     let database = Firestore.firestore()
     
     let childProgressView = ProgressSpinnerViewController()
-=======
     let registerScreenController = RegisterScreenController()
     let profileController = ProfileScreenController()
     
->>>>>>> profile-page:BeAnywhere/LoginScreen/ViewController.swift
+
     override func loadView() {
         view = loginView
     }

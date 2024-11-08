@@ -64,14 +64,16 @@ class TripBoxTableViewCell: UITableViewCell {
             tripImage.widthAnchor.constraint(equalToConstant: 32),
             tripImage.heightAnchor.constraint(equalToConstant: 32),
             tripImage.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
+            tripImage.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -8),
             tripImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 16),
             
-            groupNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
-            groupNameLabel.leadingAnchor.constraint(equalTo: tripImage.leadingAnchor, constant: 10),
+            groupNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 14),
+            groupNameLabel.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -14),
+            groupNameLabel.leadingAnchor.constraint(equalTo: tripImage.trailingAnchor, constant: 10),
             groupNameLabel.heightAnchor.constraint(equalToConstant: 20),
             groupNameLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
             
-            wrapperCellView.heightAnchor.constraint(equalToConstant: 36)
+            wrapperCellView.heightAnchor.constraint(equalToConstant: 48)
             
         ])
         

@@ -65,14 +65,16 @@ class UserBoxTableViewCell: UITableViewCell {
             avatarImage.widthAnchor.constraint(equalToConstant: 32),
             avatarImage.heightAnchor.constraint(equalToConstant: 32),
             avatarImage.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
+            avatarImage.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -8),
             avatarImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 16),
             
-            userNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
-            userNameLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
+            userNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 14),
+            userNameLabel.bottomAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: -14),
+            userNameLabel.leadingAnchor.constraint(equalTo: avatarImage.trailingAnchor, constant: 10),
             userNameLabel.heightAnchor.constraint(equalToConstant: 20),
             userNameLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
             
-            wrapperCellView.heightAnchor.constraint(equalToConstant: 36)
+            wrapperCellView.heightAnchor.constraint(equalToConstant: 48)
             
         ])
         

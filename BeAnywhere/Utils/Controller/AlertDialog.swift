@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 func showErrorAlert(message: String, controller: UIViewController){
-        let alert = UIAlertController(title: "Error", message: "\(message) Please try again.", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
     controller.present(alert, animated: true)
 }
