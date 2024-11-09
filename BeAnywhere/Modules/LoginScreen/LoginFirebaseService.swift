@@ -50,6 +50,7 @@ extension LoginScreenController{
                 switch result {
                 case .success(let user):
                     let homeScreen = ViewController()
+                    UserSession.shared.currentUser = user
                     homeScreen.currentUser = user
                     self.dismiss(animated: false)
                   

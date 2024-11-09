@@ -1,23 +1,33 @@
 //
-//  RegisterFirebaseService.swift
+//  ProfileEditFirebaseService.swift
 //  BeAnywhere
 //
-//  Created by Jimin Kim on 10/25/24.
+//  Created by Evelyn Xiao on 11/8/24.
+//
+
+
+//
+//  ProfileEditFirebaseService.swift
+//  BeAnywhere
+//
+//  Created by Evelyn Xiao on 11/7/24.
 //
 
 import Foundation
 import FirebaseAuth
+import UIKit
 
-extension RegisterScreenController{
+
+extension ProfileEditViewController{
     
-    func registerNewAccount(){
+    @objc func saveProfile() {
+        // MARK: Will be done soon
         showActivityIndicator()
         //MARK: create a Firebase user with email and password...
-        if let name = registerView.textFieldName.text,
-           let email = registerView.textFieldEmail.text,
-           let password = registerView.textFieldPassword.text,
-           let username = registerView.textFieldUsername.text,
-           let venmo = registerView.textFieldVenmo.text{
+        if let name = editView.textFieldName.text,
+           let email = editView.textFieldEmail.text,
+           let username = editView.textFieldUsername.text,
+           let venmo = editView.textFieldVenmo.text{
             //Validations....
             
             if (!isValidEmail(email)) {
@@ -25,31 +35,32 @@ extension RegisterScreenController{
                 return
             }
             
-            if (name == "" || email == "" || password == "" || username == "" ) {
+            if (name == "" || email == "" || username == "" ) {
                 showErrorAlert(message: "Text fields cannot be empty.", controller: self)
                 return
             }
-
             
-            Auth.auth().createUser(withEmail: email, password: password, completion: {result, error in
-                if error == nil{
-                    //MARK: the user creation is successful...
-                    self.uploadProfilePhotoToStorage(userId: Auth.auth().currentUser!.uid, email: email, name: name, username: username, venmo: venmo)
-                    
-                    
-                }else{
-                    //MARK: there is a error creating the user...
-                    
-                    
-                    if let errorObj = error {
-                        showErrorAlert(message: errorObj.localizedDescription, controller: self)
-                    } else {
-                        showErrorAlert(message: "Unknown error occured.", controller: self)
-                    }
-                    
-                }
-            })
+            self.uploadProfilePhotoToStorage(userId: Auth.auth().currentUser!.uid, email: email, name: name, username: username, venmo: venmo)
+            
+            
+            
         }
+    }
+    
+    @objc func logoutCurrentAccount() {
+        do {
+            try Auth.auth().signOut()
+            let loginController = LoginScreenController()
+            loginController.modalPresentationStyle = .fullScreen
+            self.present(loginController, animated: false)
+        } catch {
+            showErrorAlert(message: "Failed to logout.", controller: self)
+        }
+    }
+    
+    
+    func updateProfile(){
+        
     }
     
     func uploadProfilePhotoToStorage(userId: String, email: String, name: String, username: String, venmo: String){
@@ -66,7 +77,7 @@ extension RegisterScreenController{
                         imageRef.downloadURL(completion: {(url, error) in
                             if error == nil,
                                let imageUrl = url{
-                                self.setNameOfTheUserInFirebaseAuth(newUser: FirestoreUser(id: userId, name: name, email: email, avatarURL: imageUrl.absoluteString, venmo: venmo, username: username))
+                                self.updateUserInFirebaseAuth(newUser: FirestoreUser(id: userId, name: name, email: email, avatarURL: imageUrl.absoluteString, venmo: venmo, username: username))
                             }
                         })
                     }
@@ -74,12 +85,11 @@ extension RegisterScreenController{
             }
         } else {
            
-            self.setNameOfTheUserInFirebaseAuth(newUser: FirestoreUser(id: userId, name: name, email: email, avatarURL: "", venmo: venmo, username: username))
+            self.updateUserInFirebaseAuth(newUser: FirestoreUser(id: userId, name: name, email: email, avatarURL: "", venmo: venmo, username: username))
         }
     }
     
-    //MARK: We set the name of the user after we create the account...
-    func setNameOfTheUserInFirebaseAuth(newUser: FirestoreUser){
+    func updateUserInFirebaseAuth(newUser: FirestoreUser){
         let currentUser = Auth.auth().currentUser
         let changeRequest = currentUser?.createProfileChangeRequest()
         changeRequest?.displayName = newUser.name
@@ -106,14 +116,8 @@ extension RegisterScreenController{
                     do{
                         try collectionUsers.setData(from: newUser, completion: {(error) in
                             if error == nil{
-                                let homeController = ViewController()
-                                homeController.currentUser = newUser
-                                
-                                self.dismiss(animated: false)
-                                self.loginDelegate.delegateNavigateToHomeScreen()
-                                
-                                
-                                showSuccessAlert(message: "Successfully logged in!", controller: self)
+                                self.navigationController?.popViewController(animated: true)
+                                showSuccessAlert(message: "Successfully updated user!", controller: self)
                             }
                         })
                     }catch{
@@ -121,5 +125,19 @@ extension RegisterScreenController{
                     }
         
         self.hideActivityIndicator()
+    }
+}
+
+extension ProfileEditViewController:ProgressSpinnerDelegate{
+    func showActivityIndicator(){
+        addChild(childProgressView)
+        view.addSubview(childProgressView.view)
+        childProgressView.didMove(toParent: self)
+    }
+    
+    func hideActivityIndicator(){
+        childProgressView.willMove(toParent: nil)
+        childProgressView.view.removeFromSuperview()
+        childProgressView.removeFromParent()
     }
 }

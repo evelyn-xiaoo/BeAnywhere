@@ -21,7 +21,7 @@ class ProfileScreenController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if let user = currentUser {
-            profileView.name.text = "\(user.name)!"
+            profileView.name.text = "\(user.name)"
             profileView.username.text = "@\(user.username)"
             profileView.venmo.text = "venmo: \(user.venmo)"
             if let url = URL(string: user.avatarURL){
@@ -40,6 +40,7 @@ class ProfileScreenController: UIViewController {
     
     @objc func editProfile(){
         let editProfileScreen = ProfileEditViewController()
+        editProfileScreen.currentUser = currentUser
         navigationController?.pushViewController(editProfileScreen, animated: true)
     }
 
