@@ -36,6 +36,7 @@ class ViewController: UIViewController {
             loginController.modalPresentationStyle = .fullScreen
             self.present(loginController, animated: false)
         } else {
+            showActivityIndicator()
             // MARK: fetch current user data and trips
             getCurrentUserAndTrips(userId: firebaseAuth.currentUser!.uid)
         }

@@ -67,6 +67,7 @@ class RegisterScreenController: UIViewController, UIImagePickerControllerDelegat
                 showEmptyAlertText(text: "\(fieldList)", controller: self)
             } else {
                 // All checks passed, proceed with registration
+                showActivityIndicator()
                 registerNewAccount()
             }
     }

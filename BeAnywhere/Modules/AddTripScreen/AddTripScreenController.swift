@@ -65,7 +65,7 @@ class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate
         
         if let newFoodTripLocation, let newFoodTripName{
             do {
-                let newTrip: FoodTrip = FoodTrip(id: "", groupName: newFoodTripName, location: newFoodTripLocation, members: groupMembers, photoURL: nil)
+                let newTrip: FoodTrip = FoodTrip(id: "", groupName: newFoodTripName, location: newFoodTripLocation, members: groupMembers, photoURL: nil, dateCreated: Date.now, dateEnded: nil, isTerminated: false)
                 
                 try saveFoodTrip(newTrip)
             } catch {

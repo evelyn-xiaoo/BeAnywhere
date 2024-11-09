@@ -21,7 +21,6 @@ extension ViewController {
     }
     
     func getCurrentUserAndTrips(userId: String) {
-        self.showActivityIndicator()
             let currentUserDocRef = database
                 .collection(FirestoreUser.collectionName)
                 .document(userId)
@@ -34,6 +33,7 @@ extension ViewController {
                   
                 case .failure(let error):
                     self.showErrorAlert(message: "Failed to get the user data. Please try login again.")
+                    self.hideActivityIndicator()
                 }
               }
         
@@ -49,9 +49,12 @@ extension ViewController {
                     do{
                         let foodTripDocument  = try document.data(as: FoodTripFromDoc.self)
                         
-                        self.currentTrips.append(foodTripDocument)
+                        if (foodTripDocument.memberIds.contains(self.currentUser!.id)) {
+                            self.currentTrips.append(foodTripDocument)
+                        }
                     }catch{
                         print(error)
+                        self.hideActivityIndicator()
                     }
                 }
                 

@@ -10,7 +10,7 @@ import FirebaseAuth
 
 extension LoginScreenController{
     func loginAccount(){
-        showActivityIndicator()
+        
         //MARK: sign in a Firebase user with email and password...
         if let email = loginView.textFieldEmail.text,
            let password = loginView.textFieldPassword.text{
@@ -26,15 +26,20 @@ extension LoginScreenController{
                             self.getCurrentUserAndNavigate(userId: currentUser.uid)
                         } else {
                             // MARK: the current user displayName is not found from Firesbase Auth
+                            self.showErrorAlert(message: "Invalid credentials. Please try again.")
+                            self.hideActivityIndicator()
                         }
                         
                     } else {
                         // MARK: the current user is not found from Firesbase Auth
+                        self.showErrorAlert(message: "Invalid credentials. Please try again.")
+                        self.hideActivityIndicator()
                     }
                     
                 }else{
                     //MARK: there is a error logging in the user...
                     self.showErrorAlert(message: "Invalid credentials. Please try again.")
+                    self.hideActivityIndicator()
                     print(error)
                 }
             })
@@ -56,8 +61,8 @@ extension LoginScreenController{
                   
                 case .failure(let error):
                     self.showErrorAlert(message: "Failed to get the user data. Please try login again.")
+                    self.hideActivityIndicator()
                 }
               }
-        self.hideActivityIndicator()
     }
 }

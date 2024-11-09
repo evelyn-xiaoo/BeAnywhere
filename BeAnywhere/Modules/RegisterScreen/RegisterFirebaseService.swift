@@ -11,7 +11,6 @@ import FirebaseAuth
 extension RegisterScreenController{
     
     func registerNewAccount(){
-        showActivityIndicator()
         //MARK: create a Firebase user with email and password...
         if let name = registerView.textFieldName.text,
            let email = registerView.textFieldEmail.text,
@@ -40,13 +39,12 @@ extension RegisterScreenController{
                 }else{
                     //MARK: there is a error creating the user...
                     
-                    
                     if let errorObj = error {
                         showErrorAlert(message: errorObj.localizedDescription, controller: self)
                     } else {
                         showErrorAlert(message: "Unknown error occured.", controller: self)
                     }
-                    
+                    self.hideActivityIndicator()
                 }
             })
         }
@@ -93,6 +91,7 @@ extension RegisterScreenController{
             }else{
                 //MARK: there was an error updating the profile...
                 print("Error occured: \(String(describing: error))")
+                self.hideActivityIndicator()
             }
            
         })
@@ -114,12 +113,12 @@ extension RegisterScreenController{
                                 
                                 
                                 showSuccessAlert(message: "Successfully logged in!", controller: self)
+                                self.hideActivityIndicator()
                             }
                         })
                     }catch{
                         print("Error adding document!")
+                        self.hideActivityIndicator()
                     }
-        
-        self.hideActivityIndicator()
     }
 }

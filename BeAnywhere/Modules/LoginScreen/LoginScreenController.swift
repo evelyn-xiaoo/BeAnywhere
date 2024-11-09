@@ -31,6 +31,7 @@ class LoginScreenController: UIViewController {
     }
     
     @objc func onLoginTapped(){
+        showActivityIndicator()
         //MARK: creating a new user on Firebase...
         loginAccount()
     }
