@@ -8,8 +8,9 @@
 import Foundation
 import FirebaseAuth
 
-extension ViewController{
+extension LoginScreenController{
     func loginAccount(){
+        showActivityIndicator()
         //MARK: sign in a Firebase user with email and password...
         if let email = loginView.textFieldEmail.text,
            let password = loginView.textFieldPassword.text{
@@ -20,9 +21,9 @@ extension ViewController{
                     if let currentUser = Auth.auth().currentUser {
                         if let userName = currentUser.displayName,
                            let userEmail = currentUser.email {
-                            self.profileController.currentUser = User(name: userName, email: userEmail)
-                            self.navigationController?.popViewController(animated: true)
-                            self.navigationController?.pushViewController(self.profileController, animated: true)
+                            
+                            // MARK: navigate back to home screen after logging in
+                            self.getCurrentUserAndNavigate(userId: currentUser.uid)
                         } else {
                             // MARK: the current user displayName is not found from Firesbase Auth
                         }
@@ -33,10 +34,30 @@ extension ViewController{
                     
                 }else{
                     //MARK: there is a error logging in the user...
-                    self.showErrorAlert(message: "Invalid credentials.")
+                    self.showErrorAlert(message: "Invalid credentials. Please try again.")
                     print(error)
                 }
             })
         }
+    }
+    
+    func getCurrentUserAndNavigate(userId: String) {
+            let currentUserDocRef = database
+                .collection(FirestoreUser.collectionName)
+                .document(userId)
+            
+            currentUserDocRef.getDocument(as: FirestoreUser.self) { result in
+                switch result {
+                case .success(let user):
+                    let homeScreen = ViewController()
+                    UserSession.shared.currentUser = user
+                    homeScreen.currentUser = user
+                    self.dismiss(animated: false)
+                  
+                case .failure(let error):
+                    self.showErrorAlert(message: "Failed to get the user data. Please try login again.")
+                }
+              }
+        self.hideActivityIndicator()
     }
 }

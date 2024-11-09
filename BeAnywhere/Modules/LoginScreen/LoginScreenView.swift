@@ -13,11 +13,15 @@ class LoginScreenView: UIView {
     var textFieldPassword: UITextField!
     var buttonLogin: UIButton!
     var buttonToRegister: UIButton!
+    var title: UILabel!
+    
+    let mainBlue = UIColor(named: "Blue")
     
     override init(frame: CGRect){
         super.init(frame: frame)
-        self.backgroundColor = .white
+        self.backgroundColor = UIColor(red: 84/255, green: 84/255, blue: 84/255, alpha: 1)
 
+        setupTitle()
         setuptextFieldEmail()
         setuptextFieldPassword()
         setupbuttonLogin()
@@ -26,11 +30,25 @@ class LoginScreenView: UIView {
         initConstraints()
     }
     
+    func setupTitle(){
+        title = UILabel()
+        title.text = "SPLIT"
+        title.textColor = .white
+        title.font = UIFont(name: "Gaegu-Bold", size: 64)
+        title.textAlignment = .center
+        title.numberOfLines = 2
+        title.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(title)
+    }
+    
     func setuptextFieldEmail(){
         textFieldEmail = UITextField()
         textFieldEmail.placeholder = "Email"
+        textFieldEmail.textColor = .black
         textFieldEmail.keyboardType = .emailAddress
         textFieldEmail.borderStyle = .roundedRect
+        textFieldEmail.backgroundColor = .white
+        textFieldEmail.layer.opacity = 0.5
         textFieldEmail.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(textFieldEmail)
     }
@@ -38,9 +56,11 @@ class LoginScreenView: UIView {
     func setuptextFieldPassword(){
         textFieldPassword = UITextField()
         textFieldPassword.placeholder = "Password"
+        textFieldPassword.textColor = .black
         textFieldPassword.textContentType = .password
         textFieldPassword.isSecureTextEntry = true
         textFieldPassword.borderStyle = .roundedRect
+        textFieldPassword.layer.opacity = 0.5
         textFieldPassword.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(textFieldPassword)
     }
@@ -48,6 +68,7 @@ class LoginScreenView: UIView {
     func setupbuttonLogin(){
         buttonLogin = UIButton(type: .system)
         buttonLogin.setTitle("Login", for: .normal)
+        buttonLogin.setTitleColor(.white, for: .normal)
         buttonLogin.titleLabel?.font = .boldSystemFont(ofSize: 16)
         buttonLogin.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(buttonLogin)
@@ -56,6 +77,7 @@ class LoginScreenView: UIView {
     func setupButtonToRegister() {
         buttonToRegister = UIButton(type: .system)
         buttonToRegister.setTitle("Create an account", for: .normal)
+        buttonToRegister.setTitleColor(.white, for: .normal)
         buttonToRegister.titleLabel?.font = .boldSystemFont(ofSize: 16)
         buttonToRegister.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(buttonToRegister)
@@ -63,18 +85,25 @@ class LoginScreenView: UIView {
     
     func initConstraints(){
         NSLayoutConstraint.activate([
-            textFieldEmail.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 16),
+            title.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 16),
+            title.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            title.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+            
+            
+            textFieldEmail.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 16),
             textFieldEmail.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
-            textFieldEmail.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.9),
+            textFieldEmail.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+            textFieldEmail.heightAnchor.constraint(equalToConstant: 50),
             
             textFieldPassword.topAnchor.constraint(equalTo: textFieldEmail.bottomAnchor, constant: 16),
             textFieldPassword.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
-            textFieldPassword.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.9),
+            textFieldPassword.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+            textFieldPassword.heightAnchor.constraint(equalToConstant: 50),
             
             buttonLogin.topAnchor.constraint(equalTo: textFieldPassword.bottomAnchor, constant: 32),
             buttonLogin.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             
-            buttonToRegister.topAnchor.constraint(equalTo: buttonLogin.bottomAnchor, constant: 32),
+            buttonToRegister.topAnchor.constraint(equalTo: buttonLogin.bottomAnchor, constant: 16),
             buttonToRegister.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
         ])
     }
