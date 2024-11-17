@@ -11,7 +11,7 @@ import FirebaseFirestore
 
 class UserFirebaseService {
     let database = Firestore.firestore()
-    func getUser(uid: String) -> FirestoreUser? {
+    func getUser(uid: String) async -> FirestoreUser? {
         var userFound: FirestoreUser? = nil
         let currentUserDocRef = database
             .collection(FirestoreUser.collectionName)
@@ -22,12 +22,29 @@ class UserFirebaseService {
             case .success(let user):
                 userFound  = user
               
-            case .failure(let error): break
+            case .failure(_): break
                 
             }
           }
         
         return userFound
+    }
+    
+    func getUsers(userIds: [String]) async -> [FirestoreUser]? {
+        var users: [FirestoreUser] = []
+        for userId in userIds {
+            let userDocRef = database
+                .collection(FirestoreUser.collectionName)
+                .document(userId)
+            do {
+                let user = try await userDocRef.getDocument()
+                users.append(try user.data(as: FirestoreUser.self))
+            } catch {
+                return nil
+            }
+            
+        }
+        return users
     }
 
 }

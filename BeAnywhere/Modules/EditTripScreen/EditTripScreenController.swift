@@ -1,5 +1,5 @@
 //
-//  AddTripScreenController.swift
+//  EditTripScreenController.swift
 //  BeAnywhere
 //
 //  Created by Jimin Kim on 11/3/24.
@@ -10,10 +10,11 @@ import PhotosUI
 import FirebaseFirestore
 import FirebaseStorage
 
-class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class EditTripScreenController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
-    let addTripView = AddTripScreenView()
+    let editTripView = EditTripScreenView()
     var groupMembers: [FirestoreUser] = []
+    var currentTrip: FoodTrip? = nil
     let searchSheetController = UserSearchBottmSheetController()
     let childProgressView = ProgressSpinnerViewController()
         var searchSheetNavController: UINavigationController!
@@ -24,25 +25,35 @@ class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate
     var pickedTripImage: UIImage?
     
     override func loadView() {
-        view = addTripView
+        view = editTripView
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let currentTrip {
+            groupMembers.replaceSubrange(0..<currentTrip.members.count, with: currentTrip.members)
+            
+            editTripView.textFieldName.text = currentTrip.groupName
+            editTripView.textFieldLocation.text = currentTrip.location
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "New Group"
+        title = "Edit Group"
        
         //MARK: setting the delegate and data source...
-        addTripView.memberTable.dataSource = self
-        addTripView.memberTable.delegate = self
+        editTripView.memberTable.dataSource = self
+        editTripView.memberTable.delegate = self
         //MARK: removing the separator line...
-        addTripView.memberTable.separatorStyle = .none
+        editTripView.memberTable.separatorStyle = .none
         
         let confirmButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(confirmNewGroup))
         
         navigationItem.rightBarButtonItems = [confirmButton]
-        addTripView.tripImage.menu = getMenuImagePicker()
+        editTripView.tripImage.menu = getMenuImagePicker()
         
-        addTripView.addMemberButton.addTarget(self, action: #selector(onFindButtonTapped), for: .touchUpInside)
+        editTripView.addMemberButton.addTarget(self, action: #selector(onFindButtonTapped), for: .touchUpInside)
         
         // MARK: setup notification observer
         notificationCenter.addObserver(
@@ -55,13 +66,13 @@ class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate
     // MARK: adds the selected group member in the form and closes the sheet
     @objc func notificationReceivedForMemberAdded(notification: Notification){
         groupMembers.append(notification.object as! FirestoreUser)
-        addTripView.memberTable.reloadData()
+        editTripView.memberTable.reloadData()
         dismiss(animated: true)
         }
     
     @objc func confirmNewGroup(){
-        let newFoodTripName: String? = addTripView.textFieldName.text
-        let newFoodTripLocation: String? = addTripView.textFieldLocation.text
+        let newFoodTripName: String? = editTripView.textFieldName.text
+        let newFoodTripLocation: String? = editTripView.textFieldLocation.text
         
         if let newFoodTripLocation, let newFoodTripName{
             do {
@@ -174,13 +185,13 @@ class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate
     }
 }
 
-extension AddTripScreenController: UITableViewDelegate, UITableViewDataSource{
+extension EditTripScreenController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return groupMembers.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableViewUsers, for: indexPath) as! UserBoxTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableViewTripEditUsers, for: indexPath) as! UserBoxTableViewCell
         cell.userNameLabel.text = groupMembers[indexPath.row].name
         
         if let avatarImageUrl = URL(string: groupMembers[indexPath.row].avatarURL) {
@@ -196,7 +207,7 @@ extension AddTripScreenController: UITableViewDelegate, UITableViewDataSource{
     }
 }
 
-extension AddTripScreenController: UIPickerViewDelegate, UIPickerViewDataSource, PHPickerViewControllerDelegate{
+extension EditTripScreenController: UIPickerViewDelegate, UIPickerViewDataSource, PHPickerViewControllerDelegate{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
@@ -217,7 +228,7 @@ extension AddTripScreenController: UIPickerViewDelegate, UIPickerViewDataSource,
                 item.loadObject(ofClass: UIImage.self, completionHandler: { (image, error) in
                     DispatchQueue.main.async{
                         if let uwImage = image as? UIImage{
-                            self.addTripView.tripImage.setImage(
+                            self.editTripView.tripImage.setImage(
                                 uwImage.withRenderingMode(.alwaysOriginal),
                                 for: .normal
                             )
@@ -233,7 +244,7 @@ extension AddTripScreenController: UIPickerViewDelegate, UIPickerViewDataSource,
         picker.dismiss(animated: true)
         
         if let image = info[.editedImage] as? UIImage{
-            self.addTripView.tripImage.setImage(
+            self.editTripView.tripImage.setImage(
                 image.withRenderingMode(.alwaysOriginal),
                 for: .normal
             )
@@ -244,7 +255,7 @@ extension AddTripScreenController: UIPickerViewDelegate, UIPickerViewDataSource,
     }
 }
 
-extension AddTripScreenController:ProgressSpinnerDelegate{
+extension EditTripScreenController:ProgressSpinnerDelegate{
     func showActivityIndicator(){
         addChild(childProgressView)
         view.addSubview(childProgressView.view)

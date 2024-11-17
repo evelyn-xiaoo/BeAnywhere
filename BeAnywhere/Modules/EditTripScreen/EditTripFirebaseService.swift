@@ -1,5 +1,5 @@
 //
-//  AddTripFirebaseService.swift
+//  EditTripFirebaseService.swift
 //  BeAnywhere
 //
 //  Created by Jimin Kim on 11/3/24.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension AddTripScreenController {
+extension EditTripScreenController {
     func saveFoodTrip(_ trip: FoodTrip) throws {
         
         if (trip.groupName == "" || trip.location == "") {

@@ -1,5 +1,5 @@
 //
-//  AddTripScreenView.swift
+//  EditTripScreenView.swift
 //  BeAnywhere
 //
 //  Created by Jimin Kim on 11/3/24.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AddTripScreenView: UIView {
+class EditTripScreenView: UIView {
 
     var tripImage: UIButton!
     var textFieldName: UITextField!
@@ -101,7 +101,7 @@ class AddTripScreenView: UIView {
     
     func setupTableViewTrips(){
         memberTable = UITableView()
-        memberTable.register(UserBoxTableViewCell.self, forCellReuseIdentifier: TableConfigs.tableViewUsers)
+        memberTable.register(UserBoxTableViewCell.self, forCellReuseIdentifier: TableConfigs.tableViewTripEditUsers)
         memberTable.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(memberTable)
     }

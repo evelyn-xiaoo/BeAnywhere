@@ -9,5 +9,7 @@ import Foundation
 class TableConfigs{
     static let tableViewTrips = "trips"
     static let tableViewUsers = "users"
+    static let tableViewTripEditUsers = "tripEditUsers"
     static let searchUserTable = "searchUser"
+    static let tableFoodStore = "foodStore"
 }

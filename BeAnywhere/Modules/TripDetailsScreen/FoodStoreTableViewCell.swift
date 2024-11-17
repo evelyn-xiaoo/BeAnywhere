@@ -1,5 +1,5 @@
 //
-//  UserBoxTableViewCell.swift
+//  FoodStoreTableViewCell.swift
 //  BeAnywhere
 //
 //  Created by Jimin Kim on 11/4/24.
@@ -7,12 +7,14 @@
 
 import UIKit
 
-class UserBoxTableViewCell: UITableViewCell {
+class FoodStoreTableViewCell: UITableViewCell {
     
     var wrapperCellView: UIView!
-    var userNameLabel: UILabel!
-    var avatarImage:UIImageView!
-    
+    var storeNameLabel: UILabel!
+    var storeDateLabel: UILabel!
+    var storeAddressLabel: UILabel!
+    var storeFoodCostLabel: UILabel!
+    var tripImage: UIImageView!
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -25,13 +27,13 @@ class UserBoxTableViewCell: UITableViewCell {
     }
     
     func setupAvatarImage(){
-        avatarImage = UIImageView()
-        avatarImage.image = UIImage(systemName: "person.circle")?.withRenderingMode(.alwaysOriginal) // MARK: Update this to use actual saved image
-        avatarImage.contentMode = .scaleToFill
-        avatarImage.clipsToBounds = true
-        avatarImage.layer.masksToBounds = true
-        avatarImage.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(avatarImage)
+        tripImage = UIImageView()
+        tripImage.image = UIImage(systemName: "map")?.withRenderingMode(.alwaysOriginal) // MARK: Update this to use actual saved image
+        tripImage.contentMode = .scaleToFill
+        tripImage.clipsToBounds = true
+        tripImage.layer.masksToBounds = true
+        tripImage.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(tripImage)
     }
 
     func setupWrapperCellView(){
@@ -49,10 +51,10 @@ class UserBoxTableViewCell: UITableViewCell {
     }
     
     func setupLabelName(){
-        userNameLabel = UILabel()
-        userNameLabel.font = UIFont.boldSystemFont(ofSize: 16)
-        userNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        wrapperCellView.addSubview(userNameLabel)
+        storeNameLabel = UILabel()
+        storeNameLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        storeNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        wrapperCellView.addSubview(storeNameLabel)
     }
     
     func initConstraints(){
@@ -62,17 +64,17 @@ class UserBoxTableViewCell: UITableViewCell {
             wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
             wrapperCellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4),
             
-            avatarImage.widthAnchor.constraint(equalToConstant: 32),
-            avatarImage.heightAnchor.constraint(equalToConstant: 32),
-            avatarImage.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
-            avatarImage.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -8),
-            avatarImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 16),
+            tripImage.widthAnchor.constraint(equalToConstant: 32),
+            tripImage.heightAnchor.constraint(equalToConstant: 32),
+            tripImage.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
+            tripImage.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -8),
+            tripImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 16),
             
-            userNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 14),
-            userNameLabel.bottomAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: -14),
-            userNameLabel.leadingAnchor.constraint(equalTo: avatarImage.trailingAnchor, constant: 10),
-            userNameLabel.heightAnchor.constraint(equalToConstant: 20),
-            userNameLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
+            storeNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 14),
+            storeNameLabel.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -14),
+            storeNameLabel.leadingAnchor.constraint(equalTo: tripImage.trailingAnchor, constant: 10),
+            storeNameLabel.heightAnchor.constraint(equalToConstant: 20),
+            storeNameLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
             
             wrapperCellView.heightAnchor.constraint(equalToConstant: 48)
             
