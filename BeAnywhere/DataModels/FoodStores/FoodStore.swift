@@ -17,6 +17,7 @@ struct FoodStore {
     var debtors:[Debtor]
     
     static var collectionName:String = "food_stores"
+    static var submitterField: String = "submitter_id"
     
     init(id:String, storeName:String, address:String, submitter:FirestoreUser, dateCreated:Date, recipeImage:String, foodItems:[FoodItem], debtors:[Debtor]){
         self.id = id
