@@ -12,4 +12,11 @@ class TableConfigs{
     static let tableViewTripEditUsers = "tripEditUsers"
     static let searchUserTable = "searchUser"
     static let tableFoodStore = "foodStore"
+    static let otherUsers = "otherUsers"
+    static let submittedStores = "submittedStores"
+    static let foodItem = "foodItem"
+    static let selectedItems = "selectedItems"
+    static let payerUserIds = "payerUserIds"
+    static let message = "message"
+    static let selectDropdown = "selectDropDown"
 }

@@ -56,6 +56,7 @@ class ViewController: UIViewController {
         
         // MARK: set up home page buttons
         let profileIcon = UIBarButtonItem(
+            //MARK: change to user pfp
             image: UIImage(systemName: "person.crop.circle"),
             style: .plain,
             target: self,
@@ -130,7 +131,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // MARK: on current trip box click -> navigate to trip details page
-        let tripDetailsController = TripDetailsScreenController()
+        let tripDetailsController = TripViewController()
         tripDetailsController.currentTrip = currentTrips[indexPath.row]
         navigationController?.pushViewController(tripDetailsController, animated: true)
     }
