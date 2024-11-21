@@ -132,6 +132,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
         // MARK: on current trip box click -> navigate to trip details page
         let tripDetailsController = TripDetailsScreenController()
         tripDetailsController.currentTrip = currentTrips[indexPath.row]
+        tripDetailsController.currentUser = currentUser
         navigationController?.pushViewController(tripDetailsController, animated: true)
     }
 }

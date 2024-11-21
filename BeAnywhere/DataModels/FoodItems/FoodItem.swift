@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import UIKit
+
 struct FoodItem: Codable{
     var id:String
     var name:String
@@ -59,5 +61,22 @@ struct FoodItemFromDoc: Codable {
         self.price = price
         self.payerUserIds = payerUserIds
         self.foodImageUrl = foodImageUrl
+    }
+}
+
+// MARK: used to save food item image data before the new food store form submission
+struct FoodItemInForm {
+    var id:String
+    var name:String
+    var price:Double
+    var payers:[FirestoreUser]
+    var foodImage: UIImage?
+    
+    init(id: String, name: String, price: Double, payers: [FirestoreUser], foodImage: UIImage? = nil) {
+        self.id = id
+        self.name = name
+        self.price = price
+        self.payers = payers
+        self.foodImage = foodImage
     }
 }

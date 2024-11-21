@@ -12,4 +12,6 @@ class TableConfigs{
     static let tableViewTripEditUsers = "tripEditUsers"
     static let searchUserTable = "searchUser"
     static let tableFoodStore = "foodStore"
+    static let tableFoodItem = "foodItem"
+    static let memberCheckBox = "memberCheckBox"
 }

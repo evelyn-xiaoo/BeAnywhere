@@ -54,6 +54,10 @@ struct FoodStore {
         
         return map
     }
+    
+    enum FirebaseError: Error {
+        case unknownError
+    }
 }
 
 // MARK: used to parse the Firestore food store collection document
@@ -73,5 +77,28 @@ struct FoodStoreFromDoc: Codable {
         self.recipeImage = recipeImage
         self.dateCreated = dateCreated
         self.submitterId = submitterId
+    }
+}
+
+// MARK: used to save food item image data before the new food store form submission
+struct FoodStoreInForm {
+    var id:String
+    var storeName:String
+    var address:String
+    var submitter:FirestoreUser
+    var dateCreated:Date
+    var recipeImage:String
+    var foodItems:[FoodItemInForm]
+    var debtors:[Debtor]
+    
+    init(id: String, storeName: String, address: String, submitter: FirestoreUser, dateCreated: Date, recipeImage: String, foodItems: [FoodItemInForm], debtors: [Debtor]) {
+        self.id = id
+        self.storeName = storeName
+        self.address = address
+        self.submitter = submitter
+        self.dateCreated = dateCreated
+        self.recipeImage = recipeImage
+        self.foodItems = foodItems
+        self.debtors = debtors
     }
 }

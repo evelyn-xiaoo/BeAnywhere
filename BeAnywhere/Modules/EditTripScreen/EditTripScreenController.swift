@@ -13,8 +13,8 @@ import FirebaseStorage
 class EditTripScreenController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     let editTripView = EditTripScreenView()
+    var currentTrip: FoodTripFromDoc? = nil
     var groupMembers: [FirestoreUser] = []
-    var currentTrip: FoodTrip? = nil
     let searchSheetController = UserSearchBottmSheetController()
     let childProgressView = ProgressSpinnerViewController()
         var searchSheetNavController: UINavigationController!
@@ -31,10 +31,20 @@ class EditTripScreenController: UIViewController, UIImagePickerControllerDelegat
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if let currentTrip {
-            groupMembers.replaceSubrange(0..<currentTrip.members.count, with: currentTrip.members)
-            
             editTripView.textFieldName.text = currentTrip.groupName
             editTripView.textFieldLocation.text = currentTrip.location
+            
+            Task.detached {
+                let tripMembers = await UserFirebaseService().getUsers(userIds: currentTrip.memberIds)
+                
+                if (tripMembers == nil) {
+                    showErrorAlert(message: "Unknown error. Please try to revist the page.", controller: self)
+                    return
+                }
+                
+                
+                await self.groupMembers.replaceSubrange(0..<self.groupMembers.count, with: tripMembers!)
+            }
         }
     }
     
@@ -42,65 +52,26 @@ class EditTripScreenController: UIViewController, UIImagePickerControllerDelegat
         super.viewDidLoad()
         title = "Edit Group"
        
-        //MARK: setting the delegate and data source...
-        editTripView.memberTable.dataSource = self
-        editTripView.memberTable.delegate = self
-        //MARK: removing the separator line...
-        editTripView.memberTable.separatorStyle = .none
-        
         let confirmButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(confirmNewGroup))
         
         navigationItem.rightBarButtonItems = [confirmButton]
         editTripView.tripImage.menu = getMenuImagePicker()
-        
-        editTripView.addMemberButton.addTarget(self, action: #selector(onFindButtonTapped), for: .touchUpInside)
-        
-        // MARK: setup notification observer
-        notificationCenter.addObserver(
-                    self,
-                    selector: #selector(notificationReceivedForMemberAdded(notification:)),
-                    name: Notification.Name(NotificationConfigs.UserSelectedObserverName),
-                    object: nil)
     }
-    
-    // MARK: adds the selected group member in the form and closes the sheet
-    @objc func notificationReceivedForMemberAdded(notification: Notification){
-        groupMembers.append(notification.object as! FirestoreUser)
-        editTripView.memberTable.reloadData()
-        dismiss(animated: true)
-        }
     
     @objc func confirmNewGroup(){
         let newFoodTripName: String? = editTripView.textFieldName.text
         let newFoodTripLocation: String? = editTripView.textFieldLocation.text
         
-        if let newFoodTripLocation, let newFoodTripName{
+        if let newFoodTripLocation, let newFoodTripName, let currentTrip{
             do {
-                let newTrip: FoodTrip = FoodTrip(id: "", groupName: newFoodTripName, location: newFoodTripLocation, members: groupMembers, photoURL: "", dateCreated: Date.now, dateEnded: nil, isTerminated: false)
+                let newTrip: FoodTrip = FoodTrip(id: currentTrip.id, groupName: newFoodTripName, location: newFoodTripLocation, members: groupMembers, photoURL: currentTrip.photoURL, dateCreated: currentTrip.dateCreated, dateEnded: currentTrip.dateEnded, isTerminated: currentTrip.isTerminated)
                 
                 try saveFoodTrip(newTrip)
-            } catch {
-                showErrorAlert(message: "Failed to create new trip. Please try again.", controller: self)
             }
             
+        } else {
+            showErrorAlert(message: "Unknown error occured. Please try again.", controller: self)
         }
-    }
-    
-    func setupSearchBottomSheet(){
-            //MARK: setting up bottom search sheet...
-            searchSheetNavController = UINavigationController(rootViewController: searchSheetController)
-            
-            // MARK: setting up modal style...
-            searchSheetNavController.modalPresentationStyle = .pageSheet
-            
-            if let bottomSearchSheet = searchSheetNavController.sheetPresentationController{
-                bottomSearchSheet.detents = [.medium(), .large()]
-                bottomSearchSheet.prefersGrabberVisible = true
-            }
-    }
-    @objc func onFindButtonTapped(){
-        setupSearchBottomSheet()
-        present(searchSheetNavController, animated: true)
     }
     
     func getMenuImagePicker() -> UIMenu {
@@ -182,28 +153,6 @@ class EditTripScreenController: UIViewController, UIImagePickerControllerDelegat
         default:
             completion(false) // Access denied or restricted
         }
-    }
-}
-
-extension EditTripScreenController: UITableViewDelegate, UITableViewDataSource{
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return groupMembers.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableViewTripEditUsers, for: indexPath) as! UserBoxTableViewCell
-        cell.userNameLabel.text = groupMembers[indexPath.row].name
-        
-        if let avatarImageUrl = URL(string: groupMembers[indexPath.row].avatarURL) {
-            cell.avatarImage.loadRemoteImage(from: avatarImageUrl)
-        }
-        
-     
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // MARK: on current trip box click -> navigate to trip details page
     }
 }
 

@@ -32,10 +32,15 @@ class TripDetailsScreenController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        if let currentTrip {
+            title = currentTrip.groupName
+        }
+        
         // MARK: load food stores and food items in each store
         if let currentTrip {
-            Task.detached{
+            Task.detached {
                 await self.initFoodStores(tripId: currentTrip.id)
+                self.updatePriceAmount()
             }
         }
         
@@ -44,26 +49,15 @@ class TripDetailsScreenController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let currentTrip {
-            title = currentTrip.groupName
-        }
-        
-        var totalReceived: Double = 0
-        
-        storePaidByMe.forEach { store in
-            store.foodItems.forEach { item in
-                totalReceived += item.price
-            }
-        }
         
         tripDetailsView.paidByMeLabel.text = "Paid by you"
-        tripDetailsView.totalReceivedLabel.text = "$ \(totalReceived.formatted())"
         
         //MARK: setting the delegate and data source...
         tripDetailsView.foodStoreTable.dataSource = self
         tripDetailsView.foodStoreTable.delegate = self
         //MARK: removing the separator line...
         tripDetailsView.foodStoreTable.separatorStyle = .none
+        tripDetailsView.foodStoreTable.rowHeight = 104
         
         let editTripIcon = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(onTripEditClick))
        
@@ -71,6 +65,15 @@ class TripDetailsScreenController: UIViewController {
         navigationItem.rightBarButtonItems = [editTripIcon]
         
         tripDetailsView.addStoreButton.addTarget(self, action: #selector(onAddFoodStoreButtonClick), for: .touchUpInside)
+        
+        // MARK: setup notification observer to listen for new food store added by the current user
+        notificationCenter.addObserver(
+                    self,
+                    selector: #selector(notificationReceivedForFoodStoreAdded(notification:)),
+                    name: Notification.Name(NotificationConfigs.NewFoodStoreObserverName),
+                    object: nil)
+        
+        notificationCenter.addObserver(self, selector: #selector(notificationReceivedForTripEdit(notification:)) , name: Notification.Name(NotificationConfigs.UpdatedTripObserverName), object: nil)
     }
    
     
@@ -81,25 +84,51 @@ class TripDetailsScreenController: UIViewController {
         }
         
         self.showActivityIndicator()
-//        let tripMembers = await UserFirebaseService().getUsers(userIds: currentTrip!.memberIds)
-//        
-//        if (tripMembers == nil) {
-//            self.showErrorAlert(message: "Unknown error. Please try to revist the page.")
-//            return
-//        }
-        
-        
-        
+
         let editTripScreenController = EditTripScreenController()
-        editTripScreenController.currentTrip = FoodTrip(doc: currentTrip!, members: [])
+        editTripScreenController.currentTrip = currentTrip!
         self.hideActivityIndicator()
         self.navigationController?.pushViewController(editTripScreenController, animated: true)
     }
     
-   
+    @objc func notificationReceivedForFoodStoreAdded(notification: Notification) {
+        let newFoodStoreByCurrentUser = notification.object as! FoodStore
+        
+        storePaidByMe.append(newFoodStoreByCurrentUser)
+        updatePriceAmount()
+        tripDetailsView.foodStoreTable.reloadData()
+    }
+    
+    @objc func notificationReceivedForTripEdit(notification: Notification) {
+        let newTrip = notification.object as! FoodTrip
+        
+        
+        currentTrip = FoodTripFromDoc(id: newTrip.id, groupName: newTrip.groupName, location: newTrip.location, memberIds: newTrip.members.map({$0.id}), photoURL: newTrip.photoURL, dateCreated: newTrip.dateCreated, isTerminated: newTrip.isTerminated, dateEnded: newTrip.dateEnded)
+        
+    }
     
     @objc func onAddFoodStoreButtonClick(){
-        print("on new food store button click")
+        let foodStoreFormController = StoreFormScreenController()
+        foodStoreFormController.currentTrip = currentTrip!
+        self.navigationController?.pushViewController(foodStoreFormController, animated: true)
+    }
+    
+    func updatePriceAmount() {
+        var amountOwedToCurrentUser: Double = 0.0
+        
+        for store in storePaidByMe {
+            for foodItem in store.foodItems {
+                if (!foodItem.payers.contains(where: ({$0.id == self.currentUser!.id}))) {
+                    amountOwedToCurrentUser += foodItem.price
+                }
+            }
+        }
+        
+        tripDetailsView.totalReceivedLabel.text = "Total amount to receive: $\(roundToTwoPlace(amountOwedToCurrentUser))"
+    }
+    
+    func getTotalStoreItemsCost(store: FoodStore) -> Double {
+        return roundToTwoPlace(store.foodItems.reduce(0) { $0 + $1.price })
     }
     
     func showErrorAlert(message: String){
@@ -118,14 +147,12 @@ extension TripDetailsScreenController: UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableFoodStore, for: indexPath) as! FoodStoreTableViewCell
-        let dateFormatter = DateFormatter()
+        
         cell.storeNameLabel.text = storePaidByMe[indexPath.row].storeName
-        cell.storeDateLabel.text = dateFormatter.string(from: storePaidByMe[indexPath.row].dateCreated)
+        cell.storeDateLabel.text =  storePaidByMe[indexPath.row].dateCreated.formatted()
         cell.storeAddressLabel.text = storePaidByMe[indexPath.row].address
-        cell.storeFoodCostLabel.text = "$"
         
-       
-        
+        cell.storeFoodCostLabel.text = "Total cost: $ \(getTotalStoreItemsCost(store: storePaidByMe[indexPath.row]))"
      
         return cell
     }

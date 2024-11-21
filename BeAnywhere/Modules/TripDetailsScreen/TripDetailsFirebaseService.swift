@@ -19,8 +19,13 @@ extension TripDetailsScreenController {
             return
         }
         
-        await setFoodItems(foodStores: foodStores!, tripId: tripId)
-        self.hideActivityIndicator()
+        do {
+            try await setFoodItems(foodStores: foodStores!, tripId: tripId)
+            self.hideActivityIndicator()
+        } catch {
+            self.hideActivityIndicator()
+            self.showErrorAlert(message: "Cannot get food stores. Please try again later.")
+        }
     }
     
     func getFoodStores(tripId: String) async -> [FoodStoreFromDoc]? {
@@ -37,27 +42,9 @@ extension TripDetailsScreenController {
         }
     }
     
-    func getFoodItems(foodStores: [FoodStoreFromDoc], tripId: String) {
-        for foodStore in foodStores{
-            let foodItemsCollectionRef = database
-                .collection(FoodTrip.collectionName)
-                .document(tripId)
-                .collection(FoodStore.collectionName)
-                .document(foodStore.id)
-                .collection(FoodItem.collectionName)
-            
-            foodItemsCollectionRef.getDocuments { querySnapshot, error in
-                if let documents = querySnapshot?.documents {
-                    do {
-                        
-                    }
-                }
-            }
-        }
-    }
-    
     // MARK: get food item from each food store and update the controller food stores variable
-    func setFoodItems(foodStores: [FoodStoreFromDoc], tripId: String) async {
+    func setFoodItems(foodStores: [FoodStoreFromDoc], tripId: String) async throws {
+        self.storePaidByMe.removeAll()
         for foodStore in foodStores{
             let foodItemsCollectionRef = database
                 .collection(FoodTrip.collectionName)
@@ -65,24 +52,30 @@ extension TripDetailsScreenController {
                 .collection(FoodStore.collectionName)
                 .document(foodStore.id)
                 .collection(FoodItem.collectionName)
+            var foodItems: [FoodItem] = []
             do {
                 let foodItemDocsRef = try await foodItemsCollectionRef.getDocuments()
                 let foodItemDocs = try foodItemDocsRef.documents.map({try $0.data(as: FoodItemFromDoc.self)})
                 
-                // MARK: we don't need a list of payers for each food item in food trip details page. We query list of payers only when we need to
-                let foodItems = foodItemDocs.map({FoodItem(doc: $0, payers: [])})
+                for foodItemDoc in foodItemDocs {
+                    let itemPayers = await UserFirebaseService().getUsers(userIds: foodItemDoc.payerUserIds)
+                    if let itemPayers {
+                        foodItems.append(FoodItem(doc: foodItemDoc, payers: itemPayers))
+                    } else {
+                        throw FoodStore.FirebaseError.unknownError
+                    }
+                    
+                }
                 
                 let submitter = await UserFirebaseService().getUser(uid: foodStore.submitterId)
                 
                 if (submitter == nil) {
-                    self.showErrorAlert(message: "Cannot fetch the food store. Please try again later.")
-                    return
+                    throw FoodStore.FirebaseError.unknownError
                 }
                 
                 storePaidByMe.append(FoodStore(doc: foodStore, debtors: [], submitter: submitter!, foodItems: foodItems))
             } catch {
-                self.showErrorAlert(message: "Unknown error. Please try again later.")
-                return
+                throw FoodStore.FirebaseError.unknownError
             }
             
         }

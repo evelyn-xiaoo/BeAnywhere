@@ -46,7 +46,7 @@ class TripDetailsScreenView: UIView {
         let appLabels: [UILabel] = [paidByMeLabel, totalReceivedLabel]
         
         paidByMeLabel.font = UIFont.boldSystemFont(ofSize: 15)
-        totalReceivedLabel.font = UIFont.boldSystemFont(ofSize: 15)
+        totalReceivedLabel.font = UIFont.boldSystemFont(ofSize: 12)
         
         
         // apply common attributes to the labels
@@ -59,7 +59,7 @@ class TripDetailsScreenView: UIView {
     
     func setupTableViewTrips(){
         foodStoreTable = UITableView()
-        foodStoreTable.register(TripBoxTableViewCell.self, forCellReuseIdentifier: TableConfigs.tableFoodStore)
+        foodStoreTable.register(FoodStoreTableViewCell.self, forCellReuseIdentifier: TableConfigs.tableFoodStore)
         foodStoreTable.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(foodStoreTable)
     }
@@ -73,12 +73,11 @@ class TripDetailsScreenView: UIView {
             totalReceivedLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             
             foodStoreTable.topAnchor.constraint(equalTo: paidByMeLabel.bottomAnchor, constant: 16),
-            foodStoreTable.leadingAnchor.constraint(equalTo: paidByMeLabel.leadingAnchor, constant: 5),
-            foodStoreTable.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
+            foodStoreTable.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor),
             foodStoreTable.bottomAnchor.constraint(equalTo: addStoreButton.topAnchor, constant: -8),
             
             
-            addStoreButton.topAnchor.constraint(equalTo: foodStoreTable.bottomAnchor, constant: 8),
+            addStoreButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant:-32),
             addStoreButton.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor)
         ])
     }

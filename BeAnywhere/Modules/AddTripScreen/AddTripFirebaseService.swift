@@ -54,7 +54,7 @@ extension AddTripScreenController {
                 let imagesRepo = storageRef.child("imagesFoodTrips")
                 let imageRef = imagesRepo.child("\(trip.id).jpg")
                 
-                let uploadTask = imageRef.putData(jpegData, completion: {(metadata, error) in
+                _ = imageRef.putData(jpegData, completion: {(metadata, error) in
                     if error == nil{
                         imageRef.downloadURL(completion: {(url, error) in
                             if error == nil,

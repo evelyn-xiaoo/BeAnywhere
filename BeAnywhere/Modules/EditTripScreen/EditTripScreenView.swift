@@ -12,21 +12,16 @@ class EditTripScreenView: UIView {
     var tripImage: UIButton!
     var textFieldName: UITextField!
     var textFieldLocation: UITextField!
-    var addMemberButton: UIButton!
-    var memberTable: UITableView!
     var tripImageLabel: UILabel!
-    var membersLabel: UILabel!
     
     override init(frame: CGRect){
         super.init(frame: frame)
         self.backgroundColor = .white
 
         setUpLabels()
-        setupAddMemberButton()
         setuptextFieldLocation()
         setuptextFieldGroupName()
         setupTripImage()
-        setupTableViewTrips()
         initConstraints()
     }
     
@@ -63,32 +58,13 @@ class EditTripScreenView: UIView {
         self.addSubview(textFieldLocation)
     }
     
-    func setupAddMemberButton(){
-        addMemberButton = UIButton(type: .system)
-        addMemberButton.setTitle("", for: .normal)
-        addMemberButton.setImage(UIImage(systemName: "person.crop.circle.badge.plus")?.withRenderingMode(.alwaysOriginal), for: .normal)
-        addMemberButton.contentHorizontalAlignment = .fill
-        addMemberButton.contentVerticalAlignment = .fill
-        addMemberButton.imageView?.contentMode = .scaleAspectFit
-        addMemberButton.layer.cornerRadius = 16
-        addMemberButton.imageView?.layer.shadowOffset = .zero
-        addMemberButton.imageView?.layer.shadowRadius = 0.8
-        addMemberButton.imageView?.layer.shadowOpacity = 0.7
-        addMemberButton.imageView?.clipsToBounds = true
-        addMemberButton.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(addMemberButton)
-    }
-    
     func setUpLabels() {
         tripImageLabel = UILabel()
-        membersLabel = UILabel()
         
-        let appLabels: [UILabel] = [ tripImageLabel, membersLabel]
+        let appLabels: [UILabel] = [ tripImageLabel]
         
-        membersLabel.font = UIFont.boldSystemFont(ofSize: 15)
         tripImageLabel.font = UIFont.boldSystemFont(ofSize: 13)
         tripImageLabel.text = "Trip Image"
-        membersLabel.text = "Group Members:"
         
         
         // apply common attributes to the labels
@@ -97,13 +73,6 @@ class EditTripScreenView: UIView {
             label.textAlignment = .center
             self.addSubview(label)
         }
-    }
-    
-    func setupTableViewTrips(){
-        memberTable = UITableView()
-        memberTable.register(UserBoxTableViewCell.self, forCellReuseIdentifier: TableConfigs.tableViewTripEditUsers)
-        memberTable.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(memberTable)
     }
     
     func initConstraints(){
@@ -126,18 +95,6 @@ class EditTripScreenView: UIView {
             textFieldLocation.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             textFieldLocation.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             textFieldLocation.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
-            
-            membersLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 32),
-            membersLabel.topAnchor.constraint(equalTo: textFieldLocation.bottomAnchor, constant: 16),
-            
-            memberTable.topAnchor.constraint(equalTo: membersLabel.bottomAnchor, constant: 16),
-            memberTable.bottomAnchor.constraint(equalTo: addMemberButton.topAnchor, constant: -8),
-            memberTable.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor),
-            
-            addMemberButton.widthAnchor.constraint(equalToConstant: 48),
-            addMemberButton.heightAnchor.constraint(equalToConstant: 48),
-            addMemberButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            addMemberButton.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
         ])
     }
     
