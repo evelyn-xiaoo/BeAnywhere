@@ -1,5 +1,5 @@
 //
-//  TripBoxTableViewCell.swift
+//  UserBoxTableViewCell.swift
 //  BeAnywhere
 //
 //  Created by Jimin Kim on 11/4/24.

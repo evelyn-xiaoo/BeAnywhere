@@ -17,6 +17,9 @@ class ProfileScreenView: UIView {
     var name: UILabel!
     var username: UILabel!
     var venmo: UILabel!
+    
+    var pastTripsLabel: UILabel!
+    var tripTable: UITableView!
 
     override init(frame: CGRect){
         super.init(frame: frame)
@@ -25,6 +28,8 @@ class ProfileScreenView: UIView {
         setupStack()
         setupLabels()
         setupProfilePic()
+        
+        setupPastTrips()
         initConstraints()
     }
     
@@ -74,6 +79,20 @@ class ProfileScreenView: UIView {
         
     }
     
+    func setupPastTrips() {
+        pastTripsLabel = UILabel()
+        pastTripsLabel.textColor = .black
+        pastTripsLabel.text = "Past Trips"
+        pastTripsLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(pastTripsLabel)
+        
+        tripTable = UITableView()
+        tripTable.register(TripBoxTableViewCell.self, forCellReuseIdentifier: TableConfigs.tableViewTrips)
+        tripTable.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(tripTable)
+        
+    }
+    
     func initConstraints() {
         NSLayoutConstraint.activate([
             userInfo.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 16),
@@ -85,7 +104,16 @@ class ProfileScreenView: UIView {
             profilePic.leadingAnchor.constraint(equalTo: userInfo.leadingAnchor),
             profilePic.centerYAnchor.constraint(equalTo: userInfo.centerYAnchor),
             
-            bio.leadingAnchor.constraint(equalTo: profilePic.trailingAnchor, constant: 20)
+            bio.leadingAnchor.constraint(equalTo: profilePic.trailingAnchor, constant: 20),
+            
+            
+            pastTripsLabel.topAnchor.constraint(equalTo: bio.bottomAnchor, constant: 10),
+            pastTripsLabel.leadingAnchor.constraint(equalTo: tripTable.leadingAnchor, constant: 0),
+            
+            tripTable.topAnchor.constraint(equalTo: pastTripsLabel.bottomAnchor, constant: 5),
+            tripTable.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.9),
+            tripTable.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            tripTable.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10)
         ])
     }
 }

@@ -11,14 +11,14 @@ struct FoodTrip: Codable{
     var groupName:String
     var location:String
     var members:[FirestoreUser]
-    var photoURL:String?
+    var photoURL:String
     var dateCreated:Date
     var dateEnded:Date?
     var isTerminated:Bool
     
     static var collectionName:String = "food_trips"
     
-    init(id:String, groupName: String, location: String, members: [FirestoreUser], photoURL:String?, dateCreated: Date, dateEnded: Date?, isTerminated: Bool) {
+    init(id:String, groupName: String, location: String, members: [FirestoreUser], photoURL:String, dateCreated: Date, dateEnded: Date?, isTerminated: Bool) {
         self.id = id
         self.groupName = groupName
         self.location = location
@@ -48,15 +48,13 @@ struct FoodTrip: Codable{
         map["groupName"] = groupName
         map["location"] = location
         map["memberIds"] = members.map{$0.id}
+        map["photoURL"] = photoURL
         map["id"] = id
         
         if let dateEnded {
-            map["dateEnded"] = dateEnded.timeIntervalSince1970
+            map["dateEnded"] = Date( timeIntervalSince1970: dateEnded.timeIntervalSince1970)
         }
         
-        if let photoURL {
-            map["photoURL"] = photoURL
-        }
         return map
     }
     enum FirebaseError: Error {
@@ -70,13 +68,13 @@ struct FoodTripFromDoc: Codable {
     var groupName:String
     var location:String
     var memberIds:[String]
-    var photoURL:String?
+    var photoURL:String
     var dateCreated:Date
     var isTerminated:Bool
     var dateEnded:Date?
     
     
-    init(id:String, groupName: String, location: String, memberIds: [String], photoURL:String?, dateCreated:Date, isTerminated:Bool, dateEnded:Date?) {
+    init(id:String, groupName: String, location: String, memberIds: [String], photoURL:String, dateCreated:Date, isTerminated:Bool, dateEnded:Date?) {
         self.id = id
         self.groupName = groupName
         self.location = location

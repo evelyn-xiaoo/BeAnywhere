@@ -9,4 +9,8 @@ import Foundation
 class NotificationConfigs {
     static let UserSelectedObserverName = "userSelectedObserverName"
     static let NewTripObserverName = "newTripObserverName"
+    static let NewFoodStoreObserverName = "newFoodStoreObserverName"
+    static let NewFoodItemObserverName = "newFoodItemObserverName"
+    static let UpdatedTripObserverName = "updatedTripObserverName"
+    static let UpdatedFoodStoreObserverName = "updatedFoodStoreObserverName"
 }

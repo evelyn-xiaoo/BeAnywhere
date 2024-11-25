@@ -64,7 +64,10 @@ class ProfileEditView: UIView {
         
         [textFieldName, textFieldEmail, textFieldUsername, textFieldVenmo].forEach {
             $0.borderStyle = .roundedRect
-            $0.backgroundColor = .lightGray
+            $0.backgroundColor = .white
+            $0.layer.borderWidth = 1
+            $0.layer.cornerRadius = 5
+            $0.layer.borderColor = UIColor.gray.cgColor
             $0.textColor = .black
             $0.translatesAutoresizingMaskIntoConstraints = false
             self.addSubview($0)

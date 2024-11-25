@@ -56,6 +56,7 @@ class ViewController: UIViewController {
         
         // MARK: set up home page buttons
         let profileIcon = UIBarButtonItem(
+            //MARK: change to user pfp
             image: UIImage(systemName: "person.crop.circle"),
             style: .plain,
             target: self,
@@ -117,12 +118,12 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
         let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableViewTrips, for: indexPath) as! TripBoxTableViewCell
         cell.groupNameLabel.text = currentTrips[indexPath.row].groupName
         
-        if let url = currentTrips[indexPath.row].photoURL {
-            if let avatarImageUrl = URL(string: url) {
-                cell.tripImage.loadRemoteImage(from: avatarImageUrl)
+        let url = currentTrips[indexPath.row].photoURL
+            if let tripImageUrl = URL(string: url) {
+                cell.tripImage.loadRemoteImage(from: tripImageUrl)
             }
             
-        }
+        
         
      
         return cell
@@ -130,6 +131,10 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // MARK: on current trip box click -> navigate to trip details page
+        let tripDetailsController = TripViewController()
+        tripDetailsController.currentTrip = currentTrips[indexPath.row]
+        tripDetailsController.currentUser = currentUser
+        navigationController?.pushViewController(tripDetailsController, animated: true)
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  HomeFirebaseService.swift
+//  EditTripFirebaseService.swift
 //  BeAnywhere
 //
 //  Created by Jimin Kim on 11/3/24.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-extension AddTripScreenController {
-    func saveFoodTrip(_ trip: FoodTrip) throws {
+extension EditTripScreenController {
+    func saveFoodTrip(_ trip: FoodTrip) {
         
         if (trip.groupName == "" || trip.location == "") {
             showErrorAlert(message: "The text fields cannot be empty. Please try again.", controller: self)
@@ -19,24 +19,22 @@ extension AddTripScreenController {
             showErrorAlert(message: "There should be at least one member in the group. Please try again.", controller: self)
             return
         }
+        
         self.showActivityIndicator()
-        saveTripDataToFirestore(trip)
-        
-        
+        updateTripDataToFirestore(trip)
         
     }
     
-    func saveTripDataToFirestore(_ trip: FoodTrip) {
-        let collectionTrips = database
+    func updateTripDataToFirestore(_ trip: FoodTrip) {
+        let tripDocRef = database
             .collection(FoodTrip.collectionName)
-        let newTripDocRef = collectionTrips.document()
-        let newFoodTrip = FoodTrip(id: newTripDocRef.documentID, groupName: trip.groupName, location: trip.location, members: trip.members, photoURL: trip.photoURL ?? "", dateCreated: trip.dateCreated, dateEnded: trip.dateEnded, isTerminated: trip.isTerminated)
+            .document(trip.id)
                     
-                        newTripDocRef.setData(
-                            newFoodTrip.toMap()
+        tripDocRef.updateData(
+                            trip.toMap()
                         , completion: {(error) in
                             if error == nil{
-                                self.uploadTripPhotoToStorage(newFoodTrip)
+                                self.uploadTripPhotoToStorage(trip)
                             } else {
                                 self.hideActivityIndicator()
                                 showErrorAlert(message: "Failed to create new trip. Please try again.", controller: self)
@@ -54,26 +52,34 @@ extension AddTripScreenController {
                 let imagesRepo = storageRef.child("imagesFoodTrips")
                 let imageRef = imagesRepo.child("\(trip.id).jpg")
                 
-                let uploadTask = imageRef.putData(jpegData, completion: {(metadata, error) in
-                    if error == nil{
-                        imageRef.downloadURL(completion: {(url, error) in
-                            if error == nil,
-                               let imageUrl = url{
-                                self._updateTripImageUrl(FoodTrip(
-                                    id: trip.id,
-                                    groupName: trip.groupName, location: trip.location, members: trip.members, photoURL: imageUrl.absoluteString, dateCreated: trip.dateCreated, dateEnded: trip.dateEnded, isTerminated: trip.isTerminated))
+                
+                // MARK: delete the original image storage ref and upload image in the same storage ref
+                
+                        _ = imageRef.putData(jpegData, completion: {(metadata, error) in
+                            if error == nil{
+                                imageRef.downloadURL(completion: {(url, error) in
+                                    if error == nil,
+                                       let imageUrl = url{
+                                        self._updateTripImageUrl(FoodTrip(
+                                            id: trip.id,
+                                            groupName: trip.groupName, location: trip.location, members: trip.members, photoURL: imageUrl.absoluteString, dateCreated: trip.dateCreated, dateEnded: trip.dateEnded, isTerminated: trip.isTerminated))
+                                    } else {
+                                        self.hideActivityIndicator()
+                                        showErrorAlert(message: "Failed to update a trip. Please try again.", controller: self)
+                                    }
+                                })
                             } else {
                                 self.hideActivityIndicator()
-                                showErrorAlert(message: "Failed to create new trip. Please try again.", controller: self)
+                                showErrorAlert(message: "Failed to update a trip. Please try again.", controller: self)
                             }
                         })
-                    } else {
-                        self.hideActivityIndicator()
-                        showErrorAlert(message: "Failed to create new trip. Please try again.", controller: self)
-                    }
-                })
+                    
+                
             }
         } else {
+            notificationCenter.post(
+                name: Notification.Name(NotificationConfigs.UpdatedTripObserverName),
+                object: trip)
             self.navigationController?.popViewController(animated: true)
             self.hideActivityIndicator()
         }
@@ -87,9 +93,12 @@ extension AddTripScreenController {
             .document(trip.id)
         
         collectionTrips.updateData([
-            "photoURL": trip.photoURL!
+            "photoURL": trip.photoURL
         ], completion: {(error) in
             if error == nil {
+                self.notificationCenter.post(
+                    name: Notification.Name(NotificationConfigs.UpdatedTripObserverName),
+                    object: trip)
                 self.navigationController?.popViewController(animated: true)
                 self.hideActivityIndicator()
                 
