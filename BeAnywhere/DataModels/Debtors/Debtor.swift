@@ -7,9 +7,9 @@
 
 import Foundation
 enum PaymentStatus: String {
-    case pending = "pending"
-    case paid = "paid"
-    case dispute = "dispute"
+    case pending = "Pending"
+    case paid = "Paid"
+    case dispute = "Dispute"
 }
 
 struct Debtor {

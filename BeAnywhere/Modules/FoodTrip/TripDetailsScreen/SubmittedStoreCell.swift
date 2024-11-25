@@ -24,7 +24,7 @@ class SubmittedStoreCell: UITableViewCell {
     func setupWrapperCell() {
         wrapperCell = UIView()
         wrapperCell.backgroundColor = .white
-        wrapperCell.layer.borderColor = UIColor.black.cgColor
+        wrapperCell.layer.borderColor = UIColor.gray.cgColor
         wrapperCell.layer.borderWidth = 1
         wrapperCell.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.addSubview(wrapperCell)

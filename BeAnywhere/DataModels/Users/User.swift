@@ -13,8 +13,8 @@ struct FirestoreUser: Codable {
     var avatarURL:String
     var venmo: String
     var username: String
-    static var collectionName:String = "users"
     var submittedStores: [FoodStoreFromDoc]?
+    var submittedFoodItems: [FoodItem]?
     
     init(id: String, name: String, email: String, avatarURL: String, venmo: String, username: String) {
         self.id = id
@@ -24,4 +24,6 @@ struct FirestoreUser: Codable {
         self.venmo = venmo
         self.username = username
     }
+    
+    static var collectionName:String = "users"
 }

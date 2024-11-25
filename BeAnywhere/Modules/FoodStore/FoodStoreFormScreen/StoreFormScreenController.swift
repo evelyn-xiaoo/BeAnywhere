@@ -40,38 +40,16 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
         
         // MARK: load the current user from Firestore
         Task.detached {
+            self.showActivityIndicator()
             let currentFirestoreUser = await UserFirebaseService().getUser(uid: self.currentUser.uid)
             
             if let currentFirestoreUser {
                 self.currentFirestoreUser = currentFirestoreUser
+                self.prefillViewFields()
             } else {
                 showErrorAlert(message: "Cannot load user information. Please try again later.", controller: self)
-                self.navigationController?.popViewController(animated: true)
             }
-        }
-        
-        if let selectedFoodStore {
-            // MARK: indicates the controller is used for existing food store edit
-            addStoreView.textFieldName.text = selectedFoodStore.storeName
-            addStoreView.textFieldLocation.text = selectedFoodStore.address
-            addStoreView.datePicker.date = selectedFoodStore.dateCreated
-            addStoreView.totalPriceAmountLabel.text = selectedFoodStore.foodItems.reduce(0) { $0 + $1.price }.formatted()
-            
-            Task.detached {
-                
-                await self.addStoreView.myTotalPriceAmountLabel.text = selectedFoodStore.foodItems.filter({$0.payers.contains(where: {$0.id == self.currentFirestoreUser!.id
-                    })}).reduce(0) { $0 + $1.price }.formatted()
-                
-                
-            }
-            
-        } else {
-            // MARK: indicates the controller is used for adding a new food store
-            addStoreView.datePicker.date = Date.now
-            addStoreView.totalPriceAmountLabel.text = "$ 0"
-            addStoreView.myTotalPriceAmountLabel.text = "$ 0"
-            
-           
+            self.hideActivityIndicator()
         }
     }
     
@@ -99,6 +77,32 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
                     selector: #selector(notificationReceivedForFoodItemAdded(notification:)),
                     name: Notification.Name(NotificationConfigs.NewFoodItemObserverName),
                     object: nil)
+    }
+    
+    func prefillViewFields() {
+        if let selectedFoodStore {
+            // MARK: indicates the controller is used for existing food store edit
+            addStoreView.textFieldName.text = selectedFoodStore.storeName
+            addStoreView.textFieldLocation.text = selectedFoodStore.address
+            addStoreView.datePicker.date = selectedFoodStore.dateCreated
+            addStoreView.totalPriceAmountLabel.text = selectedFoodStore.foodItems.reduce(0) { $0 + $1.price }.formatted()
+            
+            Task.detached {
+                
+                await self.addStoreView.myTotalPriceAmountLabel.text = selectedFoodStore.foodItems.filter({$0.payers.contains(where: {$0.id == self.currentFirestoreUser!.id
+                    })}).reduce(0) { $0 + $1.price }.formatted()
+                
+                
+            }
+            
+        } else {
+            // MARK: indicates the controller is used for adding a new food store
+            addStoreView.datePicker.date = Date.now
+            addStoreView.totalPriceAmountLabel.text = "$ 0"
+            addStoreView.myTotalPriceAmountLabel.text = "$ 0"
+            
+           
+        }
     }
     
     // MARK: adds the new food item in the form and closes the bottom sheet

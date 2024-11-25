@@ -40,6 +40,9 @@ extension StoreFormScreenController {
             try await newFoodStoreDocRef.setData(newFoodStoreWithId.toMap())
             let newStoreWithImageURL = try await self.uploadRecipePhotoToStorage(newFoodStoreWithId, tripId: tripId)
             
+            // Save debtors in Firestore
+            try await saveDebtorsInFirestore(tripId: tripId, storeId: newFoodStoreWithId.id, debtors: newStore.debtors)
+            
             // Indicates the food store submission was successful
             self.notificationCenter.post(
                 name: Notification.Name(NotificationConfigs.NewFoodStoreObserverName),
@@ -113,7 +116,6 @@ extension StoreFormScreenController {
     }
     
     func getFoodItemImageURL(foodItems: [FoodItemInForm], tripId: String, storeId: String) async throws -> [FoodItem] {
-        self.showActivityIndicator()
         var foodItemsWithImageUrl: [FoodItem] = []
         for foodItem in foodItems {
             let foodItemDocRef = database
@@ -140,10 +142,14 @@ extension StoreFormScreenController {
                             "foodImageUrl": url.absoluteString
                         ])
                     } catch {
-                        print("DEV: error uploading food item image")
+                        print("DEV: error on saving image into Firestore")
                         throw FoodStore.FirebaseError.unknownError
                     }
                     
+                } else {
+                    print("DEV: error on compressing the food item image")
+                    throw FoodStore.FirebaseError.unknownError
+
                 }
             } else {
                 foodItemsWithImageUrl.append(FoodItem(id: foodItem.id, name: foodItem.name, price: foodItem.price, payers: foodItem.payers, foodImage: ""))
@@ -152,6 +158,26 @@ extension StoreFormScreenController {
         return foodItemsWithImageUrl
     }
     
-    
+    func saveDebtorsInFirestore(tripId: String, storeId: String, debtors: [Debtor]) async throws {
+        let collectionFoodStores = database
+            .collection(FoodTrip.collectionName)
+            .document(tripId)
+            .collection(FoodStore.collectionName)
+            .document(storeId)
+            .collection(Debtor.collectionName)
+        
+        for debtor in debtors {
+            let newDebtorDocRef = collectionFoodStores.document()
+            do {
+                // Save food store document and upload recipe image
+                let newDebtor = Debtor(id: newDebtorDocRef.documentID, user: debtor.user, dateCreated: debtor.dateCreated, paymentStatus: debtor.paymentStatus)
+                try await newDebtorDocRef.setData(newDebtor.toMap())
+                
+            } catch {
+                print("DEV: error on saving debtor in Firestore")
+                throw FoodStore.FirebaseError.unknownError
+            }
+        }
+    }
     
 }

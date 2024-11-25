@@ -12,4 +12,5 @@ class NotificationConfigs {
     static let NewFoodStoreObserverName = "newFoodStoreObserverName"
     static let NewFoodItemObserverName = "newFoodItemObserverName"
     static let UpdatedTripObserverName = "updatedTripObserverName"
+    static let UpdatedFoodStoreObserverName = "updatedFoodStoreObserverName"
 }

@@ -1,32 +1,33 @@
 //
-//  UserCell.swift
+//  StoreMemberCell.swift
 //  BeAnywhere
 //
-//  Created by Evelyn Xiao on 11/19/24.
+//  Created by Jimin Kim on 11/23/2024.
 //
 
 import UIKit
 
-
-//outer table
-class UserCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
+class StoreMemberCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
     var wrapperCellView: UIView!
     var userNameLabel: UILabel!
+    var totalItemCostLabel: UILabel!
+    var messageButtonImage: UIImageView!
     var innerTable: UITableView!
     var navigationController: UINavigationController!
     var tripId: String!
     
     
     // put this info into inner table
-    var submittedStores: [FoodStoreFromDoc] = []
+    var submittedFoodItems: [FoodItem] = []
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         
         setupWrapperCellView()
-        setupUserNameLabel()
+        setupLabels()
         setupTable()
+        setupButtonImage()
         initConstraints()
     }
     
@@ -41,20 +42,37 @@ class UserCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
         innerTable = UITableView()
         innerTable.backgroundColor = .white
         innerTable.translatesAutoresizingMaskIntoConstraints = false
-        innerTable.register(SubmittedStoreCell.self, forCellReuseIdentifier: TableConfigs.submittedStores)
+        innerTable.register(FoodItemInStoreCell.self, forCellReuseIdentifier: TableConfigs.foodItemInStoreDetails)
         innerTable.dataSource = self
         innerTable.delegate = self
-        innerTable.rowHeight = UITableView.automaticDimension
         innerTable.separatorStyle = .none
         wrapperCellView.addSubview(innerTable)
     }
     
-    func setupUserNameLabel() {
+    func setupButtonImage() {
+        messageButtonImage = UIImageView()
+        
+        messageButtonImage.image = UIImage(systemName: "message")?.withRenderingMode(.alwaysOriginal)
+        messageButtonImage.tintColor = .black
+        messageButtonImage.contentMode = .scaleToFill
+        messageButtonImage.clipsToBounds = true
+        messageButtonImage.layer.masksToBounds = true
+        messageButtonImage.translatesAutoresizingMaskIntoConstraints = false
+        wrapperCellView.addSubview(messageButtonImage)
+    }
+    
+    func setupLabels() {
         userNameLabel = UILabel()
-        userNameLabel.textColor = .black
-        userNameLabel.font = .systemFont(ofSize: 16, weight: .regular)
-        userNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        wrapperCellView.addSubview(userNameLabel)
+        totalItemCostLabel = UILabel()
+        
+        let labels: [UILabel] = [userNameLabel, totalItemCostLabel]
+        
+        for label: UILabel in labels {
+            label.textColor = .black
+            label.font = .systemFont(ofSize: 16, weight: .regular)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            wrapperCellView.addSubview(label)
+        }
     }
     
     
@@ -66,24 +84,22 @@ class UserCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
             wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             
-            userNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 10),
-            userNameLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 20),
+            messageButtonImage.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 10),
+            messageButtonImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
             
+            userNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 10),
+            userNameLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 150),
+            userNameLabel.leadingAnchor.constraint(equalTo: messageButtonImage.trailingAnchor, constant: 10),
+            
+            totalItemCostLabel.topAnchor.constraint(equalTo: userNameLabel.topAnchor),
+            totalItemCostLabel.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -20),
+            totalItemCostLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 80),
             
             innerTable.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 0),
-            innerTable.leadingAnchor.constraint(equalTo: userNameLabel.leadingAnchor, constant: 10),
+            innerTable.leadingAnchor.constraint(equalTo: messageButtonImage.trailingAnchor),
             innerTable.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -10),
-            innerTable.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor),
+            innerTable.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -50),
             
-            /*
-            totalCostLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 2),
-            totalCostLabel.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -2),
-            
-            foodStoreTable.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 2),
-            foodStoreTable.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor),
-            foodStoreTable.leadingAnchor.constraint(equalTo: userNameLabel.leadingAnchor, constant: 2),
-            foodStoreTable.trailingAnchor.constraint(equalTo: userNameLabel.trailingAnchor),
-             */
             ])
     }
     
@@ -104,27 +120,20 @@ class UserCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
     
 }
 
-extension UserCell {
+extension StoreMemberCell {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("num stores: \(submittedStores.count)")
-        return submittedStores.count
+        return submittedFoodItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.submittedStores, for: indexPath) as! SubmittedStoreCell
-        let store = submittedStores[indexPath.row]
-        cell.name.text = store.storeName
-        cell.date.text = store.dateCreated.formatted()
-        // get cost ?
+        let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.foodItemInStoreDetails, for: indexPath) as! FoodItemInStoreCell
+        let store = submittedFoodItems[indexPath.row]
+        cell.itemNameLabel.text = store.name
+        cell.itemCostLabel.text = "$ \(store.price)"
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let userItemsVC = UserItemsViewController()
-        let store = submittedStores[indexPath.row]
-        userItemsVC.store = store
-        userItemsVC.tripId = tripId
-        navigationController?.pushViewController(userItemsVC, animated: true)
     }
     
     
