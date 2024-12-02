@@ -184,7 +184,9 @@ extension AddTripScreenController: UITableViewDelegate, UITableViewDataSource{
         cell.userNameLabel.text = groupMembers[indexPath.row].name
         
         if let avatarImageUrl = URL(string: groupMembers[indexPath.row].avatarURL) {
-            cell.avatarImage.loadRemoteImage(from: avatarImageUrl)
+            Task.detached {
+                await cell.avatarImage.loadRemoteImage(from: avatarImageUrl)
+            }
         }
         
      

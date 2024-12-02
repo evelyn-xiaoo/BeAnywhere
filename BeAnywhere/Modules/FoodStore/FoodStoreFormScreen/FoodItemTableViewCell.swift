@@ -29,7 +29,7 @@ class FoodItemTableViewCell: UITableViewCell {
     
     func setupitemImage(){
         itemImage = UIImageView()
-        itemImage.image = UIImage(systemName: "photo")?.withRenderingMode(.alwaysOriginal) // MARK: Update this to use actual saved image
+        itemImage.image = UIImage(systemName: "fork.knife.circle")?.withRenderingMode(.alwaysOriginal) // MARK: Update this to use actual saved image
         itemImage.contentMode = .scaleToFill
         itemImage.clipsToBounds = true
         itemImage.layer.masksToBounds = true
@@ -103,7 +103,7 @@ class FoodItemTableViewCell: UITableViewCell {
             itemPayersLabel.heightAnchor.constraint(equalToConstant: 15),
             itemPayersLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
             
-            checkBoxImage.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -16),
+            checkBoxImage.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -36),
             checkBoxImage.centerYAnchor.constraint(equalTo: wrapperCellView.centerYAnchor),
             
             wrapperCellView.heightAnchor.constraint(equalToConstant: 77)

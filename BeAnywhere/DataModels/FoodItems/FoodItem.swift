@@ -71,12 +71,14 @@ struct FoodItemInForm {
     var price:Double
     var payers:[FirestoreUser]
     var foodImage: UIImage?
+    var imageUrlToLoad:String?
     
-    init(id: String, name: String, price: Double, payers: [FirestoreUser], foodImage: UIImage? = nil) {
+    init(id: String, name: String, price: Double, payers: [FirestoreUser], foodImage: UIImage? = nil, imageUrlToLoad:String? = nil) {
         self.id = id
         self.name = name
         self.price = price
         self.payers = payers
         self.foodImage = foodImage
+        self.imageUrlToLoad = imageUrlToLoad
     }
 }

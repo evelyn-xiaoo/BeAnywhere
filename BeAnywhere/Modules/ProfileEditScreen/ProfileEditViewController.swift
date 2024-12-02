@@ -40,7 +40,9 @@ class ProfileEditViewController: UIViewController, UIImagePickerControllerDelega
             }
             else {
                 if let url = URL(string: user.avatarURL){
-                    editView.profilePhoto.loadRemoteImage(from: url)
+                    Task.detached {
+                        await self.editView.profilePhoto.loadRemoteImage(from: url)
+                    }
                 }
             }
         }
@@ -181,7 +183,7 @@ extension ProfileEditViewController: UIPickerViewDelegate, UIPickerViewDataSourc
 }
 
 extension UIButton {
-    func loadRemoteImage(from url: URL) {
+    func loadRemoteImage(from url: URL) async {
         DispatchQueue.global().async { [weak self] in
             if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
                 DispatchQueue.main.async {

@@ -8,6 +8,28 @@
 import Foundation
 
 extension StoreFormScreenController {
+    func updateExistingFoodStore(newStore: FoodStoreInForm, tripId: String) async {
+        if (newStore.storeName == "" || newStore.address == "") {
+            showErrorAlert(message: "The text fields cannot be empty. Please try again.", controller: self)
+            return
+        }
+        
+        if (newStore.foodItems.isEmpty) {
+            showErrorAlert(message: "There should be at least one food item in the food store. Please try again.", controller: self)
+            return
+        }
+        
+        if (newStore.id == "") {
+            showErrorAlert(message: "Invalid store. Please try again.", controller: self)
+            return
+        }
+        
+        self.showActivityIndicator()
+        
+        await deleteAllOldFoodItems(tripId: tripId, storeId: newStore.id)
+        await saveFoodStoreDataToFirebase(newStore, tripId: tripId)
+    }
+    
     func saveNewFoodStore(_ newStore: FoodStoreInForm, tripId: String) async {
         if (newStore.storeName == "" || newStore.address == "") {
             showErrorAlert(message: "The text fields cannot be empty. Please try again.", controller: self)
@@ -22,18 +44,71 @@ extension StoreFormScreenController {
         await saveFoodStoreDataToFirebase(newStore, tripId: tripId)
     }
     
+    func deleteAllOldFoodItems(tripId: String, storeId: String) async {
+        do {
+            let foodItemCollection = try await database
+                .collection(FoodTrip.collectionName)
+                .document(tripId)
+                .collection(FoodStore.collectionName)
+                .document(storeId)
+                .collection(FoodItem.collectionName)
+                .getDocuments()
+            
+            let storageRef = storage.reference()
+            
+            for foodItem in foodItemCollection.documents {
+                let foodItemFromDoc = try foodItem.data(as: FoodItemFromDoc.self)
+                
+                if (foodItemFromDoc.foodImageUrl != "") {
+                    try await storageRef.child("imagesFoodItems").child("\(foodItemFromDoc.id).jpg")
+                        .delete()
+                }
+                try await foodItem.reference.delete()
+            }
+        } catch {
+            self.hideActivityIndicator()
+            showErrorAlert(message: "Failed to update a store. Please try again.", controller: self)
+        }
+    }
+    
     func saveFoodStoreDataToFirebase(_ newStore: FoodStoreInForm, tripId: String) async {
+        
+        var debtorsWithSubmittedItems: [Debtor] = []
         let collectionFoodStores = database
             .collection(FoodTrip.collectionName)
             .document(tripId)
             .collection(FoodStore.collectionName)
-        let newFoodStoreDocRef = collectionFoodStores.document()
+        
+        var newFoodStoreDocRef = collectionFoodStores.document()
+        
+        if (newStore.id != "") {
+            let existingFoodStoreDocRef = database
+                .collection(FoodTrip.collectionName)
+                .document(tripId)
+                .collection(FoodStore.collectionName)
+                .document(newStore.id)
+            
+            newFoodStoreDocRef = existingFoodStoreDocRef
+        }
         
         do {
             // Save food item documents
             // Upload food item images and update food item document field
             let foodItemsWithIds = try await saveFoodItemsToFirestore(foodItems: newStore.foodItems, tripId: tripId, storeId: newFoodStoreDocRef.documentID)
             let foodItemsWithImageURL = try await getFoodItemImageURL(foodItems: foodItemsWithIds, tripId: tripId, storeId: newFoodStoreDocRef.documentID)
+            
+            // MARK:
+//            for i in (0...newStore.debtors.count) {
+//                var debtorsFoodItems: [FoodItem] = []
+//                for foodItem in foodItemsWithImageURL {
+//                    if (foodItem.payers.contains(where: { $0.id == newStore.debtors[i].id})) {
+//                        debtorsFoodItems.append(foodItem)
+//                    }
+//                }
+//                debtorsWithSubmittedItems.append(newStore.debtors[i])
+//                debtorsWithSubmittedItems[i].user.submittedFoodItems = debtorsFoodItems
+//                
+//            }
             
             // Save food store document and upload recipe image
             let newFoodStoreWithId = FoodStore(id: newFoodStoreDocRef.documentID, storeName: newStore.storeName, address: newStore.address, submitter: newStore.submitter, dateCreated: newStore.dateCreated, recipeImage: newStore.recipeImage, foodItems: foodItemsWithImageURL, debtors: newStore.debtors)
@@ -46,7 +121,10 @@ extension StoreFormScreenController {
             // Indicates the food store submission was successful
             self.notificationCenter.post(
                 name: Notification.Name(NotificationConfigs.NewFoodStoreObserverName),
-                object: newStoreWithImageURL)
+                object: [
+                    "newStore": newStoreWithImageURL,
+                    "isUpdate": selectedFoodStore != nil
+                ])
             self.hideActivityIndicator()
             self.navigationController?.popViewController(animated: true)
         } catch {
@@ -63,7 +141,7 @@ extension StoreFormScreenController {
             .document(newStore.id)
         
         if let image = pickedRecipeImage {
-            if let jpegData = image.jpegData(compressionQuality: 80){
+            if let jpegData = image.image!.jpegData(compressionQuality: 80){
                 let storageRef = storage.reference()
                 let imagesRepo = storageRef.child("imagesFoodStores")
                 let imageRef = imagesRepo.child("\(newStore.id).jpg")
@@ -101,7 +179,9 @@ extension StoreFormScreenController {
                 .collection(FoodStore.collectionName)
                 .document(storeId)
                 .collection(FoodItem.collectionName)
+            
             let newFoodItemDocRef = newItemCollectionRef.document()
+            
             let newFoodItem = FoodItem(id: newFoodItemDocRef.documentID, name: foodItem.name, price: foodItem.price, payers: foodItem.payers, foodImage: "")
             do {
                 try await newFoodItemDocRef.setData(newFoodItem.toMap())
@@ -127,30 +207,31 @@ extension StoreFormScreenController {
                 .document(foodItem.id)
             
             if let itemImage = foodItem.foodImage {
-                if let jpegData = itemImage.jpegData(compressionQuality: 80){
-                    let storageRef = storage.reference()
-                    let imagesRepo = storageRef.child("imagesFoodItems")
-                    let imageRef = imagesRepo.child("\(foodItem.id).jpg")
-                    
-                    do {
-                        _ = try await imageRef.putDataAsync(jpegData)
-                        let url = try await imageRef.downloadURL()
+                    if let jpegData = itemImage.jpegData(compressionQuality: 80){
+                        let storageRef = storage.reference()
+                        let imagesRepo = storageRef.child("imagesFoodItems")
+                        let imageRef = imagesRepo.child("\(foodItem.id).jpg")
                         
-                        foodItemsWithImageUrl.append(FoodItem(id: foodItem.id, name: foodItem.name, price: foodItem.price, payers: foodItem.payers, foodImage: url.absoluteString))
+                        do {
+                            _ = try await imageRef.putDataAsync(jpegData)
+                            let url = try await imageRef.downloadURL()
+                            
+                            foodItemsWithImageUrl.append(FoodItem(id: foodItem.id, name: foodItem.name, price: foodItem.price, payers: foodItem.payers, foodImage: url.absoluteString))
+                            
+                            try await foodItemDocRef.updateData([
+                                "foodImageUrl": url.absoluteString
+                            ])
+                        } catch {
+                            print("DEV: error on saving image into Firestore")
+                            throw FoodStore.FirebaseError.unknownError
+                        }
                         
-                        try await foodItemDocRef.updateData([
-                            "foodImageUrl": url.absoluteString
-                        ])
-                    } catch {
-                        print("DEV: error on saving image into Firestore")
+                    } else {
+                        print("DEV: error on compressing the food item image")
                         throw FoodStore.FirebaseError.unknownError
+                        
                     }
-                    
-                } else {
-                    print("DEV: error on compressing the food item image")
-                    throw FoodStore.FirebaseError.unknownError
-
-                }
+                
             } else {
                 foodItemsWithImageUrl.append(FoodItem(id: foodItem.id, name: foodItem.name, price: foodItem.price, payers: foodItem.payers, foodImage: ""))
             }
@@ -167,7 +248,20 @@ extension StoreFormScreenController {
             .collection(Debtor.collectionName)
         
         for debtor in debtors {
-            let newDebtorDocRef = collectionFoodStores.document()
+            var newDebtorDocRef = collectionFoodStores.document()
+            
+            if (debtor.id != "") {
+                let debtorDocumentRef = database
+                    .collection(FoodTrip.collectionName)
+                    .document(tripId)
+                    .collection(FoodStore.collectionName)
+                    .document(storeId)
+                    .collection(Debtor.collectionName)
+                    .document(debtor.id)
+                
+                newDebtorDocRef = debtorDocumentRef
+            }
+    
             do {
                 // Save food store document and upload recipe image
                 let newDebtor = Debtor(id: newDebtorDocRef.documentID, user: debtor.user, dateCreated: debtor.dateCreated, paymentStatus: debtor.paymentStatus)

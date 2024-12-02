@@ -24,7 +24,9 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
     var currentFirestoreUser: FirestoreUser? = nil
     
     var foodItems: [FoodItemInForm] = []
-    var pickedRecipeImage: UIImage?
+    var pickedRecipeImage: UIImageView!
+    
+    // MARK: Fields that need to be initialized from other calls
     var currentTrip: FoodTripFromDoc? = nil
     
     // MARK: Fields that can be initialized from other calls
@@ -38,6 +40,8 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        pickedRecipeImage = UIImageView()
+        
         // MARK: load the current user from Firestore
         Task.detached {
             self.showActivityIndicator()
@@ -45,7 +49,7 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
             
             if let currentFirestoreUser {
                 self.currentFirestoreUser = currentFirestoreUser
-                self.prefillViewFields()
+                await self.prefillViewFields()
             } else {
                 showErrorAlert(message: "Cannot load user information. Please try again later.", controller: self)
             }
@@ -79,7 +83,7 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
                     object: nil)
     }
     
-    func prefillViewFields() {
+    func prefillViewFields() async {
         if let selectedFoodStore {
             // MARK: indicates the controller is used for existing food store edit
             addStoreView.textFieldName.text = selectedFoodStore.storeName
@@ -87,21 +91,23 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
             addStoreView.datePicker.date = selectedFoodStore.dateCreated
             addStoreView.totalPriceAmountLabel.text = selectedFoodStore.foodItems.reduce(0) { $0 + $1.price }.formatted()
             
-            Task.detached {
-                
-                await self.addStoreView.myTotalPriceAmountLabel.text = selectedFoodStore.foodItems.filter({$0.payers.contains(where: {$0.id == self.currentFirestoreUser!.id
-                    })}).reduce(0) { $0 + $1.price }.formatted()
-                
-                
-            }
+            self.addStoreView.myTotalPriceAmountLabel.text = selectedFoodStore.foodItems.filter({$0.payers.contains(where: {$0.id == self.currentFirestoreUser!.id
+                })}).reduce(0) { $0 + $1.price }.formatted()
             
+            // Load the recipe image
+            await setRecipeImageFromURL(imageUrlString: selectedFoodStore.recipeImage)
+            
+            // Load food item's images
+            for foodItem in selectedFoodStore.foodItems {
+                foodItems.append(FoodItemInForm(id: foodItem.id, name: foodItem.name, price: foodItem.price, payers: foodItem.payers, imageUrlToLoad: foodItem.foodImage))
+            }
+                                 
+            addStoreView.foodItemTable.reloadData()
         } else {
             // MARK: indicates the controller is used for adding a new food store
             addStoreView.datePicker.date = Date.now
             addStoreView.totalPriceAmountLabel.text = "$ 0"
             addStoreView.myTotalPriceAmountLabel.text = "$ 0"
-            
-           
         }
     }
     
@@ -123,17 +129,21 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
         
         if let newFoodStoreName, let newFoodStoreLocation, let currentTrip {
             do {
-                if let selectedFoodStore {
+                if var selectedFoodStore {
                     // MARK: update the new edited food store in the Firestore
+                    
+                    
+                    let newFoodStore: FoodStoreInForm = FoodStoreInForm(id: selectedFoodStore.id, storeName: newFoodStoreName, address: newFoodStoreLocation, submitter: self.currentFirestoreUser!, dateCreated: newFoodStoreDate, recipeImage: "", foodItems: self.foodItems, debtors: selectedFoodStore.debtors)
+                    
+                    Task.detached{
+                        await self.updateExistingFoodStore(newStore: newFoodStore, tripId: currentTrip.id)
+                    }
                 } else {
                     // MARK: save a new food store in the Firestore
                     let newDebtors = getNewDebtorsFromFoodItems()
+                    let newFoodStore: FoodStoreInForm = FoodStoreInForm(id: "", storeName: newFoodStoreName, address: newFoodStoreLocation, submitter: self.currentFirestoreUser!, dateCreated: newFoodStoreDate, recipeImage: "", foodItems: self.foodItems, debtors: newDebtors)
                     
                     Task.detached {
-                        
-                            let newFoodStore: FoodStoreInForm = await FoodStoreInForm(id: "", storeName: newFoodStoreName, address: newFoodStoreLocation, submitter: self.currentFirestoreUser!, dateCreated: newFoodStoreDate, recipeImage: "", foodItems: self.foodItems, debtors: newDebtors)
-                            
-                            
                             await self.saveNewFoodStore(newFoodStore, tripId: currentTrip.id)
                         
                     }
@@ -145,6 +155,16 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
         }
     }
     
+    func setRecipeImageFromURL(imageUrlString: String) async  {
+        if let imageURL = URL(string: imageUrlString) {
+            await pickedRecipeImage.loadRemoteImage(from: imageURL)
+            await addStoreView.recipeImage.loadRemoteImage(from: imageURL)
+        } else {
+            pickedRecipeImage.setSymbolImage(UIImage(systemName: "photo")!.withRenderingMode(.alwaysOriginal), contentTransition: .automatic)
+        }
+        
+    }
+    
     // MARK: Updates the total food item prices
     func updateTotalAmount() {
         var currentUserTotal: Double = 0.0
@@ -152,7 +172,7 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
         
         for foodItem in foodItems {
             if (foodItem.payers.contains(where: { $0.id == currentUser.uid })) {
-                currentUserTotal += foodItem.price
+                currentUserTotal += foodItem.price / Double(foodItem.payers.count)
             }
             totalPriceAmount += foodItem.price
         }
@@ -276,6 +296,12 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
             completion(false) // Access denied or restricted
         }
     }
+    
+    func deleteFoodItem(index: Int) {
+        foodItems.remove(at: index)
+        addStoreView.foodItemTable.reloadData()
+        updateTotalAmount()
+    }
 }
 
 extension StoreFormScreenController: UITableViewDelegate, UITableViewDataSource{
@@ -289,13 +315,38 @@ extension StoreFormScreenController: UITableViewDelegate, UITableViewDataSource{
         cell.itemNameLabel.text = foodItems[indexPath.row].name
         cell.itemCostLabel.text = "$ \(foodItems[indexPath.row].price.formatted())"
         cell.itemPayersLabel.text = foodItems[indexPath.row].payers.map({$0.name}).joined(separator: ", ")
+        
         if let foodItemImage {
-            cell.itemImage.setSymbolImage(foodItemImage, contentTransition: .automatic)
+                cell.itemImage.setSymbolImage(foodItemImage, contentTransition: .automatic)
+            
+        } else if let imageUrlToLoad = foodItems[indexPath.row].imageUrlToLoad {
+            if let foodItemUrl = URL(string: imageUrlToLoad) {
+                Task.detached {
+                    await cell.itemImage.loadRemoteImage(from: foodItemUrl)
+                    self.foodItems[indexPath.row].foodImage = cell.itemImage.image
+                }
+            }
         }
         
         if (foodItems[indexPath.row].payers.contains(where: ({$0.id == self.currentUser.uid}))) {
             cell.checkBoxImage.setSymbolImage(UIImage(systemName: "square.fill")!, contentTransition: .automatic)
         }
+        
+        // MARK: creating an accessory button...
+        let buttonOptions = UIButton(type: .system)
+        buttonOptions.sizeToFit()
+        buttonOptions.showsMenuAsPrimaryAction = true
+        buttonOptions.setImage(UIImage(systemName: "slider.horizontal.3"), for: .normal)
+        
+        //MARK: setting up menu for button options click...
+        buttonOptions.menu = UIMenu(title: "Delete?",
+                                    children: [
+                                        UIAction(title: "Delete",handler: {(_) in
+                                            self.deleteFoodItem(index: indexPath.row)
+                                        })
+                                    ])
+        //MARK: setting the button as an accessory of the cell...
+        cell.accessoryView = buttonOptions
      
         return cell
     }
@@ -319,16 +370,16 @@ extension StoreFormScreenController: UIPickerViewDelegate, UIPickerViewDataSourc
         
         let itemprovider = results.map(\.itemProvider)
         
-        for item in itemprovider{
+        for item in itemprovider {
             if item.canLoadObject(ofClass: UIImage.self){
                 item.loadObject(ofClass: UIImage.self, completionHandler: { (image, error) in
-                    DispatchQueue.main.async{
+                    DispatchQueue.main.async {
                         if let uwImage = image as? UIImage{
                             self.addStoreView.recipeImage.setImage(
                                 uwImage.withRenderingMode(.alwaysOriginal),
                                 for: .normal
                             )
-                            self.pickedRecipeImage = uwImage
+                            self.pickedRecipeImage.image = uwImage
                         }
                     }
                 })
@@ -344,7 +395,7 @@ extension StoreFormScreenController: UIPickerViewDelegate, UIPickerViewDataSourc
                 image.withRenderingMode(.alwaysOriginal),
                 for: .normal
             )
-            self.pickedRecipeImage = image
+            self.pickedRecipeImage.image = image
         }else{
             showAlertText(text: "Failed to take photo", controller: self)
         }
