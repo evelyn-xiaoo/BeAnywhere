@@ -43,6 +43,11 @@ class TripViewController: UIViewController {
             
             Task.detached{
                 self.showActivityIndicator()
+                
+                if (self.currentUser == nil) {
+                    self.currentUser = await UserFirebaseService().getUser(uid: self.firebaseAuth.currentUser!.uid)
+                }
+                
                 await self.initUsers(tripId: currentTrip.id)
                 DispatchQueue.main.async {
                     self.tripView.otherUsersTable.reloadData()
@@ -98,9 +103,17 @@ class TripViewController: UIViewController {
     }
     
     @objc func notificationReceivedForFoodStoreAdded(notification: Notification) {
-        let newFoodStoreByCurrentUser = notification.object as! FoodStore
+        let newFoodStoreRequest = notification.object as! Dictionary<String, Any>
         
-        storePaidByMe.append(newFoodStoreByCurrentUser)
+        let newFoodStoreByCurrentUser = newFoodStoreRequest["newStore"] as! FoodStore
+        let isRequestUpdate = newFoodStoreRequest["isUpdate"] as! Bool
+        
+        if (isRequestUpdate) {
+            storePaidByMe.removeAll(where: { $0.id == newFoodStoreByCurrentUser.id })
+            storePaidByMe.append(newFoodStoreByCurrentUser)
+        } else {
+            storePaidByMe.append(newFoodStoreByCurrentUser)
+        }
         updatePriceAmount()
         tripView.foodStoreTable.reloadData()
     }
@@ -232,7 +245,7 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
         // MARK: on current trip box click -> navigate to food store details
         if (tableView == tripView.foodStoreTable) {
             let storeDetailsController = StoreDetailsController()
-            storeDetailsController.currentTripId = self.currentTrip!.id
+            storeDetailsController.currentTrip = self.currentTrip!
             storeDetailsController.currentFoodStore = storePaidByMe[indexPath.row]
             navigationController?.pushViewController(storeDetailsController, animated: true)
         }

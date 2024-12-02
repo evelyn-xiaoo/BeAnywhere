@@ -27,7 +27,7 @@ class StoreDetailsController: UIViewController {
     
     // MARK: varialbes that must be defined on this class call
     var currentFoodStore: FoodStore? = nil
-    var currentTripId: String? = nil
+    var currentTrip: FoodTripFromDoc? = nil
     
     override func loadView() {
         view = storeView
@@ -39,12 +39,13 @@ class StoreDetailsController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let currentFoodStore, let currentTripId {
+        if let currentFoodStore, let currentTrip {
             title = currentFoodStore.storeName
             
             Task.detached{
                 self.showActivityIndicator()
-                try await self.initDebtors(tripId: currentTripId, storeId: currentFoodStore.id)
+                try await self.initDebtors(tripId: currentTrip.id, storeId: currentFoodStore.id)
+                await self.setRecipeImage()
                 self.updatePriceAmount()
                 self.hideActivityIndicator()
             }
@@ -72,17 +73,18 @@ class StoreDetailsController: UIViewController {
         
         navigationItem.rightBarButtonItems = [editTripIcon]
         
-        notificationCenter.addObserver(self, selector: #selector(notificationReceivedForTripEdit(notification:)) , name: Notification.Name(NotificationConfigs.UpdatedFoodStoreObserverName), object: nil)
+        notificationCenter.addObserver(self, selector: #selector(notificationReceivedForStoreEdit(notification:)) , name: Notification.Name(NotificationConfigs.UpdatedFoodStoreObserverName), object: nil)
     }
     
     @objc func onTripEditClick() {
 
         let editStoreScreenController = StoreFormScreenController()
         editStoreScreenController.selectedFoodStore = currentFoodStore!
+        editStoreScreenController.currentTrip = currentTrip!
         self.navigationController?.pushViewController(editStoreScreenController, animated: true)
     }
     
-    @objc func notificationReceivedForTripEdit(notification: Notification) {
+    @objc func notificationReceivedForStoreEdit(notification: Notification) {
         let newFoodStore = notification.object as! FoodStore
         
         debtors.replaceSubrange(0..<self.debtors.count, with: newFoodStore.debtors)
@@ -90,6 +92,14 @@ class StoreDetailsController: UIViewController {
         
         storeView.memberWithFoodItemsTable.reloadData()
         storeView.memberWithPaymentStatusTable.reloadData()
+    }
+    
+    func setRecipeImage() async {
+        if let currentFoodStore {
+            if let imageURL = URL(string: currentFoodStore.recipeImage) {
+                await storeView.foodStoreImageView.loadRemoteImage(from: imageURL)
+            }
+        }
     }
     
     func updatePriceAmount() {
@@ -123,7 +133,6 @@ extension StoreDetailsController: UITableViewDelegate, UITableViewDataSource{
         if(tableView == storeView.memberWithFoodItemsTable) {
             let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.foodItemMember, for: indexPath) as! StoreMemberCell
             let memberWithItems = membersFoodItems[indexPath.row]
-            
             
             cell.userNameLabel.text = memberWithItems.name
             if let submittedFoodItems = memberWithItems.submittedFoodItems {

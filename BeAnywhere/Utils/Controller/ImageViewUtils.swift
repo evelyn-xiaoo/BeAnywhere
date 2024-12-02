@@ -11,7 +11,7 @@ import UIKit
 extension UIImageView {
     //MARK: Borrowed from: https://www.hackingwithswift.com/example-code/uikit/how-to-load-a-remote-image-url-into-uiimageview
     
-    func loadRemoteImage(from url: URL) {
+    func loadRemoteImage(from url: URL) async {
         DispatchQueue.global().async { [weak self] in
             if let data = try? Data(contentsOf: url) {
                 if let image = UIImage(data: data) {

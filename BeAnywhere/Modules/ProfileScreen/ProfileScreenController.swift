@@ -35,7 +35,9 @@ class ProfileScreenController: UIViewController {
             profileView.username.text = "@\(user.username)"
             profileView.venmo.text = "venmo: \(user.venmo)"
             if let url = URL(string: user.avatarURL){
-                profileView.profilePic.loadRemoteImage(from: url)
+                Task.detached {
+                    await self.profileView.profilePic.loadRemoteImage(from: url)
+                }
             }
             
             Task.detached {
@@ -72,14 +74,15 @@ extension ProfileScreenController: UITableViewDelegate, UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("here")
         let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableViewTrips, for: indexPath) as! TripBoxTableViewCell
         cell.groupNameLabel.text = pastTrips[indexPath.row].groupName
         
         
         let url = pastTrips[indexPath.row].photoURL
             if let tripImageUrl = URL(string: url) {
-                cell.tripImage.loadRemoteImage(from: tripImageUrl)
+                Task.detached {
+                    await cell.tripImage.loadRemoteImage(from: tripImageUrl)
+                }
             }
         
         

@@ -120,7 +120,9 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
         
         let url = currentTrips[indexPath.row].photoURL
             if let tripImageUrl = URL(string: url) {
-                cell.tripImage.loadRemoteImage(from: tripImageUrl)
+                Task.detached {
+                    await cell.tripImage.loadRemoteImage(from: tripImageUrl)
+                }
             }
             
         
