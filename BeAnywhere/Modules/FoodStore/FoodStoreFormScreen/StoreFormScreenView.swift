@@ -18,6 +18,7 @@ class StoreFormScreenView: UIView {
     var recipeImageLabel: UILabel!
     var foodItemTableLabel: UILabel!
     var datePickLabel: UILabel!
+    var noSelectedItemLabel: UILabel!
     
     var myTotalPriceLabel: UILabel!
     var totalPriceLabel: UILabel!
@@ -42,7 +43,6 @@ class StoreFormScreenView: UIView {
         recipeImage = UIButton(type: .system)
         recipeImage.setTitle("", for: .normal)
         recipeImage.setImage(UIImage(systemName: "photo"), for: .normal)
-        recipeImage.tintColor = .gray
         recipeImage.contentHorizontalAlignment = .fill
         recipeImage.contentVerticalAlignment = .fill
         recipeImage.imageView?.contentMode = .scaleAspectFill
@@ -104,8 +104,9 @@ class StoreFormScreenView: UIView {
         totalPriceLabel = UILabel()
         totalPriceAmountLabel = UILabel()
         datePickLabel = UILabel()
+        noSelectedItemLabel = UILabel()
         
-        let appLabels: [UILabel] = [ recipeImageLabel, foodItemTableLabel, myTotalPriceLabel, myTotalPriceAmountLabel, totalPriceLabel, totalPriceAmountLabel, datePickLabel]
+        let appLabels: [UILabel] = [ recipeImageLabel, foodItemTableLabel, myTotalPriceLabel, myTotalPriceAmountLabel, totalPriceLabel, totalPriceAmountLabel, datePickLabel, noSelectedItemLabel]
         
         foodItemTableLabel.font = UIFont.boldSystemFont(ofSize: 15)
         recipeImageLabel.font = UIFont.boldSystemFont(ofSize: 13)
@@ -122,6 +123,9 @@ class StoreFormScreenView: UIView {
         totalPriceLabel.font = UIFont.boldSystemFont(ofSize: 15)
         totalPriceAmountLabel.font = UIFont.boldSystemFont(ofSize: 13)
         totalPriceLabel.text = "Total"
+        
+        noSelectedItemLabel.font = UIFont.boldSystemFont(ofSize: 13)
+        noSelectedItemLabel.numberOfLines = 0
         
         
         // apply common attributes to the labels
@@ -171,6 +175,9 @@ class StoreFormScreenView: UIView {
             foodItemTable.topAnchor.constraint(equalTo: foodItemTableLabel.bottomAnchor, constant: 16),
             foodItemTable.bottomAnchor.constraint(equalTo: myTotalPriceLabel.topAnchor, constant: -8),
             foodItemTable.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor),
+            
+            noSelectedItemLabel.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            noSelectedItemLabel.topAnchor.constraint(equalTo: foodItemTableLabel.bottomAnchor, constant: 32),
             
             myTotalPriceLabel.bottomAnchor.constraint(equalTo: totalPriceLabel.topAnchor, constant: -8),
             myTotalPriceLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),

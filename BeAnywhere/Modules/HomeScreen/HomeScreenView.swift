@@ -11,6 +11,7 @@ class HomeScreenView: UIView {
     var addTripButton: UIButton!
     var tripTable: UITableView!
     var currentTripLabel: UILabel!
+    var noTripLabel: UILabel!
     
     override init(frame: CGRect){
         super.init(frame: frame)
@@ -41,11 +42,13 @@ class HomeScreenView: UIView {
     
     func setUpLabels() {
         currentTripLabel = UILabel()
-        
-        let appLabels: [UILabel] = [currentTripLabel]
+        noTripLabel = UILabel()
         
         currentTripLabel.font = UIFont.boldSystemFont(ofSize: 15)
+        noTripLabel.font = UIFont.boldSystemFont(ofSize: 15)
+        noTripLabel.numberOfLines = 0
         
+        let appLabels: [UILabel] = [currentTripLabel, noTripLabel]
         
         // apply common attributes to the labels
         for label: UILabel in appLabels {
@@ -66,6 +69,10 @@ class HomeScreenView: UIView {
         NSLayoutConstraint.activate([
             currentTripLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 25),
             currentTripLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            
+            noTripLabel.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            noTripLabel.centerYAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerYAnchor),
+            
             
             tripTable.topAnchor.constraint(equalTo: currentTripLabel.bottomAnchor, constant: 16),
             tripTable.leadingAnchor.constraint(equalTo: currentTripLabel.leadingAnchor, constant: 5),

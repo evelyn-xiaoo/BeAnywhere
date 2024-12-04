@@ -15,13 +15,22 @@ class MessagingViewController: UIViewController {
     
     var msgGroups: [String] = []
     
+    let childProgressView = ProgressSpinnerViewController()
     var items: [FoodItemFromDoc] = []
     var database = Firestore.firestore()
     let firebaseAuth = Auth.auth()
     var tripId: String = ""
-    var currentStore: FoodStoreFromDoc? = nil
     
     var textFieldBottomConstraint: NSLayoutConstraint!
+    
+    // MARK: a list of messages that get tracked in real time
+    var currentMessages: [Message] = []
+    
+    // MARK: a variables that need to be initialized from other calls
+    var currentChat: Chat? = nil
+    var currentStore: FoodStoreFromDoc? = nil
+    var currentUser: FirestoreUser? = nil
+    var opponentUser: FirestoreUser? = nil
     
     override func loadView() {
         view = msgView
@@ -30,11 +39,18 @@ class MessagingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if let opponentUser {
+            title = opponentUser.name
+        }
         msgView.itemsTable.delegate = self
         msgView.itemsTable.dataSource = self
         
         msgView.dropDownView.delegate = self
         msgView.dropDownView.dataSource = self
+        
+        msgView.messagesTable.delegate = self
+        msgView.messagesTable.dataSource = self
+        msgView.messagesTable.separatorStyle = .none
         
         textFieldBottomConstraint = msgView.textField.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40)
                 textFieldBottomConstraint.isActive = true
@@ -56,28 +72,29 @@ class MessagingViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(sendMessage))
-        
-        self.msgView.selectItem.addTarget(self, action: #selector(toggleDropdown), for: .touchUpInside)
-    
-    }
-    
-    @objc func toggleDropdown() {
-        UIView.animate(withDuration: 0.3) {
-            self.msgView.dropDownView.isHidden.toggle()
-        }
+        self.msgView.msgSendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        showActivityIndicator()
         if let store = currentStore {
-            Task{
-                await self.initItems(tripId: self.tripId, storeId: store.id)
-                DispatchQueue.main.async {
-                    self.msgView.itemsTable.reloadData()
+            if let currentChat {
+                setMessageObserver(storeId: store.id, chat: currentChat)
+                Task{
+                    await self.initItems(tripId: self.tripId, storeId: store.id)
+                    DispatchQueue.main.async {
+                        self.msgView.itemsTable.reloadData()
+                    }
+                    self.hideActivityIndicator()
                 }
+            } else {
+                showErrorAlert(message: "Unknown error occurred. Please try again later.", controller: self)
             }
+        } else {
+            showErrorAlert(message: "Unknown error occurred. Please try again later.", controller: self)
         }
+        hideActivityIndicator()
         
     }
     
@@ -111,7 +128,13 @@ class MessagingViewController: UIViewController {
     }
 
     @objc func sendMessage() {
-        
+        if let messageContent = msgView.textField.text {
+            Task.detached {
+                await self.sendMessage(tripId: self.tripId, storeId: self.currentStore!.id, chatId: self.currentChat!.id, content: messageContent)
+            }
+        } else {
+            showErrorAlert(message: "Unknown error. Please try again.", controller: self)
+        }
     }
 }
 
@@ -125,6 +148,8 @@ extension MessagingViewController: UITableViewDelegate, UITableViewDataSource{
         else if tableView == msgView.dropDownView {
             print("num items = \(items.count)")
             return items.count
+        } else if tableView == msgView.messagesTable {
+            return currentMessages.count
         }
         return 0
     }
@@ -135,12 +160,57 @@ extension MessagingViewController: UITableViewDelegate, UITableViewDataSource{
             let item = msgGroups[indexPath.row]
             cell.itemLabel.text = item
             return cell
+        } else if tableView == msgView.messagesTable {
+            let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableViewMessages, for: indexPath) as! MessageTableViewCell
+            
+            if (currentUser!.id == currentMessages[indexPath.row].submitter.id) {
+                // Current user's message
+                cell.wrapperCellView.backgroundColor = .blue
+                cell.userNameLabel.textColor = .white
+                cell.messageDateLabel.textColor = .white
+                cell.messageContentLabel.textColor = .white
+                
+            } else {
+                // Other user's message
+                cell.wrapperCellView.backgroundColor = .white
+                cell.userNameLabel.textColor = .black
+                cell.messageDateLabel.textColor = .black
+                cell.messageContentLabel.textColor = .black
+                
+            }
+            
+            cell.userNameLabel.text = currentMessages[indexPath.row].submitter.name
+            cell.messageDateLabel.text = currentMessages[indexPath.row].dateCreated.formatted()
+            cell.messageContentLabel.text = currentMessages[indexPath.row].content
+            
+            if let avatarImageUrl = URL(string: currentMessages[indexPath.row].submitter.avatarURL) {
+                Task.detached {
+                    await cell.userAvatarImage.loadRemoteImage(from: avatarImageUrl)
+                }
+            }
+         
+            return cell
         }
-        print("here")
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.selectDropdown, for: indexPath) as! DropdownCell
         let item = items[indexPath.row]
         cell.itemLabel.text = item.name
+        
         return cell
+    }
+}
+
+extension MessagingViewController:ProgressSpinnerDelegate{
+    func showActivityIndicator(){
+        addChild(childProgressView)
+        view.addSubview(childProgressView.view)
+        childProgressView.didMove(toParent: self)
+    }
+    
+    func hideActivityIndicator(){
+        childProgressView.willMove(toParent: nil)
+        childProgressView.view.removeFromSuperview()
+        childProgressView.removeFromParent()
     }
 }
 

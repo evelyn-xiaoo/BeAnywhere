@@ -111,6 +111,14 @@ class ViewController: UIViewController {
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if (currentTrips.isEmpty) {
+            homeView.noTripLabel.text = "No trips. \n\n Click on bottom right button to add a trip."
+            homeView.noTripLabel.layer.zPosition = 1
+        } else {
+            homeView.noTripLabel.text = ""
+            homeView.noTripLabel.layer.zPosition = 0
+        }
+        
         return currentTrips.count
     }
     

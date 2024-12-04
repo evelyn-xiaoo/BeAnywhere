@@ -125,22 +125,26 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
         let newFoodStoreName: String? = addStoreView.textFieldName.text
         let newFoodStoreLocation: String? = addStoreView.textFieldLocation.text
         let newFoodStoreDate: Date = addStoreView.datePicker.date
+        let newDebtors = getNewDebtorsFromFoodItems()
         
+        if (newDebtors.isEmpty) {
+            showErrorAlert(message: "There should be at least one debtor who pays your bill. Please try again.", controller: self)
+            return
+        }
         
-        if let newFoodStoreName, let newFoodStoreLocation, let currentTrip {
+        if let newFoodStoreName, let newFoodStoreLocation, let currentTrip  {
             do {
                 if var selectedFoodStore {
                     // MARK: update the new edited food store in the Firestore
                     
                     
-                    let newFoodStore: FoodStoreInForm = FoodStoreInForm(id: selectedFoodStore.id, storeName: newFoodStoreName, address: newFoodStoreLocation, submitter: self.currentFirestoreUser!, dateCreated: newFoodStoreDate, recipeImage: "", foodItems: self.foodItems, debtors: selectedFoodStore.debtors)
+                    let newFoodStore: FoodStoreInForm = FoodStoreInForm(id: selectedFoodStore.id, storeName: newFoodStoreName, address: newFoodStoreLocation, submitter: self.currentFirestoreUser!, dateCreated: newFoodStoreDate, recipeImage: "", foodItems: self.foodItems, debtors: newDebtors)
                     
                     Task.detached{
                         await self.updateExistingFoodStore(newStore: newFoodStore, tripId: currentTrip.id)
                     }
                 } else {
                     // MARK: save a new food store in the Firestore
-                    let newDebtors = getNewDebtorsFromFoodItems()
                     let newFoodStore: FoodStoreInForm = FoodStoreInForm(id: "", storeName: newFoodStoreName, address: newFoodStoreLocation, submitter: self.currentFirestoreUser!, dateCreated: newFoodStoreDate, recipeImage: "", foodItems: self.foodItems, debtors: newDebtors)
                     
                     Task.detached {
@@ -306,6 +310,13 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
 
 extension StoreFormScreenController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if (foodItems.isEmpty) {
+            addStoreView.noSelectedItemLabel.text = "No items added yet. \n\n Add item by clicking bottom right button."
+            addStoreView.noSelectedItemLabel.layer.zPosition = 1
+        } else {
+            addStoreView.noSelectedItemLabel.text = ""
+            addStoreView.foodItemTable.layer.zPosition = -1
+        }
         return foodItems.count
     }
     

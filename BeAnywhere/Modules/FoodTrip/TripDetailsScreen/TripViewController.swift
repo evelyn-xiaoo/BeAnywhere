@@ -78,13 +78,6 @@ class TripViewController: UIViewController {
         
         tripView.addStoreButton.addTarget(self, action: #selector(onAddFoodStoreButtonClick), for: .touchUpInside)
         
-        // MARK: setup notification observer to listen for new food store added by the current user
-        notificationCenter.addObserver(
-                    self,
-                    selector: #selector(notificationReceivedForFoodStoreAdded(notification:)),
-                    name: Notification.Name(NotificationConfigs.NewFoodStoreObserverName),
-                    object: nil)
-        
         notificationCenter.addObserver(self, selector: #selector(notificationReceivedForTripEdit(notification:)) , name: Notification.Name(NotificationConfigs.UpdatedTripObserverName), object: nil)
     }
     
@@ -102,21 +95,21 @@ class TripViewController: UIViewController {
         self.navigationController?.pushViewController(editTripScreenController, animated: true)
     }
     
-    @objc func notificationReceivedForFoodStoreAdded(notification: Notification) {
-        let newFoodStoreRequest = notification.object as! Dictionary<String, Any>
-        
-        let newFoodStoreByCurrentUser = newFoodStoreRequest["newStore"] as! FoodStore
-        let isRequestUpdate = newFoodStoreRequest["isUpdate"] as! Bool
-        
-        if (isRequestUpdate) {
-            storePaidByMe.removeAll(where: { $0.id == newFoodStoreByCurrentUser.id })
-            storePaidByMe.append(newFoodStoreByCurrentUser)
-        } else {
-            storePaidByMe.append(newFoodStoreByCurrentUser)
-        }
-        updatePriceAmount()
-        tripView.foodStoreTable.reloadData()
-    }
+//    @objc func notificationReceivedForFoodStoreAdded(notification: Notification) {
+//        let newFoodStoreRequest = notification.object as! Dictionary<String, Any>
+//        
+//        let newFoodStoreByCurrentUser = newFoodStoreRequest["newStore"] as! FoodStore
+//        let isRequestUpdate = newFoodStoreRequest["isUpdate"] as! Bool
+//        
+//        if (isRequestUpdate) {
+//            storePaidByMe.removeAll(where: { $0.id == newFoodStoreByCurrentUser.id })
+//            storePaidByMe.append(newFoodStoreByCurrentUser)
+//        } else {
+//            storePaidByMe.append(newFoodStoreByCurrentUser)
+//        }
+//        updatePriceAmount()
+//        tripView.foodStoreTable.reloadData()
+//    }
     
     @objc func notificationReceivedForTripEdit(notification: Notification) {
         let newTrip = notification.object as! FoodTrip
@@ -184,6 +177,13 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
         }
         
         if (tableView == tripView.foodStoreTable) {
+            if (storePaidByMe.isEmpty) {
+                tripView.noStorePaidByYouLabel.layer.zPosition = 1
+                tripView.noStorePaidByYouLabel.text = "No store paid by you. \n\n Click below button to add store you paid."
+            } else {
+                tripView.noStorePaidByYouLabel.layer.zPosition = 0
+                tripView.noStorePaidByYouLabel.text = ""
+            }
                 return storePaidByMe.count
         }
         return 0
@@ -195,9 +195,15 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
             let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.otherUsers, for: indexPath) as! UserCell
             let user = storeOtherUsers[indexPath.row]
             
-            
             cell.userNameLabel.text = user.name
             if let submittedStores = user.submittedStores {
+                if (submittedStores.isEmpty) {
+                    cell.noStoresPaidByUser.layer.zPosition = 1
+                    cell.noStoresPaidByUser.text = "No store paid by user."
+                } else {
+                    cell.noStoresPaidByUser.layer.zPosition = -1
+                    cell.noStoresPaidByUser.text = ""
+                }
                 cell.submittedStores = submittedStores
             }
             cell.navigationController = navigationController

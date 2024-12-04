@@ -12,10 +12,13 @@ import FirebaseAuth
 class SelectItemsViewController: UIViewController {
     let storeView = SelectItemsView()
     var store: FoodStoreFromDoc? = nil
+    let childProgressView = ProgressSpinnerViewController()
     var tripId: String = ""
     var database = Firestore.firestore()
     var firebaseAuth = Auth.auth()
     var delegate: UserItemsViewController!
+    var chatWithStorePayer: Chat? = nil
+    var currentUser: FirestoreUser? = nil
     
     var items: [FoodItemFromDoc] = []
     
@@ -40,6 +43,15 @@ class SelectItemsViewController: UIViewController {
         messagingVC.currentStore = store
         messagingVC.tripId = tripId
         messagingVC.items = items
+        messagingVC.currentUser = currentUser
+        
+        if let chatWithStorePayer {
+            messagingVC.currentChat = chatWithStorePayer
+            messagingVC.opponentUser = chatWithStorePayer.storePayer
+        } else {
+            showErrorAlert(message: "Unknown error. Please try again later.", controller: self)
+            return
+        }
         
         if let store {
             // need to send the submitterId
@@ -95,12 +107,15 @@ class SelectItemsViewController: UIViewController {
         super.viewWillAppear(animated)
         if let store {
             title = store.storeName
-            
-            Task.detached{
+            showActivityIndicator()
+            Task.detached {
+                self.currentUser =  await UserFirebaseService().getUser(uid: self.firebaseAuth.currentUser!.uid)
+                self.chatWithStorePayer = await self.getChatWithStorePayer(tripId: self.tripId, storeId: store.id)
                 await self.initFoodItems(tripId: self.tripId, storeId: store.id)
                 DispatchQueue.main.async {
                     self.storeView.itemsTable.reloadData()
                 }
+                self.hideActivityIndicator()
             }
         }
     }
@@ -230,4 +245,18 @@ extension SelectItemsViewController: UITableViewDelegate, UITableViewDataSource 
         }
     }
     
+}
+
+extension SelectItemsViewController:ProgressSpinnerDelegate{
+    func showActivityIndicator(){
+        addChild(childProgressView)
+        view.addSubview(childProgressView.view)
+        childProgressView.didMove(toParent: self)
+    }
+    
+    func hideActivityIndicator(){
+        childProgressView.willMove(toParent: nil)
+        childProgressView.view.removeFromSuperview()
+        childProgressView.removeFromParent()
+    }
 }

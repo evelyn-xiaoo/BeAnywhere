@@ -44,10 +44,38 @@ extension StoreDetailsController {
                 debtors.append(Debtor(doc: debtorDoc, user: user!))
             }
             
-            self.storeView.memberWithFoodItemsTable.reloadData()
-            self.storeView.memberWithPaymentStatusTable.reloadData()
         } catch {
             showErrorAlert(message: "Unknown error occured. Please try again later.", controller: self)
         }
+    }
+    
+    func getChatWithStorePayer(tripId: String, storeId: String, debtorUserIds: [String]) async -> [Chat]? {
+        var debtorChats: [Chat] = []
+        for debtorUserId in debtorUserIds {
+            let chatDocRef = database
+                .collection(FoodTrip.collectionName)
+                .document(tripId)
+                .collection(FoodStore.collectionName)
+                .document(storeId)
+                .collection(Chat.collectionName)
+                .document(debtorUserId)
+            
+            do {
+                let chat = try await chatDocRef.getDocument(as: ChatFromDoc.self)
+                
+                let storePayer = await UserFirebaseService().getUser(uid: chat.storePayerId)
+                
+                if (storePayer == nil) {
+                    return nil
+                }
+                
+                debtorChats.append(Chat(doc: chat, storePayer: storePayer!))
+                
+            } catch {
+                return nil
+            }
+        }
+        return debtorChats
+
     }
 }

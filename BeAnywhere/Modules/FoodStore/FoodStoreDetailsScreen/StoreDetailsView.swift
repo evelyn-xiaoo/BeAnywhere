@@ -8,7 +8,6 @@
 import UIKit
 
 class StoreDetailsView: UIView {
-
     var storeDateLabel: UILabel!
     var totalCostAmountLabel: UILabel!
     var totalCostLabel: UILabel!

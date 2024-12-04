@@ -96,10 +96,10 @@ class FoodItemAddBottomSheetView: UIView {
     func setupLabels() {
         foodImageButtonLabel = UILabel()
         
-        let appLabels: [UILabel] = [ foodImageButtonLabel ]
-        
         foodImageButtonLabel.font = UIFont.boldSystemFont(ofSize: 15)
         foodImageButtonLabel.text = "Item image (optional)"
+        
+        let appLabels: [UILabel] = [ foodImageButtonLabel ]
         
         // apply common attributes to the labels
         for label: UILabel in appLabels {

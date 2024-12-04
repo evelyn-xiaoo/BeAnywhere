@@ -13,6 +13,7 @@ class TripView: UIView {
     var foodStoreTable: UITableView!
     var paidByMeLabel: UILabel!
     var totalReceivedLabel: UILabel!
+    var noStorePaidByYouLabel: UILabel!
     
     var paidByOthersLabel: UILabel!
     var totalCost: UILabel!
@@ -63,6 +64,7 @@ class TripView: UIView {
         totalReceivedLabel = UILabel()
         paidByOthersLabel = UILabel()
         totalCost = UILabel()
+        noStorePaidByYouLabel = UILabel()
         
         paidByMeLabel.font = UIFont.boldSystemFont(ofSize: 15)
         paidByMeLabel.text = "Paid by you"
@@ -74,7 +76,10 @@ class TripView: UIView {
         totalCost.text = "$0.00"
         totalCost.font = UIFont.boldSystemFont(ofSize: 15)
         
-        let appLabels: [UILabel] = [paidByMeLabel, totalReceivedLabel, paidByOthersLabel, totalCost]
+        noStorePaidByYouLabel.font = UIFont.boldSystemFont(ofSize: 15)
+        noStorePaidByYouLabel.numberOfLines = 0
+        
+        let appLabels: [UILabel] = [paidByMeLabel, totalReceivedLabel, paidByOthersLabel, totalCost, noStorePaidByYouLabel]
         
         // apply common attributes to the labels
         for label: UILabel in appLabels {
@@ -120,6 +125,9 @@ class TripView: UIView {
             
             totalReceivedLabel.topAnchor.constraint(equalTo: paidByMeLabel.topAnchor),
             totalReceivedLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            
+            noStorePaidByYouLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            noStorePaidByYouLabel.topAnchor.constraint(equalTo: paidByMeLabel.bottomAnchor, constant: 32),
             
             foodStoreTable.topAnchor.constraint(equalTo: paidByMeLabel.bottomAnchor, constant: 16),
             foodStoreTable.bottomAnchor.constraint(equalTo: addStoreButton.topAnchor, constant: -8),
