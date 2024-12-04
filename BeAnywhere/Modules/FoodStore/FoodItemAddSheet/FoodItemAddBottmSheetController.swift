@@ -28,6 +28,7 @@ class FoodItemAddBottmSheetController: UIViewController, UIImagePickerController
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        selectedPayers.removeAll()
         Task.detached {
             let tripMembers = await UserFirebaseService().getUsers(userIds: self.tripMemberIds)
             if let tripMembers {
@@ -141,6 +142,7 @@ extension FoodItemAddBottmSheetController: UITableViewDelegate, UITableViewDataS
             withIdentifier: TableConfigs.memberCheckBox, for: indexPath) as! FoodItemAddTableViewCell
         
         cell.labelTitle.text = allTripMembers[indexPath.row].name
+        cell.checkBox.setSymbolImage(UIImage(systemName: "square")!, contentTransition: .replace)
         return cell
     }
     

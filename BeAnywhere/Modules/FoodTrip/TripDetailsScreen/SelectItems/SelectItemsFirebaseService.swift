@@ -19,6 +19,8 @@ extension SelectItemsViewController {
             print("failed to fetch food items.")
         }
         
+        
+        
         var submitterName: String = ""
         if let store {
             let submitterId = store.submitterId
@@ -33,6 +35,31 @@ extension SelectItemsViewController {
         self.storeView.msgButton.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
         self.storeView.msgButton.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
         
+    }
+    
+    func getChatWithStorePayer(tripId: String, storeId: String) async -> Chat? {
+        let chatDocRef = database
+            .collection(FoodTrip.collectionName)
+            .document(tripId)
+            .collection(FoodStore.collectionName)
+            .document(storeId)
+            .collection(Chat.collectionName)
+            .document(firebaseAuth.currentUser!.uid)
+        
+        do {
+            let chat = try await chatDocRef.getDocument(as: ChatFromDoc.self)
+            
+            let storePayer = await UserFirebaseService().getUser(uid: chat.storePayerId)
+            
+            if (storePayer == nil) {
+                return nil
+            }
+            
+            return Chat(doc: chat, storePayer: storePayer!)
+            
+        } catch {
+            return nil
+        }
     }
     
     func getFoodItems(tripId: String, storeId: String) async -> [FoodItemFromDoc]? {

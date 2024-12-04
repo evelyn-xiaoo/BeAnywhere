@@ -18,6 +18,7 @@ class StoreDetailsController: UIViewController {
     let database = Firestore.firestore()
     let firebaseAuth = Auth.auth()
     var currentUser: FirestoreUser? = nil
+    var chatsWithStorePayer: [Chat]? = nil
     
     // MARK: list of food store's members with food items in each user
     var membersFoodItems: [FirestoreUser] = []
@@ -42,12 +43,20 @@ class StoreDetailsController: UIViewController {
         if let currentFoodStore, let currentTrip {
             title = currentFoodStore.storeName
             
-            Task.detached{
+            Task{
                 self.showActivityIndicator()
-                try await self.initDebtors(tripId: currentTrip.id, storeId: currentFoodStore.id)
+                self.currentUser = await UserFirebaseService().getUser(uid: firebaseAuth.currentUser!.uid)
+                await self.initDebtors(tripId: currentTrip.id, storeId: currentFoodStore.id)
+                self.chatsWithStorePayer = await self.getChatWithStorePayer(tripId: currentTrip.id, storeId: currentFoodStore.id, debtorUserIds: self.debtors.map({$0.user.id}))
                 await self.setRecipeImage()
                 self.updatePriceAmount()
-                self.hideActivityIndicator()
+                DispatchQueue.main.async {
+                    self.storeView.memberWithFoodItemsTable.reloadData()
+                    self.storeView.memberWithPaymentStatusTable.reloadData()
+                    self.hideActivityIndicator()
+                    
+                }
+                
             }
         } else {
             showErrorAlert(message: "Cannot load food store. Please try again later.", controller: self)
@@ -77,7 +86,6 @@ class StoreDetailsController: UIViewController {
     }
     
     @objc func onTripEditClick() {
-
         let editStoreScreenController = StoreFormScreenController()
         editStoreScreenController.selectedFoodStore = currentFoodStore!
         editStoreScreenController.currentTrip = currentTrip!
@@ -86,12 +94,7 @@ class StoreDetailsController: UIViewController {
     
     @objc func notificationReceivedForStoreEdit(notification: Notification) {
         let newFoodStore = notification.object as! FoodStore
-        
-        debtors.replaceSubrange(0..<self.debtors.count, with: newFoodStore.debtors)
-        membersFoodItems.replaceSubrange(0..<self.membersFoodItems.count, with: newFoodStore.debtors.map({$0.user}))
-        
-        storeView.memberWithFoodItemsTable.reloadData()
-        storeView.memberWithPaymentStatusTable.reloadData()
+        currentFoodStore = newFoodStore
     }
     
     func setRecipeImage() async {
@@ -112,6 +115,33 @@ class StoreDetailsController: UIViewController {
     
     func getTotalStoreItemsCost() -> Double {
         return roundToTwoPlace(currentFoodStore!.foodItems.reduce(0) { $0 + $1.price })
+    }
+    
+    func onDebtorChat(selectedDebtorUser: FirestoreUser) {
+        let messagingVC = MessagingViewController()
+        messagingVC.currentStore = FoodStoreFromDoc(id: currentFoodStore!.id, storeName: currentFoodStore!.storeName, address: currentFoodStore!.address, recipeImage: currentFoodStore!.recipeImage, dateCreated: currentFoodStore!.dateCreated, submitterId: currentFoodStore!.submitter.id)
+        messagingVC.tripId = currentTrip!.id
+        messagingVC.currentUser = currentUser
+        messagingVC.opponentUser = selectedDebtorUser
+        
+        if let chatsWithStorePayer {
+            messagingVC.currentChat = chatsWithStorePayer.first(where: { $0.id == selectedDebtorUser.id })
+        } else {
+            showErrorAlert(message: "Unknown error. Please try again later.", controller: self)
+            return
+        }
+        
+        navigationController?.pushViewController(messagingVC, animated: true)
+    }
+    
+    func getChatOption(selectedUser: FirestoreUser) -> UIMenu {
+        let menuItems = [
+                    UIAction(title: "Chat",handler: {(_) in
+                        self.onDebtorChat(selectedDebtorUser: selectedUser)
+                    })
+                ]
+                
+        return UIMenu(title: "Option", children: menuItems)
     }
 }
 
@@ -135,6 +165,7 @@ extension StoreDetailsController: UITableViewDelegate, UITableViewDataSource{
             let memberWithItems = membersFoodItems[indexPath.row]
             
             cell.userNameLabel.text = memberWithItems.name
+            cell.messageButtonImage.menu = getChatOption(selectedUser: memberWithItems)
             if let submittedFoodItems = memberWithItems.submittedFoodItems {
                 cell.totalItemCostLabel.text = "$ \(roundToTwoPlace(submittedFoodItems.reduce(0) { $0 + $1.price }))"
                 cell.submittedFoodItems = submittedFoodItems

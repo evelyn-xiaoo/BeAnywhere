@@ -12,9 +12,10 @@ class MessagingView: UIView, UITextViewDelegate {
     
     var scrollView: UIScrollView!
     var contentView: UIView!
-    var selectItem: UIButton!
-    var textField: UITextView!
+    var msgSendButton: UIButton!
+    var textField: UITextField!
     var dropDownView: UITableView!
+    var messagesTable: UITableView!
 
     override init(frame: CGRect){
         super.init(frame: frame)
@@ -22,7 +23,7 @@ class MessagingView: UIView, UITextViewDelegate {
         
         setupSelect()
         setupTextFields()
-        setupScrollView()
+        //setupScrollView()
         setupTable()
         initConstraints()
     }
@@ -32,17 +33,17 @@ class MessagingView: UIView, UITextViewDelegate {
     }
     
     func setupSelect(){
-        selectItem = UIButton()
-        selectItem = UIButton(type: .system)
-        selectItem.setTitle("Select Item", for: .normal)
-        selectItem.titleLabel?.textAlignment = .left
-        selectItem.setTitleColor(.black, for: .normal)
-        selectItem.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
-        selectItem.layer.cornerRadius = 5
-        selectItem.layer.borderWidth = 1
-        selectItem.layer.borderColor = UIColor.black.cgColor
-        selectItem.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(selectItem)
+        msgSendButton = UIButton()
+        msgSendButton = UIButton(type: .system)
+        msgSendButton.setTitle("Send", for: .normal)
+        msgSendButton.titleLabel?.textAlignment = .left
+        msgSendButton.setTitleColor(.black, for: .normal)
+        msgSendButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
+        msgSendButton.layer.cornerRadius = 5
+        msgSendButton.layer.borderWidth = 1
+        msgSendButton.layer.borderColor = UIColor.black.cgColor
+        msgSendButton.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(msgSendButton)
         
         dropDownView = UITableView()
         dropDownView.translatesAutoresizingMaskIntoConstraints = false
@@ -56,16 +57,16 @@ class MessagingView: UIView, UITextViewDelegate {
     }
     
     func setupTextFields(){
-        textField = UITextView()
-        textField.text = "Enter Message"
+        textField = UITextField()
+        textField.placeholder = "Enter Message"
         textField.textColor = .black
         textField.font = .systemFont(ofSize: 16, weight: .regular)
         textField.layer.cornerRadius = 5
         textField.layer.borderWidth = 1
+        textField.keyboardType = .default
+        textField.borderStyle = .roundedRect
         textField.layer.borderColor = UIColor.black.cgColor
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.isScrollEnabled = false
-        textField.delegate = self
         
         self.addSubview(textField)
     }
@@ -85,44 +86,47 @@ class MessagingView: UIView, UITextViewDelegate {
         itemsTable.translatesAutoresizingMaskIntoConstraints = false
         itemsTable.register(MessagingCell.self, forCellReuseIdentifier: TableConfigs.message)
         itemsTable.rowHeight = UITableView.automaticDimension
-        contentView.addSubview(itemsTable)
+        // contentView.addSubview(itemsTable)
         
+        messagesTable = UITableView()
+        messagesTable.register(MessageTableViewCell.self, forCellReuseIdentifier: TableConfigs.tableViewMessages)
+        messagesTable.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(messagesTable)
     }
     
     func initConstraints(){
         NSLayoutConstraint.activate([
+//
+//            scrollView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+//            scrollView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
+//            scrollView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+//            scrollView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor),
+//            
+//            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+//            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+//            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+//            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+//            
+//            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            scrollView.topAnchor.constraint(equalTo: self.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: selectItem.topAnchor, constant: -20),
+            messagesTable.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 10),
+            messagesTable.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+            messagesTable.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -10),
+            messagesTable.heightAnchor.constraint(equalTo: self.safeAreaLayoutGuide.heightAnchor, multiplier: 0.8),
             
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+//            dropDownView.bottomAnchor.constraint(equalTo: msgSendButton.topAnchor), // Position above the button
+//            dropDownView.centerXAnchor.constraint(equalTo: dropDownView.centerXAnchor),
+//            dropDownView.widthAnchor.constraint(equalTo: dropDownView.widthAnchor),
+//            dropDownView.heightAnchor.constraint(equalToConstant: 200),
             
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            
-            itemsTable.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            itemsTable.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
-            itemsTable.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            itemsTable.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            itemsTable.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.8),
-            
-            dropDownView.bottomAnchor.constraint(equalTo: selectItem.topAnchor), // Position above the button
-            dropDownView.centerXAnchor.constraint(equalTo: dropDownView.centerXAnchor),
-            dropDownView.widthAnchor.constraint(equalTo: dropDownView.widthAnchor),
-            dropDownView.heightAnchor.constraint(equalToConstant: 200),
-            
-            selectItem.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 20),
-            selectItem.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
-            selectItem.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
-            
-            textField.topAnchor.constraint(equalTo: selectItem.bottomAnchor, constant: 10),
-            textField.widthAnchor.constraint(equalTo: selectItem.widthAnchor),
+            textField.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: 20),
+            textField.widthAnchor.constraint(equalTo: msgSendButton.widthAnchor),
             textField.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             textField.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -40),
+            
+            msgSendButton.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 10),
+            msgSendButton.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+            msgSendButton.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
         ])
     }
     

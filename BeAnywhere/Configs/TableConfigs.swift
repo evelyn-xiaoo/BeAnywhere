@@ -25,4 +25,5 @@ class TableConfigs{
     static let foodItemInStoreDetails = "foodItemInStoreDetails"
     static let foodItemMember = "foodItemMember"
     static let foodItemDebtor = "foodItemDebtor"
+    static let tableViewMessages = "chatMessageCell"
 }

@@ -15,6 +15,7 @@ class UserCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
     var innerTable: UITableView!
     var navigationController: UINavigationController!
     var tripId: String!
+    var noStoresPaidByUser: UILabel!
     
     
     // put this info into inner table
@@ -46,15 +47,22 @@ class UserCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
         innerTable.delegate = self
         innerTable.rowHeight = UITableView.automaticDimension
         innerTable.separatorStyle = .none
+        innerTable.showsVerticalScrollIndicator = true
         wrapperCellView.addSubview(innerTable)
     }
     
     func setupUserNameLabel() {
         userNameLabel = UILabel()
+        noStoresPaidByUser = UILabel()
+        
         userNameLabel.textColor = .black
         userNameLabel.font = .systemFont(ofSize: 16, weight: .regular)
+        
+        noStoresPaidByUser.font = .systemFont(ofSize: 14, weight: .regular)
         userNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        noStoresPaidByUser.translatesAutoresizingMaskIntoConstraints = false
         wrapperCellView.addSubview(userNameLabel)
+        wrapperCellView.addSubview(noStoresPaidByUser)
     }
     
     
@@ -69,6 +77,8 @@ class UserCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
             userNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 10),
             userNameLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 20),
             
+            noStoresPaidByUser.centerXAnchor.constraint(equalTo: wrapperCellView.centerXAnchor),
+            noStoresPaidByUser.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 13),
             
             innerTable.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 0),
             innerTable.leadingAnchor.constraint(equalTo: userNameLabel.leadingAnchor, constant: 10),

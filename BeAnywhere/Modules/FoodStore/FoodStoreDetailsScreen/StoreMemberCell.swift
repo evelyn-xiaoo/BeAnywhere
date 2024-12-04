@@ -11,7 +11,7 @@ class StoreMemberCell: UITableViewCell, UITableViewDataSource, UITableViewDelega
     var wrapperCellView: UIView!
     var userNameLabel: UILabel!
     var totalItemCostLabel: UILabel!
-    var messageButtonImage: UIImageView!
+    var messageButtonImage: UIButton!
     var innerTable: UITableView!
     var navigationController: UINavigationController!
     var tripId: String!
@@ -50,13 +50,13 @@ class StoreMemberCell: UITableViewCell, UITableViewDataSource, UITableViewDelega
     }
     
     func setupButtonImage() {
-        messageButtonImage = UIImageView()
-        
-        messageButtonImage.image = UIImage(systemName: "message")?.withRenderingMode(.alwaysOriginal)
-        messageButtonImage.tintColor = .black
+        messageButtonImage = UIButton(type: .system)
+        messageButtonImage.setTitle("", for: .normal)
+        messageButtonImage.setImage(UIImage(systemName: "message")?.withRenderingMode(.alwaysOriginal), for: .normal)
         messageButtonImage.contentMode = .scaleToFill
         messageButtonImage.clipsToBounds = true
         messageButtonImage.layer.masksToBounds = true
+        messageButtonImage.showsMenuAsPrimaryAction = true
         messageButtonImage.translatesAutoresizingMaskIntoConstraints = false
         wrapperCellView.addSubview(messageButtonImage)
     }

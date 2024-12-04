@@ -47,7 +47,7 @@ class AddTripScreenView: UIView {
     
     func setuptextFieldGroupName(){
         textFieldName = UITextField()
-        textFieldName.placeholder = "Group Name"
+        textFieldName.placeholder = "Trip Name"
         textFieldName.keyboardType = .default
         textFieldName.borderStyle = .roundedRect
         textFieldName.translatesAutoresizingMaskIntoConstraints = false
@@ -88,7 +88,7 @@ class AddTripScreenView: UIView {
         membersLabel.font = UIFont.boldSystemFont(ofSize: 15)
         tripImageLabel.font = UIFont.boldSystemFont(ofSize: 13)
         tripImageLabel.text = "Trip Image"
-        membersLabel.text = "Group Members:"
+        membersLabel.text = "Trip Members:"
         
         
         // apply common attributes to the labels

@@ -29,7 +29,7 @@ class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "New Group"
+        title = "New Trip"
        
         //MARK: setting the delegate and data source...
         addTripView.memberTable.dataSource = self
