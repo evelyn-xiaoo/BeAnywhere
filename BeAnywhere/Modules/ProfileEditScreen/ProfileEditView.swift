@@ -50,7 +50,7 @@ class ProfileEditView: UIView {
         profilePhoto.contentVerticalAlignment = .fill
         profilePhoto.imageView?.contentMode = .scaleAspectFill
         profilePhoto.showsMenuAsPrimaryAction = true
-        profilePhoto.layer.cornerRadius = 50
+        profilePhoto.layer.cornerRadius = 20
         profilePhoto.clipsToBounds = true
         profilePhoto.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(profilePhoto)
@@ -64,8 +64,8 @@ class ProfileEditView: UIView {
         
         [textFieldName, textFieldEmail, textFieldUsername, textFieldVenmo].forEach {
             $0.borderStyle = .roundedRect
-            $0.backgroundColor = .white
-            $0.layer.borderWidth = 1
+            $0.backgroundColor = .systemGray5
+            //$0.layer.borderWidth = 1
             $0.layer.cornerRadius = 5
             $0.layer.borderColor = UIColor.gray.cgColor
             $0.textColor = .black
@@ -109,13 +109,16 @@ class ProfileEditView: UIView {
             textFieldName.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 2),
             textFieldName.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             textFieldName.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+            textFieldName.heightAnchor.constraint(equalToConstant: 40),
             
             emailLabel.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 16),
             emailLabel.leadingAnchor.constraint(equalTo: textFieldEmail.leadingAnchor, constant: 2),
             
+            
             textFieldEmail.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 2),
             textFieldEmail.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             textFieldEmail.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+            textFieldEmail.heightAnchor.constraint(equalToConstant: 40),
             
             usernameLabel.topAnchor.constraint(equalTo: textFieldEmail.bottomAnchor, constant: 16),
             usernameLabel.leadingAnchor.constraint(equalTo: textFieldUsername.leadingAnchor, constant: 2),
@@ -123,6 +126,7 @@ class ProfileEditView: UIView {
             textFieldUsername.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 2),
             textFieldUsername.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             textFieldUsername.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+            textFieldUsername.heightAnchor.constraint(equalToConstant: 40),
             
             venmoLabel.topAnchor.constraint(equalTo: textFieldUsername.bottomAnchor, constant: 16),
             venmoLabel.leadingAnchor.constraint(equalTo: textFieldVenmo.leadingAnchor, constant: 2),
@@ -130,6 +134,7 @@ class ProfileEditView: UIView {
             textFieldVenmo.topAnchor.constraint(equalTo: venmoLabel.bottomAnchor, constant: 2),
             textFieldVenmo.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             textFieldVenmo.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+            textFieldVenmo.heightAnchor.constraint(equalToConstant: 40),
         ])
     }
 

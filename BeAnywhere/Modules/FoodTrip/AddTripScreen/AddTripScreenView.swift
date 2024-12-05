@@ -50,6 +50,7 @@ class AddTripScreenView: UIView {
         textFieldName.placeholder = "Trip Name"
         textFieldName.keyboardType = .default
         textFieldName.borderStyle = .roundedRect
+        textFieldName.backgroundColor = .systemGray6
         textFieldName.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(textFieldName)
     }
@@ -59,22 +60,24 @@ class AddTripScreenView: UIView {
         textFieldLocation.placeholder = "City, Country"
         textFieldLocation.keyboardType = .default
         textFieldLocation.borderStyle = .roundedRect
+        textFieldLocation.backgroundColor = .systemGray6
         textFieldLocation.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(textFieldLocation)
     }
     
     func setupAddMemberButton(){
         addMemberButton = UIButton(type: .system)
-        addMemberButton.setTitle("", for: .normal)
-        addMemberButton.setImage(UIImage(systemName: "person.crop.circle.badge.plus")?.withRenderingMode(.alwaysOriginal), for: .normal)
-        addMemberButton.contentHorizontalAlignment = .fill
-        addMemberButton.contentVerticalAlignment = .fill
-        addMemberButton.imageView?.contentMode = .scaleAspectFit
-        addMemberButton.layer.cornerRadius = 16
-        addMemberButton.imageView?.layer.shadowOffset = .zero
-        addMemberButton.imageView?.layer.shadowRadius = 0.8
-        addMemberButton.imageView?.layer.shadowOpacity = 0.7
-        addMemberButton.imageView?.clipsToBounds = true
+        addMemberButton.setTitle("Add member", for: .normal)
+        addMemberButton.setTitleColor(.black, for: .normal)
+        //addMemberButton.setImage(UIImage(systemName: "person.crop.circle.badge.plus")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        //addMemberButton.contentHorizontalAlignment = .fill
+        //addMemberButton.contentVerticalAlignment = .fill
+        //addMemberButton.imageView?.contentMode = .scaleAspectFit
+        //addMemberButton.layer.cornerRadius = 16
+        //addMemberButton.imageView?.layer.shadowOffset = .zero
+        //addMemberButton.imageView?.layer.shadowRadius = 0.8
+        //addMemberButton.imageView?.layer.shadowOpacity = 0.7
+        //addMemberButton.imageView?.clipsToBounds = true
         addMemberButton.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(addMemberButton)
     }
@@ -85,8 +88,8 @@ class AddTripScreenView: UIView {
         
         let appLabels: [UILabel] = [ tripImageLabel, membersLabel]
         
-        membersLabel.font = UIFont.boldSystemFont(ofSize: 15)
-        tripImageLabel.font = UIFont.boldSystemFont(ofSize: 13)
+        membersLabel.font = UIFont.systemFont(ofSize: 16)
+        tripImageLabel.font = UIFont.systemFont(ofSize: 16)
         tripImageLabel.text = "Trip Image"
         membersLabel.text = "Trip Members:"
         
@@ -103,6 +106,7 @@ class AddTripScreenView: UIView {
         memberTable = UITableView()
         memberTable.register(UserBoxTableViewCell.self, forCellReuseIdentifier: TableConfigs.tableViewUsers)
         memberTable.translatesAutoresizingMaskIntoConstraints = false
+        memberTable.rowHeight = UITableView.automaticDimension
         self.addSubview(memberTable)
     }
     
@@ -117,27 +121,27 @@ class AddTripScreenView: UIView {
             tripImageLabel.topAnchor.constraint(equalTo: tripImage.bottomAnchor, constant: 8),
             tripImageLabel.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             
-            textFieldName.topAnchor.constraint(equalTo: tripImage.bottomAnchor, constant: 32),
-            textFieldName.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            textFieldName.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            textFieldName.topAnchor.constraint(equalTo: tripImageLabel.bottomAnchor, constant: 20),
+            textFieldName.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+            textFieldName.heightAnchor.constraint(equalToConstant: 40),
             textFieldName.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             
-            textFieldLocation.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 16),
-            textFieldLocation.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            textFieldLocation.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            textFieldLocation.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 10),
+            textFieldLocation.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
+            textFieldLocation.heightAnchor.constraint(equalToConstant: 40),
             textFieldLocation.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             
-            membersLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 32),
-            membersLabel.topAnchor.constraint(equalTo: textFieldLocation.bottomAnchor, constant: 16),
+            membersLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            membersLabel.topAnchor.constraint(equalTo: textFieldLocation.bottomAnchor, constant: 20),
             
-            memberTable.topAnchor.constraint(equalTo: membersLabel.bottomAnchor, constant: 16),
-            memberTable.bottomAnchor.constraint(equalTo: addMemberButton.topAnchor, constant: -8),
-            memberTable.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor),
+            memberTable.topAnchor.constraint(equalTo: membersLabel.bottomAnchor, constant: 10),
+            memberTable.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            memberTable.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            memberTable.bottomAnchor.constraint(equalTo: addMemberButton.topAnchor, constant: -40),
             
-            addMemberButton.widthAnchor.constraint(equalToConstant: 48),
-            addMemberButton.heightAnchor.constraint(equalToConstant: 48),
-            addMemberButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            addMemberButton.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            addMemberButton.widthAnchor.constraint(equalToConstant: 100),
+            addMemberButton.heightAnchor.constraint(equalToConstant: 40),            addMemberButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            addMemberButton.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor)
         ])
     }
     

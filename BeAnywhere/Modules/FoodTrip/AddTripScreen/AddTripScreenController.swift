@@ -35,7 +35,7 @@ class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate
         addTripView.memberTable.dataSource = self
         addTripView.memberTable.delegate = self
         //MARK: removing the separator line...
-        addTripView.memberTable.separatorStyle = .none
+        addTripView.memberTable.separatorStyle = .singleLine
         
         let confirmButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(confirmNewGroup))
         
@@ -182,6 +182,8 @@ extension AddTripScreenController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableViewUsers, for: indexPath) as! UserBoxTableViewCell
         cell.userNameLabel.text = groupMembers[indexPath.row].name
+        cell.usernameLabel.text = "@\(groupMembers[indexPath.row].username)"
+        cell.venmoLabel.text = groupMembers[indexPath.row].venmo
         
         if let avatarImageUrl = URL(string: groupMembers[indexPath.row].avatarURL) {
             Task.detached {

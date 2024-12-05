@@ -126,6 +126,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
         let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableViewTrips, for: indexPath) as! TripBoxTableViewCell
         cell.groupNameLabel.text = currentTrips[indexPath.row].groupName
         
+        
         let url = currentTrips[indexPath.row].photoURL
             if let tripImageUrl = URL(string: url) {
                 Task.detached {

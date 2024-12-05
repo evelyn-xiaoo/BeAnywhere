@@ -87,10 +87,10 @@ class UserCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
             wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             
-            userNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 10),
+            userNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 5),
             userNameLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 20),
             
-            totalCost.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 10),
+            totalCost.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 2),
             totalCost.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -0),
             
             noStoresPaidByUser.centerXAnchor.constraint(equalTo: wrapperCellView.centerXAnchor),
@@ -98,7 +98,7 @@ class UserCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
             
             innerTable.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 0),
             innerTable.leadingAnchor.constraint(equalTo: userNameLabel.leadingAnchor, constant: 10),
-            innerTable.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -30),
+            innerTable.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: 0),
             innerTable.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor),
             
             /*
@@ -146,6 +146,9 @@ extension UserCell {
         if paidStores.contains(store.id) {
             cell.cost.text = "Paid"
             cell.wrapperCell.layer.borderColor = UIColor.green.cgColor
+        }
+        else {
+            cell.cost.text = "Pending"
         }
         return cell
     }

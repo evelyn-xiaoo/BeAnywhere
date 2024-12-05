@@ -12,7 +12,8 @@ class UserBoxTableViewCell: UITableViewCell {
     var wrapperCellView: UIView!
     var userNameLabel: UILabel!
     var avatarImage:UIImageView!
-    
+    var venmoLabel: UILabel!
+    var usernameLabel: UILabel!
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -38,12 +39,14 @@ class UserBoxTableViewCell: UITableViewCell {
         wrapperCellView = UITableViewCell()
         
         //working with the shadows and colors...
+        /*
         wrapperCellView.backgroundColor = .white
         wrapperCellView.layer.cornerRadius = 4.0
         wrapperCellView.layer.shadowColor = UIColor.gray.cgColor
         wrapperCellView.layer.shadowOffset = .zero
         wrapperCellView.layer.shadowRadius = 2.0
         wrapperCellView.layer.shadowOpacity = 0.7
+         */
         wrapperCellView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(wrapperCellView)
     }
@@ -53,6 +56,16 @@ class UserBoxTableViewCell: UITableViewCell {
         userNameLabel.font = UIFont.boldSystemFont(ofSize: 16)
         userNameLabel.translatesAutoresizingMaskIntoConstraints = false
         wrapperCellView.addSubview(userNameLabel)
+        
+        venmoLabel = UILabel()
+        venmoLabel.font = UIFont.systemFont(ofSize: 16)
+        venmoLabel.translatesAutoresizingMaskIntoConstraints = false
+        wrapperCellView.addSubview(venmoLabel)
+        
+        usernameLabel = UILabel()
+        usernameLabel.font = UIFont.systemFont(ofSize: 16)
+        usernameLabel.translatesAutoresizingMaskIntoConstraints = false
+        wrapperCellView.addSubview(usernameLabel)
     }
     
     func initConstraints(){
@@ -62,19 +75,22 @@ class UserBoxTableViewCell: UITableViewCell {
             wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
             wrapperCellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4),
             
-            avatarImage.widthAnchor.constraint(equalToConstant: 32),
-            avatarImage.heightAnchor.constraint(equalToConstant: 32),
-            avatarImage.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
-            avatarImage.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -8),
-            avatarImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 16),
+            avatarImage.widthAnchor.constraint(equalTo: avatarImage.heightAnchor),
+            avatarImage.heightAnchor.constraint(equalTo: wrapperCellView.heightAnchor, multiplier: 0.8),
+            avatarImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
+            avatarImage.centerYAnchor.constraint(equalTo: wrapperCellView.centerYAnchor),
             
-            userNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 14),
-            userNameLabel.bottomAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: -14),
+            userNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 5),
             userNameLabel.leadingAnchor.constraint(equalTo: avatarImage.trailingAnchor, constant: 10),
-            userNameLabel.heightAnchor.constraint(equalToConstant: 20),
             userNameLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
             
-            wrapperCellView.heightAnchor.constraint(equalToConstant: 48)
+            usernameLabel.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 2),
+            usernameLabel.leadingAnchor.constraint(equalTo: userNameLabel.leadingAnchor),
+            
+            venmoLabel.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -10),
+            venmoLabel.centerYAnchor.constraint(equalTo: wrapperCellView.centerYAnchor),
+            
+            wrapperCellView.heightAnchor.constraint(equalToConstant: 75)
             
         ])
         

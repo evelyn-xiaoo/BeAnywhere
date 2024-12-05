@@ -273,6 +273,7 @@ extension TripViewController {
             
         }
         self.tripView.foodStoreTable.reloadData()
+        self.updateFoodStoreTableHeight()
     }
     
     /*

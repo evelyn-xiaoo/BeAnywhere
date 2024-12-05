@@ -74,12 +74,12 @@ class TripViewController: UIViewController {
         tripView.foodStoreTable.separatorStyle = .none
         
         if let currentTrip {
+            print("trip is ongoing")
             if !currentTrip.isTerminated {
                 let editTripIcon = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(onTripEditClick))
                
                 
                 navigationItem.rightBarButtonItems = [editTripIcon]
-                
                 tripView.addStoreButton.addTarget(self, action: #selector(onAddFoodStoreButtonClick), for: .touchUpInside)
                 
                 notificationCenter.addObserver(self, selector: #selector(notificationReceivedForTripEdit(notification:)) , name: Notification.Name(NotificationConfigs.UpdatedTripObserverName), object: nil)
@@ -130,6 +130,7 @@ class TripViewController: UIViewController {
     }
     
     @objc func onAddFoodStoreButtonClick(){
+        print("add foodstore clicked")
         let foodStoreFormController = StoreFormScreenController()
         foodStoreFormController.currentTrip = currentTrip!
         self.navigationController?.pushViewController(foodStoreFormController, animated: true)
@@ -162,9 +163,14 @@ class TripViewController: UIViewController {
             // Calculate row height for each user
             let user = storeOtherUsers[row]
             let numberOfStores = user.submittedStores?.count ?? 0
-            let innerTableHeight = CGFloat(numberOfStores) * 100 // Inner table row height * number of stores
+            
+            var innerTableHeight: CGFloat = 75
+            if numberOfStores > 0 {
+                innerTableHeight = CGFloat(numberOfStores) * 100 // Inner table row height * number of stores
+            }
+            
             let nameLabelHeight: CGFloat = 40 // Adjust based on your label's design
-            let padding: CGFloat = 20 // Add some padding between elements
+            let padding: CGFloat = 10 // Add some padding between elements
             
             totalHeight += nameLabelHeight + innerTableHeight + padding
         }
@@ -175,6 +181,16 @@ class TripViewController: UIViewController {
     func updateOuterTableHeight() {
         let height = calculateOuterTableHeight()
         tripView.otherUsersTable.heightAnchor.constraint(equalToConstant: height).isActive = true
+    }
+    
+    func updateFoodStoreTableHeight() {
+        var height: CGFloat = 0
+        print("num stores paid by me: \(storePaidByMe.count)")
+        for row in 0..<storePaidByMe.count {
+            height += 80 + 10
+        }
+        tripView.foodStoreTable.heightAnchor.constraint(equalToConstant: height).isActive = true
+        tripView.foodStoreTable.reloadData()
     }
     
     func getCostForUser(userId: String) -> Double {
@@ -197,10 +213,9 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
         if (tableView == tripView.foodStoreTable) {
             if (storePaidByMe.isEmpty) {
                 tripView.noStorePaidByYouLabel.layer.zPosition = 1
-                tripView.noStorePaidByYouLabel.text = "No store paid by you. \n\n Click below button to add store you paid."
+                tripView.noStorePaidByYouLabel.text = "No store paid by you. \n\n Click the button below to add store you paid."
             } else {
-                tripView.noStorePaidByYouLabel.layer.zPosition = 0
-                tripView.noStorePaidByYouLabel.text = ""
+                tripView.noStorePaidByYouLabel.isHidden = true
             }
                 return storePaidByMe.count
         }
@@ -251,7 +266,7 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
             cell.storeDateLabel.text =  storePaidByMe[indexPath.row].dateCreated.formatted()
             cell.storeAddressLabel.text = storePaidByMe[indexPath.row].address
             
-            cell.storeFoodCostLabel.text = "Total cost: $ \(getTotalStoreItemsCost(store: storePaidByMe[indexPath.row]))"
+            cell.storeFoodCostLabel.text = "Total cost: $\(getTotalStoreItemsCost(store: storePaidByMe[indexPath.row]))"
             
             return cell
         }
@@ -263,14 +278,18 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
         if (tableView == tripView.otherUsersTable) {
             let user = storeOtherUsers[indexPath.row]
             let numberOfStores = user.submittedStores?.count ?? 0
-            let innerTableHeight = CGFloat(numberOfStores) * (60 + 10) // Inner table row height * number of stores
-            let nameLabelHeight: CGFloat = 50 // Adjust based on your label's design
+            var innerTableHeight: CGFloat = 75
+            if numberOfStores > 0 {
+                innerTableHeight = CGFloat(numberOfStores) * (100) // Inner table row height * number of stores
+            }
+            
+            let nameLabelHeight: CGFloat = 20 // Adjust based on your label's design
 
             return nameLabelHeight + innerTableHeight
         }
         
         if (tableView == tripView.foodStoreTable) {
-            return 104
+            return 80 + 10
         }
         
         return 100

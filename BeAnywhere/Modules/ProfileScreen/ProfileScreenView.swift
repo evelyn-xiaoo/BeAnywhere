@@ -43,7 +43,7 @@ class ProfileScreenView: UIView {
         
         bio = UIStackView()
         bio.axis = .vertical
-        bio.spacing = 16
+        bio.spacing = 5
         bio.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -55,6 +55,7 @@ class ProfileScreenView: UIView {
         profilePic = UIImageView()
         profilePic.image = UIImage(systemName: "person.circle")
         profilePic.layer.cornerRadius = 20
+        profilePic.clipsToBounds = true
         profilePic.translatesAutoresizingMaskIntoConstraints = false
         userInfo.addArrangedSubview(profilePic)
         userInfo.addArrangedSubview(bio)
@@ -69,11 +70,13 @@ class ProfileScreenView: UIView {
         
         username = UILabel()
         username.textColor = .black
+        username.font = .systemFont(ofSize: 16, weight: .regular)
         username.translatesAutoresizingMaskIntoConstraints = false
         bio.addArrangedSubview(username)
         
         venmo = UILabel()
         venmo.textColor = .black
+        venmo.font = .systemFont(ofSize: 16, weight: .regular)
         venmo.translatesAutoresizingMaskIntoConstraints = false
         bio.addArrangedSubview(venmo)
         
@@ -101,13 +104,13 @@ class ProfileScreenView: UIView {
             
             profilePic.widthAnchor.constraint(equalTo: userInfo.widthAnchor, multiplier: 0.25),
             profilePic.heightAnchor.constraint(equalTo: profilePic.widthAnchor),
-            profilePic.leadingAnchor.constraint(equalTo: userInfo.leadingAnchor),
+            profilePic.leadingAnchor.constraint(equalTo: userInfo.leadingAnchor, constant: 10),
             profilePic.centerYAnchor.constraint(equalTo: userInfo.centerYAnchor),
             
             bio.leadingAnchor.constraint(equalTo: profilePic.trailingAnchor, constant: 20),
             
             
-            pastTripsLabel.topAnchor.constraint(equalTo: bio.bottomAnchor, constant: 10),
+            pastTripsLabel.topAnchor.constraint(equalTo: userInfo.bottomAnchor, constant: 10),
             pastTripsLabel.leadingAnchor.constraint(equalTo: tripTable.leadingAnchor, constant: 0),
             
             tripTable.topAnchor.constraint(equalTo: pastTripsLabel.bottomAnchor, constant: 5),

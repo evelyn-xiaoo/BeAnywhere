@@ -66,23 +66,24 @@ class HomeScreenView: UIView {
     func setupTableViewTrips(){
         tripTable = UITableView()
         tripTable.register(TripBoxTableViewCell.self, forCellReuseIdentifier: TableConfigs.tableViewTrips)
+        tripTable.rowHeight = UITableView.automaticDimension
         tripTable.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(tripTable)
     }
     
     func initConstraints(){
         NSLayoutConstraint.activate([
-            currentTripLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 25),
+            currentTripLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 20),
             currentTripLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             
             noTripLabel.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             noTripLabel.centerYAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerYAnchor),
             
             
-            tripTable.topAnchor.constraint(equalTo: currentTripLabel.bottomAnchor, constant: 16),
-            tripTable.leadingAnchor.constraint(equalTo: currentTripLabel.leadingAnchor, constant: 5),
-            tripTable.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
-            tripTable.bottomAnchor.constraint(equalTo: addTripButton.topAnchor, constant: -8),
+            tripTable.topAnchor.constraint(equalTo: currentTripLabel.bottomAnchor, constant: 10),
+            tripTable.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            tripTable.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            tripTable.bottomAnchor.constraint(equalTo: addTripButton.topAnchor, constant: -20),
             
             /*
             addTripButton.widthAnchor.constraint(equalToConstant: 48),
