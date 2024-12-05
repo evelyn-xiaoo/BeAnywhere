@@ -149,6 +149,7 @@ extension UserCell {
         }
         else {
             cell.cost.text = "Pending"
+            cell.wrapperCell.layer.borderColor = UIColor.gray.cgColor
         }
         return cell
     }

@@ -137,10 +137,12 @@ class TripView: UIView {
             foodStoreTable.topAnchor.constraint(equalTo: paidByMeLabel.bottomAnchor, constant: 10),
             foodStoreTable.leadingAnchor.constraint(equalTo: paidByMeLabel.leadingAnchor, constant: 20),
             foodStoreTable.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            //foodStoreTable.bottomAnchor.constraint(equalTo: addStoreButton.topAnchor, constant: -20),
             foodStoreTable.heightAnchor.constraint(greaterThanOrEqualToConstant: 200),
             
             addStoreButton.topAnchor.constraint(equalTo: foodStoreTable.bottomAnchor, constant: 20),
             addStoreButton.leadingAnchor.constraint(equalTo: foodStoreTable.leadingAnchor),
+            addStoreButton.trailingAnchor.constraint(equalTo: foodStoreTable.trailingAnchor),
             addStoreButton.widthAnchor.constraint(equalTo: foodStoreTable.widthAnchor),
             addStoreButton.heightAnchor.constraint(equalToConstant: 40),
             
@@ -151,7 +153,7 @@ class TripView: UIView {
             otherUsersTable.topAnchor.constraint(equalTo: paidByOthersLabel.bottomAnchor, constant: 10),
             otherUsersTable.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             otherUsersTable.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            //otherUsersTable.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
+            otherUsersTable.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
             otherUsersTable.heightAnchor.constraint(greaterThanOrEqualToConstant: 200),
             
             
