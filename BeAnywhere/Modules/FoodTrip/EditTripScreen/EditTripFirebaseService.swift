@@ -8,6 +8,19 @@
 import Foundation
 
 extension EditTripScreenController {
+    func terminateTrip(trip: FoodTripFromDoc) async {
+        let tripDocRef = database
+            .collection(FoodTrip.collectionName)
+            .document(trip.id)
+        
+        do {
+            try await tripDocRef.updateData(["isTerminated": true])
+        } catch {
+            showErrorAlert(message: "Failed to terminate the trip. Please try again later.", controller: self)
+        }
+        navigationController?.popToRootViewController(animated: false)
+    }
+    
     func saveFoodTrip(_ trip: FoodTrip) {
         
         if (trip.groupName == "" || trip.location == "") {

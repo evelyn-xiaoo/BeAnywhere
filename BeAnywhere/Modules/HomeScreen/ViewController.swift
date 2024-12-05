@@ -20,8 +20,6 @@ class ViewController: UIViewController {
     
     var currentUser: FirestoreUser? = nil
     var currentTrips: [FoodTripFromDoc] = []
-    let notificationCenter = NotificationCenter.default
-    
     
     override func loadView() {
         view = homeView

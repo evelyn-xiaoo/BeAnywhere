@@ -143,7 +143,7 @@ class TripViewController: UIViewController {
             for foodItem in store.foodItems {
                 if (!foodItem.payers.contains(where: ({$0.id == self.currentUser!.id}))) {
                     amountOwedToCurrentUser += foodItem.price
-                } else {
+                } else if (!foodItem.payers.isEmpty) {
                     amountOwedToCurrentUser += foodItem.price * (Double(foodItem.payers.count - 1) / Double(foodItem.payers.count))
                 }
             }

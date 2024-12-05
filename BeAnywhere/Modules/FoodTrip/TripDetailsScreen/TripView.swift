@@ -70,12 +70,12 @@ class TripView: UIView {
 
         noStorePaidByYouLabel = UILabel()
         
-        paidByMeLabel.font = UIFont.systemFont(ofSize: 15)
+        paidByMeLabel.font = UIFont.boldSystemFont(ofSize: 15)
         paidByMeLabel.text = "Paid by you"
         totalReceivedLabel.font = UIFont.systemFont(ofSize: 15)
         
         paidByOthersLabel.text = "Paid by others"
-        paidByOthersLabel.font = UIFont.systemFont(ofSize: 15)
+        paidByOthersLabel.font = UIFont.boldSystemFont(ofSize: 15)
         
         noStorePaidByYouLabel.font = UIFont.boldSystemFont(ofSize: 15)
         noStorePaidByYouLabel.numberOfLines = 0

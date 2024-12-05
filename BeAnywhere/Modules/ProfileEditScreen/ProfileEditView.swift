@@ -16,6 +16,7 @@ class ProfileEditView: UIView {
     var venmoLabel: UILabel!
     
     var profilePhoto: UIButton!
+    var terminateTripButton: UIButton!
     var textFieldName: UITextField!
     var textFieldEmail: UITextField!
     var textFieldVenmo: UITextField!

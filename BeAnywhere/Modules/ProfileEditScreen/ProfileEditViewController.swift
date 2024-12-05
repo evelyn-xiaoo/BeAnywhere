@@ -17,6 +17,7 @@ class ProfileEditViewController: UIViewController, UIImagePickerControllerDelega
     var currentUser: FirestoreUser? = nil
     let storage = Storage.storage()
     let database = Firestore.firestore()
+    let notificationCenter = NotificationCenter.default
     
     let childProgressView = ProgressSpinnerViewController()
     
@@ -50,6 +51,17 @@ class ProfileEditViewController: UIViewController, UIImagePickerControllerDelega
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(self.saveProfile))
         editView.profilePhoto.menu = getMenuImagePicker()
         editView.buttonLogout.addTarget(self, action: #selector(self.logoutCurrentAccount), for: .touchUpInside)
+        
+        // MARK: setup notification observer for new user login
+        notificationCenter.addObserver(
+                    self,
+                    selector: #selector(notificationReceivedForUserLogin(notification:)),
+                    name: Notification.Name(NotificationConfigs.NewUserLoggedInObserverName),
+                    object: nil)
+    }
+    
+    @objc func notificationReceivedForUserLogin(notification: Notification) {
+        navigationController?.popToRootViewController(animated: false)
     }
     
     func getMenuImagePicker() -> UIMenu {

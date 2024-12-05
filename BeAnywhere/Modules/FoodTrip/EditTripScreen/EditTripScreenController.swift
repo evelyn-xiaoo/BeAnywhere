@@ -56,6 +56,28 @@ class EditTripScreenController: UIViewController, UIImagePickerControllerDelegat
         
         navigationItem.rightBarButtonItems = [confirmButton]
         editTripView.tripImage.menu = getMenuImagePicker()
+        
+        editTripView.terminateTripButton.addTarget(self, action: #selector(onTripTerminateClick), for: .touchUpInside)
+    }
+    
+    @objc func onTripTerminateClick() {
+        let alert = UIAlertController(title: "Confirm", message: "Are you sure you want to terminate the trip? \n\n You cannot undo this action!", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak self] _ in
+            
+            if ((self?.currentTrip) != nil) {
+                Task {
+                    await self?.terminateTrip(trip: (self?.currentTrip)!)
+                }
+            } else {
+                print("Store ID or User ID is missing.")
+            }
+
+            
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        self.present(alert, animated: true)
     }
     
     @objc func confirmNewGroup(){
