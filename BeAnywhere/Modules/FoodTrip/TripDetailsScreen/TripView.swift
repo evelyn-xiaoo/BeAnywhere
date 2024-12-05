@@ -16,11 +16,11 @@ class TripView: UIView {
     var noStorePaidByYouLabel: UILabel!
     
     var paidByOthersLabel: UILabel!
-    var totalCost: UILabel!
     var otherUsersTable: UITableView!
     
     var scrollView: UIScrollView!
     var contentView: UIView!
+    
     
     override init(frame: CGRect){
         super.init(frame: frame)
@@ -63,7 +63,7 @@ class TripView: UIView {
         paidByMeLabel = UILabel()
         totalReceivedLabel = UILabel()
         paidByOthersLabel = UILabel()
-        totalCost = UILabel()
+
         noStorePaidByYouLabel = UILabel()
         
         paidByMeLabel.font = UIFont.boldSystemFont(ofSize: 15)
@@ -73,13 +73,11 @@ class TripView: UIView {
         paidByOthersLabel.text = "Paid by others"
         paidByOthersLabel.font = UIFont.boldSystemFont(ofSize: 15)
         
-        totalCost.text = "$0.00"
-        totalCost.font = UIFont.boldSystemFont(ofSize: 15)
-        
         noStorePaidByYouLabel.font = UIFont.boldSystemFont(ofSize: 15)
         noStorePaidByYouLabel.numberOfLines = 0
         
-        let appLabels: [UILabel] = [paidByMeLabel, totalReceivedLabel, paidByOthersLabel, totalCost, noStorePaidByYouLabel]
+        
+        let appLabels: [UILabel] = [paidByMeLabel, totalReceivedLabel, paidByOthersLabel, noStorePaidByYouLabel]
         
         // apply common attributes to the labels
         for label: UILabel in appLabels {
@@ -141,8 +139,6 @@ class TripView: UIView {
             paidByOthersLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             paidByOthersLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
-            totalCost.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            totalCost.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
             otherUsersTable.topAnchor.constraint(equalTo: paidByOthersLabel.bottomAnchor, constant: 20),
             otherUsersTable.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),

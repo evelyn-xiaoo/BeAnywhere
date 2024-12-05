@@ -27,8 +27,26 @@ extension UserItemsViewController {
 
         }
         
+        // check if this store has been paid
+        // true: remove edit button and didPay button, add "Paid!" text, set done to true
+        // false: set edit and didPay button
+        if let paid = await checkIfPaid(tripId: tripId, storeId: storeId) {
+            if paid {
+                self.userItemsView.didPay.setTitle("Paid!", for: .normal)
+                self.userItemsView.didPay.layer.borderWidth = 0
+                self.userItemsView.didPay.isEnabled = false
+                self.done = true
+            }
+            else {
+                print("paid is false")
+                self.userItemsView.didPay.setTitle("Did you pay \(submitterName)?", for: .normal)
+                navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector (editTapped))
+                userItemsView.didPay.addTarget(self, action: #selector(didPayClicked), for: .touchUpInside)
+            }
+        }
+        
         print(submitterName)
-        self.userItemsView.didPay.setTitle("Did you pay \(submitterName)?", for: .normal)
+        
         let buttonWidth = self.userItemsView.didPay.intrinsicContentSize.width + 20
         let buttonHeight = self.userItemsView.didPay.intrinsicContentSize.height + 20
         
@@ -42,6 +60,34 @@ extension UserItemsViewController {
         selectItemsVC.delegate = self
             self.navigationController?.pushViewController(selectItemsVC, animated: true)
         }
+    }
+    
+    // go to debtors
+    func checkIfPaid(tripId: String, storeId: String) async -> Bool? {
+        let debtorsCollectionRef = database
+            .collection(FoodTrip.collectionName)
+            .document(tripId)
+            .collection(FoodStore.collectionName)
+            .document(storeId)
+            .collection(Debtor.collectionName)
+        
+        do {
+            let debtorDocsRef = try await
+            debtorsCollectionRef.getDocuments()
+            let debtorDocs = try
+            debtorDocsRef.documents.map({try $0.data(as: DebtorFromDoc.self)})
+            
+            for debtor in debtorDocs {
+                if debtor.userId == currUserId {
+                    //returns true if paid
+                    print("\(debtor.userId): \(debtor.paymentStatus)")
+                    return debtor.paymentStatus == "Paid"
+                }
+            }
+        } catch {
+            print("error getting debtors: \(error)")
+        }
+        return false
     }
     
     func getFoodItems(tripId: String, storeId: String) async -> [FoodItemFromDoc]? {
@@ -91,4 +137,39 @@ extension UserItemsViewController {
         }
         
     }
+    
+    func markPaymentAsCompleted(storeId: String, userId: String) async {
+        let debtorRef = database
+            .collection(FoodTrip.collectionName)
+            .document(tripId)
+            .collection(FoodStore.collectionName)
+            .document(storeId)
+            .collection(Debtor.collectionName)
+        
+        do {
+            let debtorDocRef = try await debtorRef.getDocuments()
+            let debtorDoc = try debtorDocRef.documents.map({try $0.data(as: DebtorFromDoc.self)})
+            
+            for debtor in debtorDoc {
+                if debtor.userId == userId {
+                    let newDebtor = DebtorFromDoc(
+                        id: debtor.id, userId: debtor.userId, dateCreated: debtor.dateCreated, paymentStatus: "Paid"
+                    )
+                    
+                    let collectionDebtors = debtorRef.document(debtor.id)
+                    
+                    try collectionDebtors.setData(from: newDebtor, completion: {(error) in
+                        if error == nil {
+                            self.navigationController?.popViewController(animated: true)
+                            showSuccessAlert(message: "Successfully updated payment status!", controller: self)
+                        }
+                    })
+                }
+            }
+        } catch {
+            
+        }
+            
+    }
+        
 }

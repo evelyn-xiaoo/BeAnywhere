@@ -22,6 +22,10 @@ class TripViewController: UIViewController {
     
     var currentUser: FirestoreUser? = nil
     var storeOtherUsers: [FirestoreUser] = []
+    // other user id : cost
+    var storeUserItemCost: [String:Double] = [:]
+    // other user id : [String (store ids)]
+    var paidStores: [String:[String]] = [:]
     
     var storeDocsPaidByMe: [FoodStoreFromDoc] = []
     var storePaidByMe: [FoodStore] = []
@@ -39,12 +43,10 @@ class TripViewController: UIViewController {
         if let currentTrip {
             title = currentTrip.groupName
             
-            tripView.paidByOthersLabel.text = "Paid by others: pending"
-            
             Task.detached{
-                self.showActivityIndicator()
+                await self.showActivityIndicator()
                 
-                if (self.currentUser == nil) {
+                if await (self.currentUser == nil) {
                     self.currentUser = await UserFirebaseService().getUser(uid: self.firebaseAuth.currentUser!.uid)
                 }
                 
@@ -53,8 +55,8 @@ class TripViewController: UIViewController {
                     self.tripView.otherUsersTable.reloadData()
                 }
                 await self.initCurrentUserFoodStores(tripId: currentTrip.id, currentUserId: self.currentUser!.id)
-                self.updatePriceAmount()
-                self.hideActivityIndicator()
+                await self.updatePriceAmount()
+                await self.hideActivityIndicator()
             }
         }
     }
@@ -71,14 +73,22 @@ class TripViewController: UIViewController {
         //MARK: removing the separator line...
         tripView.foodStoreTable.separatorStyle = .none
         
-        let editTripIcon = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(onTripEditClick))
-       
+        if let currentTrip {
+            if !currentTrip.isTerminated {
+                let editTripIcon = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(onTripEditClick))
+               
+                
+                navigationItem.rightBarButtonItems = [editTripIcon]
+                
+                tripView.addStoreButton.addTarget(self, action: #selector(onAddFoodStoreButtonClick), for: .touchUpInside)
+                
+                notificationCenter.addObserver(self, selector: #selector(notificationReceivedForTripEdit(notification:)) , name: Notification.Name(NotificationConfigs.UpdatedTripObserverName), object: nil)
+            }
+            else {
+                tripView.addStoreButton.isHidden = true
+            }
+        }
         
-        navigationItem.rightBarButtonItems = [editTripIcon]
-        
-        tripView.addStoreButton.addTarget(self, action: #selector(onAddFoodStoreButtonClick), for: .touchUpInside)
-        
-        notificationCenter.addObserver(self, selector: #selector(notificationReceivedForTripEdit(notification:)) , name: Notification.Name(NotificationConfigs.UpdatedTripObserverName), object: nil)
     }
     
     @objc func onTripEditClick() {
@@ -166,6 +176,14 @@ class TripViewController: UIViewController {
         let height = calculateOuterTableHeight()
         tripView.otherUsersTable.heightAnchor.constraint(equalToConstant: height).isActive = true
     }
+    
+    func getCostForUser(userId: String) -> Double {
+        return self.storeUserItemCost[userId] ?? 0
+    }
+    
+    func getPaidStores(userId: String) -> [String] {
+        return self.paidStores[userId] ?? []
+    }
 
 }
 
@@ -195,7 +213,18 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
             let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.otherUsers, for: indexPath) as! UserCell
             let user = storeOtherUsers[indexPath.row]
             
+            if let currUserId = currentUser?.id {
+                cell.currUserId = currUserId
+            }
+            
             cell.userNameLabel.text = user.name
+            cell.userId = currentUser?.id
+            
+            cell.totalCost.text = "Total to pay back: $\(getCostForUser(userId: user.id))"
+            
+            cell.paidStores = getPaidStores(userId: user.id)
+            print(cell.paidStores.count)
+            
             if let submittedStores = user.submittedStores {
                 if (submittedStores.isEmpty) {
                     cell.noStoresPaidByUser.layer.zPosition = 1

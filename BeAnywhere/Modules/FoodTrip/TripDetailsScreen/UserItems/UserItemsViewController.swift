@@ -15,8 +15,9 @@ class UserItemsViewController: UIViewController {
     var tripId: String = ""
     var database = Firestore.firestore()
     var firebaseAuth = Auth.auth()
-    
+    var currUserId: String = ""
     var selectedItems: [FoodItemFromDoc] = []
+    var done: Bool = false
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -59,8 +60,6 @@ class UserItemsViewController: UIViewController {
         
         
         navigationItem.title = store?.storeName
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector (editTapped))
-        
         
     }
     
@@ -70,6 +69,27 @@ class UserItemsViewController: UIViewController {
         editItemsVC.tripId = tripId
         editItemsVC.delegate = self
         navigationController?.pushViewController(editItemsVC, animated: true)
+    }
+    
+    @objc func didPayClicked() {
+        let alert = UIAlertController(title: "Confirm", message: "Are you sure you paid?", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak self] _ in
+            
+            if let storeId = self?.store?.id, let userId = self?.currUserId {
+                Task {
+                    await self?.markPaymentAsCompleted(storeId: storeId, userId: userId)
+                }
+            } else {
+                print("Store ID or User ID is missing.")
+            }
+
+            
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        self.present(alert, animated: true)
+        
     }
     
     
@@ -85,6 +105,7 @@ extension UserItemsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.selectedItems, for: indexPath) as! UserItemsCell
         let item = selectedItems[indexPath.row]
+        
         
         cell.itemName.text = item.name
         cell.foodImageURL = item.foodImageUrl

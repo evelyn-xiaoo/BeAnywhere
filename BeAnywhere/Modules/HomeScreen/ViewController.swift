@@ -72,7 +72,7 @@ class ViewController: UIViewController {
        
         
         navigationItem.leftBarButtonItems = [profileIcon]
-        navigationItem.rightBarButtonItems = [logoutIcon]
+        //navigationItem.rightBarButtonItems = [logoutIcon]
         
         homeView.addTripButton.addTarget(self, action: #selector(onAddTripButtonClick), for: .touchUpInside)
         

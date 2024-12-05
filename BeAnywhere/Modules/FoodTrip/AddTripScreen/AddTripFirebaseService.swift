@@ -32,16 +32,16 @@ extension AddTripScreenController {
         let newTripDocRef = collectionTrips.document()
         let newFoodTrip = FoodTrip(id: newTripDocRef.documentID, groupName: trip.groupName, location: trip.location, members: trip.members, photoURL: trip.photoURL, dateCreated: trip.dateCreated, dateEnded: trip.dateEnded, isTerminated: trip.isTerminated)
                     
-                        newTripDocRef.setData(
-                            newFoodTrip.toMap()
-                        , completion: {(error) in
-                            if error == nil{
-                                self.uploadTripPhotoToStorage(newFoodTrip)
-                            } else {
-                                self.hideActivityIndicator()
-                                showErrorAlert(message: "Failed to create new trip. Please try again.", controller: self)
-                            }
-                        })
+        newTripDocRef.setData(
+            newFoodTrip.toMap()
+        , completion: {(error) in
+            if error == nil{
+                self.uploadTripPhotoToStorage(newFoodTrip)
+            } else {
+                self.hideActivityIndicator()
+                showErrorAlert(message: "Failed to create new trip. Please try again.", controller: self)
+            }
+        })
                     
         
         

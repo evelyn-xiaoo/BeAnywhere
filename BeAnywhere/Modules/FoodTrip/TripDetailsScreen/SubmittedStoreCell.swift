@@ -13,6 +13,7 @@ class SubmittedStoreCell: UITableViewCell {
     var date: UILabel!
     var cost: UILabel!
     
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -43,6 +44,12 @@ class SubmittedStoreCell: UITableViewCell {
         date.translatesAutoresizingMaskIntoConstraints = false
         wrapperCell.addSubview(date)
         
+        cost = UILabel()
+        cost.font = .systemFont(ofSize: 16, weight: .regular)
+        cost.textColor = .black
+        cost.translatesAutoresizingMaskIntoConstraints = false
+        wrapperCell.addSubview(cost)
+        
     }
     
     func initConstraints() {
@@ -56,8 +63,10 @@ class SubmittedStoreCell: UITableViewCell {
             name.leadingAnchor.constraint(equalTo: wrapperCell.leadingAnchor, constant: 10),
             date.topAnchor.constraint(equalTo: name.bottomAnchor, constant: 2),
             date.leadingAnchor.constraint(equalTo: name.leadingAnchor),
-            date.bottomAnchor.constraint(equalTo: wrapperCell.bottomAnchor,constant: -10)
-            ])
+            cost.topAnchor.constraint(equalTo: date.bottomAnchor, constant: 2),
+            cost.leadingAnchor.constraint(equalTo: date.leadingAnchor),
+            cost.bottomAnchor.constraint(equalTo: wrapperCell.bottomAnchor, constant: -10)
+        ])
     }
     
     
