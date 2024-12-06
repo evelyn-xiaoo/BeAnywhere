@@ -24,7 +24,7 @@ class FoodItemInStoreCell: UITableViewCell {
 
     func setupWrapperCellView(){
         wrapperCellView = UIView()
-        
+        /*
         //working with the shadows and colors...
         wrapperCellView.backgroundColor = .white
         wrapperCellView.layer.cornerRadius = 4.0
@@ -32,6 +32,7 @@ class FoodItemInStoreCell: UITableViewCell {
         wrapperCellView.layer.shadowOffset = .zero
         wrapperCellView.layer.shadowRadius = 2.0
         wrapperCellView.layer.shadowOpacity = 0.7
+         */
         wrapperCellView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(wrapperCellView)
     }
@@ -43,7 +44,7 @@ class FoodItemInStoreCell: UITableViewCell {
         let labels: [UILabel] = [itemNameLabel, itemCostLabel]
         
         for label: UILabel in labels {
-            label.font = UIFont.boldSystemFont(ofSize: 14)
+            label.font = UIFont.systemFont(ofSize: 14)
             label.translatesAutoresizingMaskIntoConstraints = false
             wrapperCellView.addSubview(label)
         }
@@ -51,23 +52,17 @@ class FoodItemInStoreCell: UITableViewCell {
     
     func initConstraints(){
         NSLayoutConstraint.activate([
-            wrapperCellView.topAnchor.constraint(equalTo: self.topAnchor,constant: 4),
-            wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-            wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
-            wrapperCellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4),
+            wrapperCellView.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
+            wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            wrapperCellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -5),
             
-            itemNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
-           
-            itemNameLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 8),
-            itemNameLabel.heightAnchor.constraint(equalToConstant: 15),
-            itemNameLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
+            itemNameLabel.centerYAnchor.constraint(equalTo: wrapperCellView.centerYAnchor),
+            itemNameLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 0),
             
-            itemCostLabel.topAnchor.constraint(equalTo: itemNameLabel.bottomAnchor, constant: 8),
-            itemCostLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 8),
-            itemCostLabel.heightAnchor.constraint(equalToConstant: 15),
-            itemCostLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
-            
-            wrapperCellView.heightAnchor.constraint(equalToConstant: 54)
+            itemCostLabel.topAnchor.constraint(equalTo: itemNameLabel.topAnchor),
+            itemCostLabel.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: 0),
+
             
         ])
         

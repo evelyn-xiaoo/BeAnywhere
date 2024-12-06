@@ -235,7 +235,7 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
             cell.userNameLabel.text = user.name
             cell.userId = currentUser?.id
             
-            cell.totalCost.text = "Total to pay back: $\(getCostForUser(userId: user.id))"
+            cell.totalCost.text = "Total spent: $\(getCostForUser(userId: user.id))"
             
             cell.paidStores = getPaidStores(userId: user.id)
             print(cell.paidStores.count)

@@ -20,6 +20,10 @@ extension UserItemsViewController {
             print("failed to fetch food items.")
         }
         
+        if let storeUsers = await getTripUsers(tripId: tripId) {
+            self.users = storeUsers
+        }
+        
         var submitterName: String = ""
         if let store {
             let submitterId = store.submitterId
@@ -54,12 +58,37 @@ extension UserItemsViewController {
         self.userItemsView.didPay.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
         
         if selectedItems.isEmpty {
-            let selectItemsVC = SelectItemsViewController()
-        selectItemsVC.store = store
-        selectItemsVC.tripId = self.tripId
-        selectItemsVC.delegate = self
-            self.navigationController?.pushViewController(selectItemsVC, animated: true)
+            userItemsView.noSelectedItems.isHidden = false
         }
+        else {
+            userItemsView.noSelectedItems.isHidden = true
+        }
+    }
+    
+    func getTripUsers(tripId: String) async -> [String:String]? {
+        let tripCollectionsRef = database
+            .collection(FoodTrip.collectionName)
+        
+        do {
+            let tripDocsRef = try await tripCollectionsRef.getDocuments()
+            let tripDocs = try tripDocsRef.documents.map({try $0.data(as: FoodTripFromDoc.self)})
+            
+            var users: [String:String] = [:]
+            for trip in tripDocs {
+                if trip.id == tripId {
+                    print("found trip")
+                    for id in trip.memberIds {
+                        users[id] = await getUserName(userId: id)
+                    }
+                    return users
+                }
+            }
+            
+            
+        } catch {
+            
+        }
+        return nil
     }
     
     // go to debtors

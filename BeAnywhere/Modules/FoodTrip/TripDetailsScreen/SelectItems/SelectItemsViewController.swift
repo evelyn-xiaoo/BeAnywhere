@@ -21,7 +21,8 @@ class SelectItemsViewController: UIViewController {
     var currentUser: FirestoreUser? = nil
     
     var items: [FoodItemFromDoc] = []
-    
+    // id:name
+    var users: [String:String] = [:]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,18 +79,7 @@ class SelectItemsViewController: UIViewController {
             $0.payerUserIds.contains(currUser.uid)
         }
         
-        
-        if selectedItems.isEmpty {
-            let alert = UIAlertController(
-                title: "No Items Selected",
-                message: "Please select at least one item to submit.",
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
-            return
-        }
-        
+            
         // Update Firestore with selected items
         if let store = store {
             Task {
@@ -162,7 +152,13 @@ extension SelectItemsViewController: UITableViewDelegate, UITableViewDataSource 
             )
         }
         
+        var payerNames: [String] = []
+        for payerId in items[indexPath.row].payerUserIds {
+            payerNames.append(users[payerId] ?? "Loading user")
+        }
+        cell.payersLabel.text = payerNames.joined(separator: ", ")
         
+        /*
         // display payer names for each item
         Task {
             var payerNames: [String] = []
@@ -182,7 +178,7 @@ extension SelectItemsViewController: UITableViewDelegate, UITableViewDataSource 
                 cell.payersLabel.text = ""
             }
         }
-        
+        */
         
         return cell
     }
@@ -232,8 +228,15 @@ extension SelectItemsViewController: UITableViewDelegate, UITableViewDataSource 
         }
         
         // Fetch and update payer names
+        var payerNames: [String] = []
+        for payerId in items[indexPath.row].payerUserIds {
+            payerNames.append(users[payerId] ?? "error getting user")
+        }
+        cell.payersLabel.text = payerNames.joined(separator: ", ")
+        
+        /*
         Task {
-            var payerNames: [String] = []
+            
             for payerId in items[indexPath.row].payerUserIds {
                 if let name = await self.getUserName(userId: payerId) {
                     payerNames.append(name)
@@ -243,6 +246,7 @@ extension SelectItemsViewController: UITableViewDelegate, UITableViewDataSource 
                 cell.payersLabel.text = payerNames.joined(separator: ", ")
             }
         }
+         */
     }
     
 }

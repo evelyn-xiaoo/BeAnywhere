@@ -103,18 +103,20 @@ class StoreFormScreenView: UIView {
         myTotalPriceAmountLabel = UILabel()
         totalPriceLabel = UILabel()
         totalPriceAmountLabel = UILabel()
-        datePickLabel = UILabel()
+        //datePickLabel = UILabel()
         noSelectedItemLabel = UILabel()
         
-        let appLabels: [UILabel] = [ recipeImageLabel, foodItemTableLabel, myTotalPriceLabel, myTotalPriceAmountLabel, totalPriceLabel, totalPriceAmountLabel, datePickLabel, noSelectedItemLabel]
+        let appLabels: [UILabel] = [ recipeImageLabel, foodItemTableLabel, myTotalPriceLabel, myTotalPriceAmountLabel, totalPriceLabel, totalPriceAmountLabel, noSelectedItemLabel]
         
         foodItemTableLabel.font = UIFont.boldSystemFont(ofSize: 15)
         recipeImageLabel.font = UIFont.boldSystemFont(ofSize: 13)
         recipeImageLabel.text = "Receipt image (optional)"
         foodItemTableLabel.text = "Food Items"
         
+        /*
         datePickLabel.font = UIFont.boldSystemFont(ofSize: 15)
         datePickLabel.text = "Date"
+        */
         
         myTotalPriceLabel.font = UIFont.boldSystemFont(ofSize: 15)
         myTotalPriceAmountLabel.font = UIFont.boldSystemFont(ofSize: 13)
@@ -145,22 +147,23 @@ class StoreFormScreenView: UIView {
     
     func initConstraints(){
         NSLayoutConstraint.activate([
-            textFieldName.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 32),
+            textFieldName.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 20),
             textFieldName.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             textFieldName.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             textFieldName.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             
-            textFieldLocation.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 16),
+            textFieldLocation.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 10),
             textFieldLocation.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            textFieldLocation.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            textFieldLocation.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            textFieldLocation.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.6),
             
-            datePicker.topAnchor.constraint(equalTo: textFieldLocation.bottomAnchor, constant: 16),
-            datePicker.leadingAnchor.constraint(equalTo: datePickLabel.trailingAnchor, constant: 20),
+            datePicker.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 10),
+            datePicker.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            datePicker.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.3),
             
+            /*
             datePickLabel.topAnchor.constraint(equalTo: datePicker.topAnchor),
             datePickLabel.leadingAnchor.constraint(equalTo: foodItemTableLabel.leadingAnchor),
-            
+            */
             recipeImage.topAnchor.constraint(equalTo: datePicker.bottomAnchor, constant: 16),
             recipeImage.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             recipeImage.widthAnchor.constraint(equalToConstant: 100),
@@ -172,9 +175,10 @@ class StoreFormScreenView: UIView {
             foodItemTableLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 32),
             foodItemTableLabel.topAnchor.constraint(equalTo: recipeImageLabel.bottomAnchor, constant: 16),
             
-            foodItemTable.topAnchor.constraint(equalTo: foodItemTableLabel.bottomAnchor, constant: 16),
-            foodItemTable.bottomAnchor.constraint(equalTo: myTotalPriceLabel.topAnchor, constant: -8),
-            foodItemTable.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor),
+            foodItemTable.topAnchor.constraint(equalTo: foodItemTableLabel.bottomAnchor, constant: 10),
+            foodItemTable.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            foodItemTable.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            foodItemTable.bottomAnchor.constraint(equalTo: myTotalPriceLabel.topAnchor, constant: -20),
             
             noSelectedItemLabel.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             noSelectedItemLabel.topAnchor.constraint(equalTo: foodItemTableLabel.bottomAnchor, constant: 32),

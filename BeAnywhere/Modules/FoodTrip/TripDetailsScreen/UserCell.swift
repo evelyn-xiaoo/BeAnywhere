@@ -52,7 +52,7 @@ class UserCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
         innerTable.delegate = self
         innerTable.rowHeight = UITableView.automaticDimension
         innerTable.separatorStyle = .none
-        innerTable.showsVerticalScrollIndicator = true
+        innerTable.isScrollEnabled = false
         wrapperCellView.addSubview(innerTable)
     }
     
@@ -65,12 +65,12 @@ class UserCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
         userNameLabel.font = .systemFont(ofSize: 16, weight: .regular)
         userNameLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        noStoresPaidByUser.font = .systemFont(ofSize: 14, weight: .regular)
+        noStoresPaidByUser.font = .systemFont(ofSize: 16, weight: .regular)
         userNameLabel.translatesAutoresizingMaskIntoConstraints = false
         noStoresPaidByUser.translatesAutoresizingMaskIntoConstraints = false
         
         totalCost.textColor = .black
-        totalCost.font = .systemFont(ofSize: 14, weight: .regular)
+        totalCost.font = .systemFont(ofSize: 16, weight: .regular)
         totalCost.translatesAutoresizingMaskIntoConstraints = false
         
         wrapperCellView.addSubview(userNameLabel)

@@ -62,10 +62,12 @@ class FoodItemAddBottmSheetController: UIViewController, UIImagePickerController
         if let newFoodItemName, let newFoodItemPrice {
             let priceAmount = Double(newFoodItemPrice)
             if let priceAmount, priceAmount > 0.0 {
+                
                 if (selectedPayers.isEmpty) {
                     showErrorAlert(message: "Choose at least one payer.", controller: self)
                     return
                 }
+                 
                 
                 if (newFoodItemName == "" || newFoodItemPrice == "") {
                     showErrorAlert(message: "Name and price cannot be empty. Please try again.", controller: self)

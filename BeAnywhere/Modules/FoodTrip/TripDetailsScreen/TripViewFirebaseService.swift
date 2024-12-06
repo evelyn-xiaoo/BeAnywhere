@@ -69,8 +69,9 @@ extension TripViewController {
                 users[i].submittedStores = submittedStores
                 
                 // for each other user, get the current user's items + store in storeUserItemCost
-                for othersStore in submittedStores {
+                for _ in submittedStores {
                     storeUserItemCost[userId] = await getTotalCost(tripId: tripId, userId: userId)
+                    
                     paidStores[userId] = await storesPaidByCurrUser(tripId: tripId, userId: userId)
                     
                 }
@@ -143,6 +144,8 @@ extension TripViewController {
                 $0.submitterId == userId
             }
             
+            var total: Double = 0.0
+            
             for store in filteredStores {
                 let itemCollectionRef = database
                     .collection(FoodTrip.collectionName)
@@ -153,7 +156,7 @@ extension TripViewController {
                 do {
                     let itemDocsRef = try await itemCollectionRef.getDocuments()
                     let itemDocs = try itemDocsRef.documents.map({try $0.data(as: FoodItemFromDoc.self)})
-                    var total: Double = 0.0
+                    
                     for item in itemDocs {
                         if let currId = currentUser?.id {
                             if item.payerUserIds.contains(currId) {
@@ -162,9 +165,10 @@ extension TripViewController {
                         }
                     }
                     print("total cost for \(userId): \(total)")
-                    return roundToTwoPlace(total)
+                    
                 }
             }
+            return roundToTwoPlace(total)
         } catch {
             print("Error: \(error)")
         }

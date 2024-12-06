@@ -18,6 +18,7 @@ class UserItemsViewController: UIViewController {
     var currUserId: String = ""
     var selectedItems: [FoodItemFromDoc] = []
     var done: Bool = false
+    var users: [String:String] = [:]
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -112,7 +113,12 @@ extension UserItemsViewController: UITableViewDelegate, UITableViewDataSource {
         cell.price.text = "\(item.price)"
         cell.payersIds = item.payerUserIds
         
-        
+        var payerNames: [String] = []
+        for payerId in item.payerUserIds {
+            payerNames.append(users[payerId] ?? "Loading user")
+        }
+        cell.payersLabel.text = payerNames.joined(separator: ", ")
+        /*
         // display payer names for each item
         Task {
             var payerNames: [String] = []
@@ -133,6 +139,7 @@ extension UserItemsViewController: UITableViewDelegate, UITableViewDataSource {
                 cell.payersLabel.text = ""
             }
         }
+         */
         
         
         return cell

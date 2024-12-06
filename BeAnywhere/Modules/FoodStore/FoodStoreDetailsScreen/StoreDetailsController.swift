@@ -52,7 +52,9 @@ class StoreDetailsController: UIViewController {
                 self.updatePriceAmount()
                 DispatchQueue.main.async {
                     self.storeView.memberWithFoodItemsTable.reloadData()
+                    self.updateOuterTableHeight()
                     self.storeView.memberWithPaymentStatusTable.reloadData()
+                    self.updateDebtorsTableHeight()
                     self.hideActivityIndicator()
                     
                 }
@@ -143,6 +145,34 @@ class StoreDetailsController: UIViewController {
                 
         return UIMenu(title: "Option", children: menuItems)
     }
+    
+    func updateOuterTableHeight() {
+        var height: CGFloat = 0
+        for row in 0..<membersFoodItems.count {
+            let user = membersFoodItems[row]
+            let numberOfFoodItems = user.submittedFoodItems?.count ?? 0
+            
+            var innerTableHeight: CGFloat = 75
+            if numberOfFoodItems > 0 {
+                innerTableHeight = CGFloat(numberOfFoodItems) * (30)
+            }
+            let nameHeight: CGFloat = 20
+            let padding: CGFloat = 25
+            
+            height += nameHeight + innerTableHeight + padding
+            
+            
+        }
+        storeView.memberWithFoodItemsTable.heightAnchor.constraint(equalToConstant: height).isActive = true
+    }
+    
+    func updateDebtorsTableHeight() {
+        var height: CGFloat = 0
+        for row in 0..<debtors.count {
+            height+=20
+        }
+        storeView.memberWithPaymentStatusTable.heightAnchor.constraint(equalToConstant: height).isActive = true
+    }
 }
 
 extension StoreDetailsController: UITableViewDelegate, UITableViewDataSource{
@@ -196,23 +226,23 @@ extension StoreDetailsController: UITableViewDelegate, UITableViewDataSource{
         return UserCell()
     }
     
-    
-//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        if (tableView == storeView.otherUsersTable) {
-//            let user = storeOtherUsers[indexPath.row]
-//            let numberOfStores = user.submittedStores?.count ?? 0
-//            let innerTableHeight = CGFloat(numberOfStores) * (60 + 10) // Inner table row height * number of stores
-//            let nameLabelHeight: CGFloat = 50 // Adjust based on your label's design
-//
-//            return nameLabelHeight + innerTableHeight
-//        }
-//        
-//        if (tableView == storeView.foodStoreTable) {
-//            return 104
-//        }
-//        
-//        return 100
-//    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if (tableView == storeView.memberWithFoodItemsTable) {
+            let user = membersFoodItems[indexPath.row]
+            let numberOfItems = (user.submittedFoodItems?.count)!
+            let innerTableHeight = CGFloat(numberOfItems) * (30) // Inner table row height * number of items
+            let nameLabelHeight: CGFloat = 20 // Adjust based on your label's design
+            let padding: CGFloat = 25
+            
+            return nameLabelHeight + innerTableHeight + padding
+        }
+        
+        if (tableView == storeView.memberWithPaymentStatusTable) {
+            return CGFloat(20)
+        }
+        
+        return 100
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // MARK: on current trip box click -> navigate to food store details

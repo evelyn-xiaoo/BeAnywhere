@@ -45,7 +45,8 @@ class StoreMemberCell: UITableViewCell, UITableViewDataSource, UITableViewDelega
         innerTable.register(FoodItemInStoreCell.self, forCellReuseIdentifier: TableConfigs.foodItemInStoreDetails)
         innerTable.dataSource = self
         innerTable.delegate = self
-        innerTable.separatorStyle = .none
+        innerTable.separatorStyle = .singleLine
+        innerTable.rowHeight = 30
         wrapperCellView.addSubview(innerTable)
     }
     
@@ -85,20 +86,18 @@ class StoreMemberCell: UITableViewCell, UITableViewDataSource, UITableViewDelega
             wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             
             messageButtonImage.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 10),
-            messageButtonImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
+            messageButtonImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 0),
             
             userNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 10),
-            userNameLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 150),
             userNameLabel.leadingAnchor.constraint(equalTo: messageButtonImage.trailingAnchor, constant: 10),
             
             totalItemCostLabel.topAnchor.constraint(equalTo: userNameLabel.topAnchor),
             totalItemCostLabel.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -20),
-            totalItemCostLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 80),
             
-            innerTable.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 0),
-            innerTable.leadingAnchor.constraint(equalTo: messageButtonImage.trailingAnchor),
-            innerTable.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -10),
-            innerTable.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -50),
+            innerTable.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 5),
+            innerTable.leadingAnchor.constraint(equalTo: userNameLabel.leadingAnchor, constant: 10),
+            innerTable.trailingAnchor.constraint(equalTo: totalItemCostLabel.trailingAnchor),
+            innerTable.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -10),
             
             ])
     }
