@@ -58,6 +58,14 @@ class ProfileEditViewController: UIViewController, UIImagePickerControllerDelega
                     selector: #selector(notificationReceivedForUserLogin(notification:)),
                     name: Notification.Name(NotificationConfigs.NewUserLoggedInObserverName),
                     object: nil)
+        
+        // Add tap gesture to dismiss keyboard
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     @objc func notificationReceivedForUserLogin(notification: Notification) {

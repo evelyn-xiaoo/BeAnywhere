@@ -58,6 +58,14 @@ class EditTripScreenController: UIViewController, UIImagePickerControllerDelegat
         editTripView.tripImage.menu = getMenuImagePicker()
         
         editTripView.terminateTripButton.addTarget(self, action: #selector(onTripTerminateClick), for: .touchUpInside)
+        
+        // Add tap gesture to dismiss keyboard
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     @objc func onTripTerminateClick() {

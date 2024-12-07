@@ -81,6 +81,14 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
                     selector: #selector(notificationReceivedForFoodItemAdded(notification:)),
                     name: Notification.Name(NotificationConfigs.NewFoodItemObserverName),
                     object: nil)
+        
+        // Add tap gesture to dismiss keyboard
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     func prefillViewFields() async {

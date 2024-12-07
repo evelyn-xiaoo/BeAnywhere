@@ -160,10 +160,6 @@ class StoreFormScreenView: UIView {
             datePicker.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             datePicker.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, multiplier: 0.3),
             
-            /*
-            datePickLabel.topAnchor.constraint(equalTo: datePicker.topAnchor),
-            datePickLabel.leadingAnchor.constraint(equalTo: foodItemTableLabel.leadingAnchor),
-            */
             recipeImage.topAnchor.constraint(equalTo: datePicker.bottomAnchor, constant: 16),
             recipeImage.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             recipeImage.widthAnchor.constraint(equalToConstant: 100),

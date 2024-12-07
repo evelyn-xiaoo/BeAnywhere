@@ -50,6 +50,14 @@ class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate
                     selector: #selector(notificationReceivedForMemberAdded(notification:)),
                     name: Notification.Name(NotificationConfigs.UserSelectedObserverName),
                     object: nil)
+        
+        // Add tap gesture to dismiss keyboard
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     // MARK: adds the selected group member in the form and closes the sheet

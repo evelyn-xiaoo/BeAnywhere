@@ -34,7 +34,14 @@ class RegisterScreenController: UIViewController, UIImagePickerControllerDelegat
             
             registerView.profileImage.menu = getMenuImagePicker()
             
+            // Add tap gesture to dismiss keyboard
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+            view.addGestureRecognizer(tapGesture)
         }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
         
         @objc func onRegisterTapped(){
             //MARK: creating a new user on Firebase...

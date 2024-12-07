@@ -42,6 +42,7 @@ class MessagingView: UIView, UITextViewDelegate {
         msgSendButton.layer.cornerRadius = 5
         msgSendButton.layer.borderWidth = 1
         msgSendButton.layer.borderColor = UIColor.black.cgColor
+        msgSendButton.layer.backgroundColor = UIColor.white.cgColor
         msgSendButton.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(msgSendButton)
         

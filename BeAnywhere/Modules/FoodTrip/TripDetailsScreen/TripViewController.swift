@@ -74,7 +74,6 @@ class TripViewController: UIViewController {
         tripView.foodStoreTable.separatorStyle = .none
         
         if let currentTrip {
-            print("trip is ongoing")
             if !currentTrip.isTerminated {
                 let editTripIcon = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(onTripEditClick))
                
@@ -105,22 +104,6 @@ class TripViewController: UIViewController {
         self.navigationController?.pushViewController(editTripScreenController, animated: true)
     }
     
-//    @objc func notificationReceivedForFoodStoreAdded(notification: Notification) {
-//        let newFoodStoreRequest = notification.object as! Dictionary<String, Any>
-//        
-//        let newFoodStoreByCurrentUser = newFoodStoreRequest["newStore"] as! FoodStore
-//        let isRequestUpdate = newFoodStoreRequest["isUpdate"] as! Bool
-//        
-//        if (isRequestUpdate) {
-//            storePaidByMe.removeAll(where: { $0.id == newFoodStoreByCurrentUser.id })
-//            storePaidByMe.append(newFoodStoreByCurrentUser)
-//        } else {
-//            storePaidByMe.append(newFoodStoreByCurrentUser)
-//        }
-//        updatePriceAmount()
-//        tripView.foodStoreTable.reloadData()
-//    }
-    
     @objc func notificationReceivedForTripEdit(notification: Notification) {
         let newTrip = notification.object as! FoodTrip
         
@@ -130,7 +113,6 @@ class TripViewController: UIViewController {
     }
     
     @objc func onAddFoodStoreButtonClick(){
-        print("add foodstore clicked")
         let foodStoreFormController = StoreFormScreenController()
         foodStoreFormController.currentTrip = currentTrip!
         self.navigationController?.pushViewController(foodStoreFormController, animated: true)

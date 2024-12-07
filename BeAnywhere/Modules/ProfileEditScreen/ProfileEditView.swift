@@ -63,6 +63,8 @@ class ProfileEditView: UIView {
         textFieldVenmo = UITextField()
         textFieldUsername = UITextField()
         
+        textFieldEmail.keyboardType = .emailAddress
+        
         [textFieldName, textFieldEmail, textFieldUsername, textFieldVenmo].forEach {
             $0.borderStyle = .roundedRect
             $0.backgroundColor = .systemGray5

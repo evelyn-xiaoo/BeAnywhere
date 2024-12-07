@@ -52,7 +52,6 @@ class FoodItemAddBottmSheetController: UIViewController, UIImagePickerController
         searchSheet.saveItemButton.addTarget(self, action: #selector(onItemSaveButtonClick), for: .touchUpInside)
         
         searchSheet.imageClearButton.addTarget(self, action: #selector(onImageClearButtonClick), for: .touchUpInside)
-        
     }
     
     @objc func onItemSaveButtonClick() {
