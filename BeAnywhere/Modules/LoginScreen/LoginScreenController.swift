@@ -13,6 +13,7 @@ class LoginScreenController: UIViewController {
     let loginView = LoginScreenView()
     let firebaseAuth = Auth.auth()
     let database = Firestore.firestore()
+    let notificationCenter = NotificationCenter.default
     
     let childProgressView = ProgressSpinnerViewController()
     let registerScreenController = RegisterScreenController()

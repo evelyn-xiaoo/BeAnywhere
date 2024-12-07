@@ -22,6 +22,10 @@ class TripViewController: UIViewController {
     
     var currentUser: FirestoreUser? = nil
     var storeOtherUsers: [FirestoreUser] = []
+    // other user id : cost
+    var storeUserItemCost: [String:Double] = [:]
+    // other user id : [String (store ids)]
+    var paidStores: [String:[String]] = [:]
     
     var storeDocsPaidByMe: [FoodStoreFromDoc] = []
     var storePaidByMe: [FoodStore] = []
@@ -39,12 +43,10 @@ class TripViewController: UIViewController {
         if let currentTrip {
             title = currentTrip.groupName
             
-            tripView.paidByOthersLabel.text = "Paid by others: pending"
-            
             Task.detached{
-                self.showActivityIndicator()
+                await self.showActivityIndicator()
                 
-                if (self.currentUser == nil) {
+                if await (self.currentUser == nil) {
                     self.currentUser = await UserFirebaseService().getUser(uid: self.firebaseAuth.currentUser!.uid)
                 }
                 
@@ -53,8 +55,8 @@ class TripViewController: UIViewController {
                     self.tripView.otherUsersTable.reloadData()
                 }
                 await self.initCurrentUserFoodStores(tripId: currentTrip.id, currentUserId: self.currentUser!.id)
-                self.updatePriceAmount()
-                self.hideActivityIndicator()
+                await self.updatePriceAmount()
+                await self.hideActivityIndicator()
             }
         }
     }
@@ -71,14 +73,21 @@ class TripViewController: UIViewController {
         //MARK: removing the separator line...
         tripView.foodStoreTable.separatorStyle = .none
         
-        let editTripIcon = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(onTripEditClick))
-       
+        if let currentTrip {
+            if !currentTrip.isTerminated {
+                let editTripIcon = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(onTripEditClick))
+               
+                
+                navigationItem.rightBarButtonItems = [editTripIcon]
+                tripView.addStoreButton.addTarget(self, action: #selector(onAddFoodStoreButtonClick), for: .touchUpInside)
+                
+                notificationCenter.addObserver(self, selector: #selector(notificationReceivedForTripEdit(notification:)) , name: Notification.Name(NotificationConfigs.UpdatedTripObserverName), object: nil)
+            }
+            else {
+                tripView.addStoreButton.isHidden = true
+            }
+        }
         
-        navigationItem.rightBarButtonItems = [editTripIcon]
-        
-        tripView.addStoreButton.addTarget(self, action: #selector(onAddFoodStoreButtonClick), for: .touchUpInside)
-        
-        notificationCenter.addObserver(self, selector: #selector(notificationReceivedForTripEdit(notification:)) , name: Notification.Name(NotificationConfigs.UpdatedTripObserverName), object: nil)
     }
     
     @objc func onTripEditClick() {
@@ -94,22 +103,6 @@ class TripViewController: UIViewController {
         self.hideActivityIndicator()
         self.navigationController?.pushViewController(editTripScreenController, animated: true)
     }
-    
-//    @objc func notificationReceivedForFoodStoreAdded(notification: Notification) {
-//        let newFoodStoreRequest = notification.object as! Dictionary<String, Any>
-//        
-//        let newFoodStoreByCurrentUser = newFoodStoreRequest["newStore"] as! FoodStore
-//        let isRequestUpdate = newFoodStoreRequest["isUpdate"] as! Bool
-//        
-//        if (isRequestUpdate) {
-//            storePaidByMe.removeAll(where: { $0.id == newFoodStoreByCurrentUser.id })
-//            storePaidByMe.append(newFoodStoreByCurrentUser)
-//        } else {
-//            storePaidByMe.append(newFoodStoreByCurrentUser)
-//        }
-//        updatePriceAmount()
-//        tripView.foodStoreTable.reloadData()
-//    }
     
     @objc func notificationReceivedForTripEdit(notification: Notification) {
         let newTrip = notification.object as! FoodTrip
@@ -132,7 +125,7 @@ class TripViewController: UIViewController {
             for foodItem in store.foodItems {
                 if (!foodItem.payers.contains(where: ({$0.id == self.currentUser!.id}))) {
                     amountOwedToCurrentUser += foodItem.price
-                } else {
+                } else if (!foodItem.payers.isEmpty) {
                     amountOwedToCurrentUser += foodItem.price * (Double(foodItem.payers.count - 1) / Double(foodItem.payers.count))
                 }
             }
@@ -152,9 +145,14 @@ class TripViewController: UIViewController {
             // Calculate row height for each user
             let user = storeOtherUsers[row]
             let numberOfStores = user.submittedStores?.count ?? 0
-            let innerTableHeight = CGFloat(numberOfStores) * 100 // Inner table row height * number of stores
+            
+            var innerTableHeight: CGFloat = 75
+            if numberOfStores > 0 {
+                innerTableHeight = CGFloat(numberOfStores) * 100 // Inner table row height * number of stores
+            }
+            
             let nameLabelHeight: CGFloat = 40 // Adjust based on your label's design
-            let padding: CGFloat = 20 // Add some padding between elements
+            let padding: CGFloat = 10 // Add some padding between elements
             
             totalHeight += nameLabelHeight + innerTableHeight + padding
         }
@@ -165,6 +163,24 @@ class TripViewController: UIViewController {
     func updateOuterTableHeight() {
         let height = calculateOuterTableHeight()
         tripView.otherUsersTable.heightAnchor.constraint(equalToConstant: height).isActive = true
+    }
+    
+    func updateFoodStoreTableHeight() {
+        var height: CGFloat = 0
+        print("num stores paid by me: \(storePaidByMe.count)")
+        for row in 0..<storePaidByMe.count {
+            height += 80 + 10
+        }
+        tripView.foodStoreTable.heightAnchor.constraint(equalToConstant: height).isActive = true
+        tripView.foodStoreTable.reloadData()
+    }
+    
+    func getCostForUser(userId: String) -> Double {
+        return self.storeUserItemCost[userId] ?? 0
+    }
+    
+    func getPaidStores(userId: String) -> [String] {
+        return self.paidStores[userId] ?? []
     }
 
 }
@@ -179,10 +195,9 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
         if (tableView == tripView.foodStoreTable) {
             if (storePaidByMe.isEmpty) {
                 tripView.noStorePaidByYouLabel.layer.zPosition = 1
-                tripView.noStorePaidByYouLabel.text = "No store paid by you. \n\n Click below button to add store you paid."
+                tripView.noStorePaidByYouLabel.text = "No store paid by you. \n\n Click the button below to add store you paid."
             } else {
-                tripView.noStorePaidByYouLabel.layer.zPosition = 0
-                tripView.noStorePaidByYouLabel.text = ""
+                tripView.noStorePaidByYouLabel.isHidden = true
             }
                 return storePaidByMe.count
         }
@@ -195,7 +210,18 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
             let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.otherUsers, for: indexPath) as! UserCell
             let user = storeOtherUsers[indexPath.row]
             
+            if let currUserId = currentUser?.id {
+                cell.currUserId = currUserId
+            }
+            
             cell.userNameLabel.text = user.name
+            cell.userId = currentUser?.id
+            
+            cell.totalCost.text = "Total spent: $\(getCostForUser(userId: user.id))"
+            
+            cell.paidStores = getPaidStores(userId: user.id)
+            print(cell.paidStores.count)
+            
             if let submittedStores = user.submittedStores {
                 if (submittedStores.isEmpty) {
                     cell.noStoresPaidByUser.layer.zPosition = 1
@@ -222,7 +248,7 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
             cell.storeDateLabel.text =  storePaidByMe[indexPath.row].dateCreated.formatted()
             cell.storeAddressLabel.text = storePaidByMe[indexPath.row].address
             
-            cell.storeFoodCostLabel.text = "Total cost: $ \(getTotalStoreItemsCost(store: storePaidByMe[indexPath.row]))"
+            cell.storeFoodCostLabel.text = "Total cost: $\(getTotalStoreItemsCost(store: storePaidByMe[indexPath.row]))"
             
             return cell
         }
@@ -234,14 +260,18 @@ extension TripViewController: UITableViewDelegate, UITableViewDataSource{
         if (tableView == tripView.otherUsersTable) {
             let user = storeOtherUsers[indexPath.row]
             let numberOfStores = user.submittedStores?.count ?? 0
-            let innerTableHeight = CGFloat(numberOfStores) * (60 + 10) // Inner table row height * number of stores
-            let nameLabelHeight: CGFloat = 50 // Adjust based on your label's design
+            var innerTableHeight: CGFloat = 75
+            if numberOfStores > 0 {
+                innerTableHeight = CGFloat(numberOfStores) * (100) // Inner table row height * number of stores
+            }
+            
+            let nameLabelHeight: CGFloat = 20 // Adjust based on your label's design
 
             return nameLabelHeight + innerTableHeight
         }
         
         if (tableView == tripView.foodStoreTable) {
-            return 104
+            return 80 + 10
         }
         
         return 100

@@ -20,8 +20,6 @@ class ViewController: UIViewController {
     
     var currentUser: FirestoreUser? = nil
     var currentTrips: [FoodTripFromDoc] = []
-    let notificationCenter = NotificationCenter.default
-    
     
     override func loadView() {
         view = homeView
@@ -72,7 +70,7 @@ class ViewController: UIViewController {
        
         
         navigationItem.leftBarButtonItems = [profileIcon]
-        navigationItem.rightBarButtonItems = [logoutIcon]
+        //navigationItem.rightBarButtonItems = [logoutIcon]
         
         homeView.addTripButton.addTarget(self, action: #selector(onAddTripButtonClick), for: .touchUpInside)
         
@@ -125,6 +123,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableViewTrips, for: indexPath) as! TripBoxTableViewCell
         cell.groupNameLabel.text = currentTrips[indexPath.row].groupName
+        
         
         let url = currentTrips[indexPath.row].photoURL
             if let tripImageUrl = URL(string: url) {

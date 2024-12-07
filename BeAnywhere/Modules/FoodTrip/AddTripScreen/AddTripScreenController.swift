@@ -35,7 +35,7 @@ class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate
         addTripView.memberTable.dataSource = self
         addTripView.memberTable.delegate = self
         //MARK: removing the separator line...
-        addTripView.memberTable.separatorStyle = .none
+        addTripView.memberTable.separatorStyle = .singleLine
         
         let confirmButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(confirmNewGroup))
         
@@ -50,6 +50,14 @@ class AddTripScreenController: UIViewController, UIImagePickerControllerDelegate
                     selector: #selector(notificationReceivedForMemberAdded(notification:)),
                     name: Notification.Name(NotificationConfigs.UserSelectedObserverName),
                     object: nil)
+        
+        // Add tap gesture to dismiss keyboard
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     // MARK: adds the selected group member in the form and closes the sheet
@@ -182,6 +190,8 @@ extension AddTripScreenController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: TableConfigs.tableViewUsers, for: indexPath) as! UserBoxTableViewCell
         cell.userNameLabel.text = groupMembers[indexPath.row].name
+        cell.usernameLabel.text = "@\(groupMembers[indexPath.row].username)"
+        cell.venmoLabel.text = groupMembers[indexPath.row].venmo
         
         if let avatarImageUrl = URL(string: groupMembers[indexPath.row].avatarURL) {
             Task.detached {

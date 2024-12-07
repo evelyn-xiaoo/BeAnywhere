@@ -36,7 +36,7 @@ class StoreDetailsView: UIView {
     func setupStoreImage(){
         foodStoreImageView = UIImageView()
         foodStoreImageView.image = UIImage(systemName: "document")?.withRenderingMode(.alwaysOriginal) // MARK: Update this to use actual saved image
-        foodStoreImageView.contentMode = .scaleToFill
+        foodStoreImageView.contentMode = .scaleAspectFit
         foodStoreImageView.clipsToBounds = true
         foodStoreImageView.layer.masksToBounds = true
         foodStoreImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -59,17 +59,17 @@ class StoreDetailsView: UIView {
         totalCostLabel = UILabel()
         paidTitleLabel = UILabel()
         
-        storeDateLabel.font = UIFont.boldSystemFont(ofSize: 15)
+        storeDateLabel.font = UIFont.boldSystemFont(ofSize: 16)
         
         
         totalCostLabel.text = "Total"
-        totalCostLabel.font = UIFont.boldSystemFont(ofSize: 15)
+        totalCostLabel.font = UIFont.systemFont(ofSize: 14)
         
         totalCostAmountLabel.text = "$0.00"
-        totalCostAmountLabel.font = UIFont.boldSystemFont(ofSize: 15)
+        totalCostAmountLabel.font = UIFont.systemFont(ofSize: 14)
         
         paidTitleLabel.text = "Paid?"
-        paidTitleLabel.font = UIFont.boldSystemFont(ofSize: 17)
+        paidTitleLabel.font = UIFont.boldSystemFont(ofSize: 16)
         
         let appLabels: [UILabel] = [storeDateLabel, totalCostAmountLabel, totalCostLabel, paidTitleLabel]
         
@@ -84,9 +84,9 @@ class StoreDetailsView: UIView {
     func setupMemberWithItemaTableView(){
         memberWithFoodItemsTable = UITableView()
         memberWithFoodItemsTable.register(StoreMemberCell.self, forCellReuseIdentifier: TableConfigs.foodItemMember)
-        memberWithFoodItemsTable.rowHeight = 250
-        memberWithFoodItemsTable.showsVerticalScrollIndicator = true
-        memberWithFoodItemsTable.isScrollEnabled = true
+        memberWithFoodItemsTable.rowHeight = 35
+        memberWithFoodItemsTable.showsVerticalScrollIndicator = false
+        memberWithFoodItemsTable.isScrollEnabled = false
         memberWithFoodItemsTable.contentInsetAdjustmentBehavior = .automatic
         memberWithFoodItemsTable.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(memberWithFoodItemsTable)
@@ -96,7 +96,7 @@ class StoreDetailsView: UIView {
         memberWithPaymentStatusTable = UITableView()
         memberWithPaymentStatusTable.register(DebtorTableCell.self, forCellReuseIdentifier: TableConfigs.foodItemDebtor)
         memberWithPaymentStatusTable.rowHeight = 20
-        memberWithPaymentStatusTable.showsVerticalScrollIndicator = true
+        memberWithPaymentStatusTable.isScrollEnabled = false
         memberWithPaymentStatusTable.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(memberWithPaymentStatusTable)
     }
@@ -113,40 +113,34 @@ class StoreDetailsView: UIView {
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            contentView.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
             
             storeDateLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
             storeDateLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             foodStoreImageView.topAnchor.constraint(equalTo: storeDateLabel.bottomAnchor, constant: 32),
             foodStoreImageView.heightAnchor.constraint(equalToConstant: 100),
-            foodStoreImageView.widthAnchor.constraint(equalToConstant: 100),
+            foodStoreImageView.widthAnchor.constraint(equalTo: foodStoreImageView.heightAnchor),
             foodStoreImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
-            memberWithFoodItemsTable.topAnchor.constraint(equalTo: foodStoreImageView.bottomAnchor, constant: 16),
+            memberWithFoodItemsTable.topAnchor.constraint(equalTo: foodStoreImageView.bottomAnchor, constant: 20),
             memberWithFoodItemsTable.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            memberWithFoodItemsTable.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            memberWithFoodItemsTable.heightAnchor.constraint(equalToConstant: 300),
+            memberWithFoodItemsTable.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            memberWithFoodItemsTable.heightAnchor.constraint(greaterThanOrEqualToConstant: 200),
             
-            paidTitleLabel.topAnchor.constraint(equalTo: memberWithFoodItemsTable.bottomAnchor, constant: 32),
-            paidTitleLabel.heightAnchor.constraint(equalToConstant: 15),
-            paidTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            paidTitleLabel.topAnchor.constraint(equalTo: memberWithFoodItemsTable.bottomAnchor, constant: 20),
+            paidTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
-            memberWithPaymentStatusTable.topAnchor.constraint(equalTo: paidTitleLabel.bottomAnchor, constant: 16),
+            memberWithPaymentStatusTable.topAnchor.constraint(equalTo: paidTitleLabel.bottomAnchor, constant: 10),
             memberWithPaymentStatusTable.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            memberWithPaymentStatusTable.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            memberWithPaymentStatusTable.heightAnchor.constraint(equalToConstant: 150),
+            memberWithPaymentStatusTable.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            memberWithPaymentStatusTable.heightAnchor.constraint(greaterThanOrEqualToConstant: 150),
             
-            totalCostLabel.heightAnchor.constraint(equalToConstant: 15),
-            totalCostLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -32),
-            totalCostLabel.topAnchor.constraint(equalTo: memberWithPaymentStatusTable.bottomAnchor, constant: 16),
-            totalCostLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 32),
+            totalCostLabel.topAnchor.constraint(equalTo: memberWithPaymentStatusTable.bottomAnchor, constant: 40),
+            totalCostLabel.leadingAnchor.constraint(equalTo: memberWithPaymentStatusTable.leadingAnchor),
             
             
             totalCostAmountLabel.topAnchor.constraint(equalTo: totalCostLabel.topAnchor),
-            totalCostAmountLabel.heightAnchor.constraint(equalToConstant: 15),
-            totalCostAmountLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -32),
-            totalCostAmountLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -32)
+            totalCostAmountLabel.trailingAnchor.constraint(equalTo: memberWithPaymentStatusTable.trailingAnchor, constant: -20)
         ])
     }
     

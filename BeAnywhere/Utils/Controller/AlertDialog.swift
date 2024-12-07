@@ -41,3 +41,4 @@ func showAlertText(text:String, controller: UIViewController){
     alert.addAction(UIAlertAction(title: "OK", style: .default))
     controller.present(alert, animated: true)
 }
+

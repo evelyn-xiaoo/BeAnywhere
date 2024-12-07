@@ -12,6 +12,7 @@ class UserItemsView: UIView {
     var didPay: UIButton!
     var itemsTable: UITableView!
     var yourItemsLabel: UILabel!
+    var noSelectedItems: UILabel!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -28,6 +29,14 @@ class UserItemsView: UIView {
         yourItemsLabel.textColor = .black
         yourItemsLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(yourItemsLabel)
+        
+        noSelectedItems = UILabel()
+        noSelectedItems.text = "No items selected"
+        noSelectedItems.font = .systemFont(ofSize: 14)
+        noSelectedItems.textColor = .black
+        noSelectedItems.translatesAutoresizingMaskIntoConstraints = false
+        noSelectedItems.textAlignment = .center
+        addSubview(noSelectedItems)
         
         didPay = UIButton()
         didPay.titleLabel?.font = .systemFont(ofSize: 14)
@@ -52,7 +61,11 @@ class UserItemsView: UIView {
             yourItemsLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 20),
             yourItemsLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             
-            itemsTable.topAnchor.constraint(equalTo: yourItemsLabel.bottomAnchor, constant: 20),
+            noSelectedItems.topAnchor.constraint(equalTo: yourItemsLabel.bottomAnchor, constant: 20),
+            noSelectedItems.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            noSelectedItems.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.8),
+            
+            itemsTable.topAnchor.constraint(equalTo: noSelectedItems.bottomAnchor, constant: 0),
             itemsTable.leadingAnchor.constraint(equalTo: yourItemsLabel.leadingAnchor),
             itemsTable.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             itemsTable.bottomAnchor.constraint(equalTo: didPay.topAnchor, constant: -20),

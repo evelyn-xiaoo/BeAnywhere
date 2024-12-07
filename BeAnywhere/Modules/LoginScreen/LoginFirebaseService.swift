@@ -54,10 +54,16 @@ extension LoginScreenController{
             currentUserDocRef.getDocument(as: FirestoreUser.self) { result in
                 switch result {
                 case .success(let user):
-                    let homeScreen = ViewController()
                     UserSession.shared.currentUser = user
-                    homeScreen.currentUser = user
+                    self.hideActivityIndicator()
                     self.dismiss(animated: false)
+                    
+                    self.notificationCenter.post(
+                        name: Notification.Name(NotificationConfigs.NewUserLoggedInObserverName),
+                        object: nil)
+                    
+                    
+                    print("DEV: navigation completed")
                   
                 case .failure(let error):
                     self.showErrorAlert(message: "Failed to get the user data. Please try login again.")

@@ -37,7 +37,7 @@ class DebtorTableCell: UITableViewCell {
         let labels: [UILabel] = [debtorNameLabel, debtorPaymentStatusLabel]
         
         for label: UILabel in labels {
-            label.font = UIFont.boldSystemFont(ofSize: 14)
+            label.font = UIFont.systemFont(ofSize: 14)
             label.translatesAutoresizingMaskIntoConstraints = false
             wrapperCellView.addSubview(label)
         }
@@ -46,8 +46,8 @@ class DebtorTableCell: UITableViewCell {
     func initConstraints(){
         NSLayoutConstraint.activate([
             wrapperCellView.topAnchor.constraint(equalTo: self.topAnchor,constant: 4),
-            wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-            wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
+            wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             wrapperCellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4),
             
             debtorNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor),
@@ -57,8 +57,7 @@ class DebtorTableCell: UITableViewCell {
             debtorNameLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 200),
             
             debtorPaymentStatusLabel.topAnchor.constraint(equalTo: debtorNameLabel.topAnchor),
-            debtorPaymentStatusLabel.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor),
-            debtorPaymentStatusLabel.heightAnchor.constraint(equalToConstant: 15),
+            debtorPaymentStatusLabel.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -20),
             
             wrapperCellView.heightAnchor.constraint(equalToConstant: 15)
             

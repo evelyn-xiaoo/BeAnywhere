@@ -53,7 +53,7 @@ class MessagingViewController: UIViewController {
         msgView.messagesTable.separatorStyle = .none
         
         textFieldBottomConstraint = msgView.textField.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40)
-                textFieldBottomConstraint.isActive = true
+        textFieldBottomConstraint.isActive = true
         
         NotificationCenter.default.addObserver(
             self,
@@ -105,11 +105,13 @@ class MessagingViewController: UIViewController {
     
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-            let keyboardHeight = keyboardFrame.height
+            let keyboardHeight = keyboardFrame.size.height
 
             UIView.animate(withDuration: 0.3) {
                 // Adjust the bottom constraint by the keyboard height
                 self.textFieldBottomConstraint.constant = -keyboardHeight
+                self.msgView.textField.layer.zPosition = 1
+                self.msgView.msgSendButton.layer.zPosition = 1
                 self.view.layoutIfNeeded()
             }
         }
@@ -119,6 +121,8 @@ class MessagingViewController: UIViewController {
         UIView.animate(withDuration: 0.3) {
             // Reset the bottom constraint to its original value
             self.textFieldBottomConstraint.constant = -40
+            self.msgView.textField.layer.zPosition = 0
+            self.msgView.msgSendButton.layer.zPosition = 0
             self.view.layoutIfNeeded()
         }
     }

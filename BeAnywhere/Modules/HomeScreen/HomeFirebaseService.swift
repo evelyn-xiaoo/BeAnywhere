@@ -49,7 +49,7 @@ extension ViewController {
                     do{
                         let foodTripDocument  = try document.data(as: FoodTripFromDoc.self)
                         
-                        if (foodTripDocument.memberIds.contains(self.currentUser!.id)) {
+                        if (foodTripDocument.memberIds.contains(self.currentUser!.id)) && !foodTripDocument.isTerminated {
                             self.currentTrips.append(foodTripDocument)
                         }
                     }catch{

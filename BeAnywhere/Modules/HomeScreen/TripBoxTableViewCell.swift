@@ -37,12 +37,14 @@ class TripBoxTableViewCell: UITableViewCell {
         wrapperCellView = UITableViewCell()
         
         //working with the shadows and colors...
-        wrapperCellView.backgroundColor = .white
+        //wrapperCellView.backgroundColor = .white
         wrapperCellView.layer.cornerRadius = 4.0
-        wrapperCellView.layer.shadowColor = UIColor.gray.cgColor
-        wrapperCellView.layer.shadowOffset = .zero
-        wrapperCellView.layer.shadowRadius = 2.0
-        wrapperCellView.layer.shadowOpacity = 0.7
+        wrapperCellView.layer.borderColor = UIColor.black.cgColor
+        wrapperCellView.layer.borderWidth = 1
+        //wrapperCellView.layer.shadowColor = UIColor.gray.cgColor
+        //wrapperCellView.layer.shadowOffset = .zero
+        //wrapperCellView.layer.shadowRadius = 2.0
+        //wrapperCellView.layer.shadowOpacity = 0.7
         wrapperCellView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(wrapperCellView)
     }
@@ -56,13 +58,13 @@ class TripBoxTableViewCell: UITableViewCell {
     
     func initConstraints(){
         NSLayoutConstraint.activate([
-            wrapperCellView.topAnchor.constraint(equalTo: self.topAnchor,constant: 4),
-            wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-            wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
-            wrapperCellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4),
+            wrapperCellView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor,constant: 0),
+            wrapperCellView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 0),
+            wrapperCellView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: 0),
+            wrapperCellView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10),
             
-            tripImage.widthAnchor.constraint(equalToConstant: 32),
-            tripImage.heightAnchor.constraint(equalToConstant: 32),
+            tripImage.widthAnchor.constraint(equalTo: tripImage.heightAnchor),
+            tripImage.heightAnchor.constraint(equalTo: wrapperCellView.heightAnchor, multiplier: 0.8),
             tripImage.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
             tripImage.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -8),
             tripImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 16),

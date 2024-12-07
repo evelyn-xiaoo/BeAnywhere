@@ -16,7 +16,6 @@ class FoodItemTableViewCell: UITableViewCell {
     var itemImage:UIImageView!
     var checkBoxImage:UIImageView!
     
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -48,7 +47,9 @@ class FoodItemTableViewCell: UITableViewCell {
 
     func setupWrapperCellView(){
         wrapperCellView = UITableViewCell()
-        
+        wrapperCellView.layer.borderColor = UIColor.black.cgColor
+        wrapperCellView.layer.borderWidth = 1
+        /*
         //working with the shadows and colors...
         wrapperCellView.backgroundColor = .white
         wrapperCellView.layer.cornerRadius = 4.0
@@ -56,6 +57,7 @@ class FoodItemTableViewCell: UITableViewCell {
         wrapperCellView.layer.shadowOffset = .zero
         wrapperCellView.layer.shadowRadius = 2.0
         wrapperCellView.layer.shadowOpacity = 0.7
+         */
         wrapperCellView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(wrapperCellView)
     }
@@ -74,40 +76,39 @@ class FoodItemTableViewCell: UITableViewCell {
             wrapperCellView.addSubview(itemLabel)
         }
         
+        //delete = UIButton(type: .system)
+        //wrapperCellView.addSubview(delete)
+        
     }
     
     func initConstraints(){
         NSLayoutConstraint.activate([
-            wrapperCellView.topAnchor.constraint(equalTo: self.topAnchor,constant: 4),
-            wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-            wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
-            wrapperCellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4),
+            wrapperCellView.topAnchor.constraint(equalTo: self.topAnchor,constant: 5),
+            wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 0),
+            wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 0),
+            wrapperCellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -5),
             
-            itemImage.widthAnchor.constraint(equalToConstant: 32),
-            itemImage.heightAnchor.constraint(equalToConstant: 32),
+            itemImage.widthAnchor.constraint(equalTo: itemImage.heightAnchor),
+            itemImage.heightAnchor.constraint(equalTo: wrapperCellView.heightAnchor, multiplier: 0.8),
             itemImage.centerYAnchor.constraint(equalTo: wrapperCellView.centerYAnchor),
-            itemImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 16),
+            itemImage.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
             
-            itemNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
+            itemNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 10),
             itemNameLabel.leadingAnchor.constraint(equalTo: itemImage.trailingAnchor, constant: 10),
-            itemNameLabel.heightAnchor.constraint(equalToConstant: 15),
-            itemNameLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
             
-            itemCostLabel.topAnchor.constraint(equalTo: itemNameLabel.bottomAnchor, constant: 8),
-            itemCostLabel.leadingAnchor.constraint(equalTo: itemImage.trailingAnchor, constant: 10),
-            itemCostLabel.heightAnchor.constraint(equalToConstant: 15),
-            itemCostLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
+            itemCostLabel.topAnchor.constraint(equalTo: itemNameLabel.bottomAnchor, constant: 2),
+            itemCostLabel.leadingAnchor.constraint(equalTo: itemNameLabel.leadingAnchor),
             
-            itemPayersLabel.topAnchor.constraint(equalTo: itemCostLabel.bottomAnchor, constant: 8),
-            itemPayersLabel.leadingAnchor.constraint(equalTo: itemImage.trailingAnchor, constant: 10),
-            itemPayersLabel.heightAnchor.constraint(equalToConstant: 15),
-            itemPayersLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
+            itemPayersLabel.topAnchor.constraint(equalTo: itemCostLabel.bottomAnchor, constant: 2),
+            itemPayersLabel.leadingAnchor.constraint(equalTo: itemNameLabel.leadingAnchor),
             
-            checkBoxImage.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -36),
+            checkBoxImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             checkBoxImage.centerYAnchor.constraint(equalTo: wrapperCellView.centerYAnchor),
             
-            wrapperCellView.heightAnchor.constraint(equalToConstant: 77)
-            
+            /*
+            delete.trailingAnchor.constraint(equalTo: wrapperCellView.trailingAnchor, constant: -20),
+            delete.centerYAnchor.constraint(equalTo: wrapperCellView.centerYAnchor),
+             */
         ])
         
     }

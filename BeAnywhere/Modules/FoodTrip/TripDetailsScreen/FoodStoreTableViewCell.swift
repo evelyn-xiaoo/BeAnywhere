@@ -26,14 +26,16 @@ class FoodStoreTableViewCell: UITableViewCell {
 
     func setupWrapperCellView(){
         wrapperCellView = UIView()
+        wrapperCellView.layer.borderColor = UIColor.black.cgColor
+        wrapperCellView.layer.borderWidth = 1
         
         //working with the shadows and colors...
-        wrapperCellView.backgroundColor = .white
-        wrapperCellView.layer.cornerRadius = 4.0
-        wrapperCellView.layer.shadowColor = UIColor.gray.cgColor
-        wrapperCellView.layer.shadowOffset = .zero
-        wrapperCellView.layer.shadowRadius = 2.0
-        wrapperCellView.layer.shadowOpacity = 0.7
+        //wrapperCellView.backgroundColor = .white
+        //wrapperCellView.layer.cornerRadius = 4.0
+        //wrapperCellView.layer.shadowColor = UIColor.gray.cgColor
+        //wrapperCellView.layer.shadowOffset = .zero
+        //wrapperCellView.layer.shadowRadius = 2.0
+        //wrapperCellView.layer.shadowOpacity = 0.7
         wrapperCellView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(wrapperCellView)
     }
@@ -47,7 +49,7 @@ class FoodStoreTableViewCell: UITableViewCell {
         let labels: [UILabel] = [storeNameLabel, storeDateLabel, storeAddressLabel, storeFoodCostLabel]
         
         for label: UILabel in labels {
-            label.font = UIFont.boldSystemFont(ofSize: 14)
+            label.font = UIFont.systemFont(ofSize: 14)
             label.translatesAutoresizingMaskIntoConstraints = false
             wrapperCellView.addSubview(label)
         }
@@ -55,33 +57,24 @@ class FoodStoreTableViewCell: UITableViewCell {
     
     func initConstraints(){
         NSLayoutConstraint.activate([
-            wrapperCellView.topAnchor.constraint(equalTo: self.topAnchor,constant: 4),
-            wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-            wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
-            wrapperCellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -4),
+            wrapperCellView.topAnchor.constraint(equalTo: self.topAnchor,constant: 0),
+            wrapperCellView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 0),
+            wrapperCellView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 0),
+            wrapperCellView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
             
-            storeNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 8),
-           
-            storeNameLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 16),
-            storeNameLabel.heightAnchor.constraint(equalToConstant: 15),
-            storeNameLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
+            storeNameLabel.topAnchor.constraint(equalTo: wrapperCellView.topAnchor, constant: 5),
+            storeNameLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
             
-            storeDateLabel.topAnchor.constraint(equalTo: storeNameLabel.bottomAnchor, constant: 8),
-            storeDateLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 16),
-            storeDateLabel.heightAnchor.constraint(equalToConstant: 15),
-            storeDateLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
+            storeDateLabel.topAnchor.constraint(equalTo: storeNameLabel.bottomAnchor, constant: 2),
+            storeDateLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
             
-            storeAddressLabel.topAnchor.constraint(equalTo: storeDateLabel.bottomAnchor, constant: 8),
-            storeAddressLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 16),
-            storeAddressLabel.heightAnchor.constraint(equalToConstant: 15),
-            storeAddressLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
+            storeAddressLabel.topAnchor.constraint(equalTo: storeDateLabel.bottomAnchor, constant: 2),
+            storeAddressLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
             
-            storeFoodCostLabel.topAnchor.constraint(equalTo: storeAddressLabel.bottomAnchor, constant: 8),
-            storeFoodCostLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 16),
-            storeFoodCostLabel.heightAnchor.constraint(equalToConstant: 15),
-            storeFoodCostLabel.widthAnchor.constraint(equalTo: wrapperCellView.widthAnchor),
+            storeFoodCostLabel.topAnchor.constraint(equalTo: storeAddressLabel.bottomAnchor, constant: 2),
+            storeFoodCostLabel.leadingAnchor.constraint(equalTo: wrapperCellView.leadingAnchor, constant: 10),
+            storeFoodCostLabel.bottomAnchor.constraint(equalTo: wrapperCellView.bottomAnchor, constant: -5),
             
-            wrapperCellView.heightAnchor.constraint(equalToConstant: 104)
             
         ])
         

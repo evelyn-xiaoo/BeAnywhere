@@ -81,6 +81,14 @@ class StoreFormScreenController: UIViewController, UIImagePickerControllerDelega
                     selector: #selector(notificationReceivedForFoodItemAdded(notification:)),
                     name: Notification.Name(NotificationConfigs.NewFoodItemObserverName),
                     object: nil)
+        
+        // Add tap gesture to dismiss keyboard
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     func prefillViewFields() async {
@@ -347,8 +355,9 @@ extension StoreFormScreenController: UITableViewDelegate, UITableViewDataSource{
         let buttonOptions = UIButton(type: .system)
         buttonOptions.sizeToFit()
         buttonOptions.showsMenuAsPrimaryAction = true
-        buttonOptions.setImage(UIImage(systemName: "slider.horizontal.3"), for: .normal)
-        
+        buttonOptions.setImage(UIImage(systemName: "trash"), for: .normal)
+        buttonOptions.tintColor = .red
+        buttonOptions.imageView?.contentMode = .scaleAspectFit
         //MARK: setting up menu for button options click...
         buttonOptions.menu = UIMenu(title: "Delete?",
                                     children: [
@@ -358,7 +367,6 @@ extension StoreFormScreenController: UITableViewDelegate, UITableViewDataSource{
                                     ])
         //MARK: setting the button as an accessory of the cell...
         cell.accessoryView = buttonOptions
-     
         return cell
     }
     

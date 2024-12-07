@@ -22,7 +22,6 @@ extension ProfileScreenController{
                         let foodTripDocument  = try document.data(as: FoodTripFromDoc.self)
                         
                         if (foodTripDocument.memberIds.contains(self.currentUser!.id) && foodTripDocument.isTerminated) {
-                            print(foodTripDocument.groupName)
                             self.pastTrips.append(foodTripDocument)
                         }
                     }catch{

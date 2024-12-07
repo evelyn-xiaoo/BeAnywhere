@@ -19,6 +19,9 @@ extension SelectItemsViewController {
             print("failed to fetch food items.")
         }
         
+        if let storeUsers = await getTripUsers(tripId: tripId) {
+            self.users = storeUsers
+        }
         
         
         var submitterName: String = ""
@@ -35,6 +38,32 @@ extension SelectItemsViewController {
         self.storeView.msgButton.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
         self.storeView.msgButton.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
         
+    }
+    
+    func getTripUsers(tripId: String) async -> [String:String]? {
+        let tripCollectionsRef = database
+            .collection(FoodTrip.collectionName)
+        
+        do {
+            let tripDocsRef = try await tripCollectionsRef.getDocuments()
+            let tripDocs = try tripDocsRef.documents.map({try $0.data(as: FoodTripFromDoc.self)})
+            
+            var users: [String:String] = [:]
+            for trip in tripDocs {
+                if trip.id == tripId {
+                    print("found trip")
+                    for id in trip.memberIds {
+                        users[id] = await getUserName(userId: id)
+                    }
+                    return users
+                }
+            }
+            
+            
+        } catch {
+            
+        }
+        return nil
     }
     
     func getChatWithStorePayer(tripId: String, storeId: String) async -> Chat? {

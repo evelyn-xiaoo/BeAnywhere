@@ -10,6 +10,7 @@ import UIKit
 class EditTripScreenView: UIView {
 
     var tripImage: UIButton!
+    var terminateTripButton: UIButton!
     var textFieldName: UITextField!
     var textFieldLocation: UITextField!
     var tripImageLabel: UILabel!
@@ -38,6 +39,12 @@ class EditTripScreenView: UIView {
         tripImage.layer.cornerRadius = 10
         tripImage.clipsToBounds = true
         self.addSubview(tripImage)
+        
+        terminateTripButton = UIButton()
+        terminateTripButton.setTitle("Terminate Trip", for: .normal)
+        terminateTripButton.setTitleColor(UIColor.red, for: .normal)
+        terminateTripButton.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(terminateTripButton)
     }
     
     func setuptextFieldGroupName(){
@@ -95,6 +102,9 @@ class EditTripScreenView: UIView {
             textFieldLocation.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             textFieldLocation.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             textFieldLocation.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            
+            terminateTripButton.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            terminateTripButton.topAnchor.constraint(equalTo: textFieldLocation.bottomAnchor, constant: 32),
         ])
     }
     

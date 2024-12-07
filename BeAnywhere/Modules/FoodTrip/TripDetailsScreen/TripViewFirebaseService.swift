@@ -67,12 +67,128 @@ extension TripViewController {
             let userId = users[i].id
             if let submittedStores = await getStores(tripId: tripId, userId: userId) {
                 users[i].submittedStores = submittedStores
+                
+                // for each other user, get the current user's items + store in storeUserItemCost
+                for _ in submittedStores {
+                    storeUserItemCost[userId] = await getTotalCost(tripId: tripId, userId: userId)
+                    
+                    paidStores[userId] = await storesPaidByCurrUser(tripId: tripId, userId: userId)
+                    
+                }
+                
             } else {
                 print("No stores found for user \(userId)")
             }
+            print("trip: \(tripId), user: \(userId)")
+            
         }
-        
         return users
+    }
+    
+    // for each store from userId, check if the curr user has paid (aka payment status = "paid")
+    func storesPaidByCurrUser(tripId: String, userId: String) async -> [String] {
+        let foodStoreCollectionRef = database
+            .collection(FoodTrip.collectionName)
+            .document(tripId)
+            .collection(FoodStore.collectionName)
+        do {
+            let foodStoreDocsRef = try await foodStoreCollectionRef.getDocuments()
+            let foodStoreDocs = try foodStoreDocsRef.documents.map({try $0.data(as: FoodStoreFromDoc.self)})
+            
+            var filteredStores = foodStoreDocs.filter {
+                $0.submitterId == userId
+            }
+            
+            var storeIds: [String] = []
+            
+            for store in filteredStores {
+                let debtorCollectionRef = database
+                    .collection(FoodTrip.collectionName)
+                    .document(tripId)
+                    .collection(FoodStore.collectionName)
+                    .document(store.id)
+                    .collection(Debtor.collectionName)
+                do {
+                    let debtorDocsRef = try await debtorCollectionRef.getDocuments()
+                    let debtorDocs = try debtorDocsRef.documents.map({try $0.data(as: DebtorFromDoc.self)})
+                    
+                    for debtor in debtorDocs {
+                        if let currId = currentUser?.id {
+                            if debtor.userId == currId && debtor.paymentStatus == "Paid" {
+                                storeIds.append(store.id)
+                                print(store.id)
+                            }
+                        }
+                       
+                    }
+                }
+            }
+            return storeIds
+        } catch {
+            print("error: \(error)")
+        }
+        return []
+    }
+    
+    // for each store from userId, get cost of each item with curr userId in payerIds
+    func getTotalCost(tripId: String, userId: String) async -> Double? {
+        let foodStoreCollectionRef = database
+            .collection(FoodTrip.collectionName)
+            .document(tripId)
+            .collection(FoodStore.collectionName)
+        do {
+            let foodStoreDocsRef = try await foodStoreCollectionRef.getDocuments()
+            let foodStoreDocs = try foodStoreDocsRef.documents.map({try $0.data(as: FoodStoreFromDoc.self)})
+            
+            var filteredStores = foodStoreDocs.filter {
+                $0.submitterId == userId
+            }
+            
+            var total: Double = 0.0
+            
+            for store in filteredStores {
+                let itemCollectionRef = database
+                    .collection(FoodTrip.collectionName)
+                    .document(tripId)
+                    .collection(FoodStore.collectionName)
+                    .document(store.id)
+                    .collection(FoodItem.collectionName)
+                do {
+                    let itemDocsRef = try await itemCollectionRef.getDocuments()
+                    let itemDocs = try itemDocsRef.documents.map({try $0.data(as: FoodItemFromDoc.self)})
+                    
+                    for item in itemDocs {
+                        if let currId = currentUser?.id {
+                            if item.payerUserIds.contains(currId) {
+                                total += item.price / Double(item.payerUserIds.count)
+                            }
+                        }
+                    }
+                    print("total cost for \(userId): \(total)")
+                    
+                }
+            }
+            return roundToTwoPlace(total)
+        } catch {
+            print("Error: \(error)")
+        }
+        return 0
+    }
+    
+    func getFirebaseUser(userId: String) async -> FirestoreUser {
+        let userCollectionRef = database.collection(FirestoreUser.collectionName)
+        do {
+            let userDocsRef = try await userCollectionRef.getDocuments()
+            let userDocs = try userDocsRef.documents.map({try $0.data(as: FirestoreUser.self)})
+            
+            let filteredUser = userDocs.filter { $0.id == userId }
+            
+            return filteredUser[0]
+            
+        } catch {
+            print("no users: \(error)")
+        }
+        return FirestoreUser(id: "", name: "", email: "", avatarURL: "", venmo: "", username: "")
     }
     
     func getStores(tripId: String, userId: String) async -> [FoodStoreFromDoc]? {
@@ -161,6 +277,7 @@ extension TripViewController {
             
         }
         self.tripView.foodStoreTable.reloadData()
+        self.updateFoodStoreTableHeight()
     }
     
     /*

@@ -76,6 +76,7 @@ class FoodItemAddBottomSheetView: UIView {
     func setupTextFields() {
         itemNameTextField = UITextField()
         itemNameTextField.placeholder = "Item name"
+        itemNameTextField.keyboardType = .default
         
         itemPriceTextField = UITextField()
         itemPriceTextField.placeholder = "Cost"
@@ -86,7 +87,6 @@ class FoodItemAddBottomSheetView: UIView {
         
         // MARK: apply common attributes
         for textField: UITextField in textFields {
-            textField.keyboardType = .default
             textField.borderStyle = .roundedRect
             textField.translatesAutoresizingMaskIntoConstraints = false
             self.addSubview(textField)

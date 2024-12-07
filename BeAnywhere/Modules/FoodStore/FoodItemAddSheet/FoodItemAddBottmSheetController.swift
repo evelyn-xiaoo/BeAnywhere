@@ -52,7 +52,6 @@ class FoodItemAddBottmSheetController: UIViewController, UIImagePickerController
         searchSheet.saveItemButton.addTarget(self, action: #selector(onItemSaveButtonClick), for: .touchUpInside)
         
         searchSheet.imageClearButton.addTarget(self, action: #selector(onImageClearButtonClick), for: .touchUpInside)
-        
     }
     
     @objc func onItemSaveButtonClick() {
@@ -62,10 +61,12 @@ class FoodItemAddBottmSheetController: UIViewController, UIImagePickerController
         if let newFoodItemName, let newFoodItemPrice {
             let priceAmount = Double(newFoodItemPrice)
             if let priceAmount, priceAmount > 0.0 {
+                
                 if (selectedPayers.isEmpty) {
                     showErrorAlert(message: "Choose at least one payer.", controller: self)
                     return
                 }
+                 
                 
                 if (newFoodItemName == "" || newFoodItemPrice == "") {
                     showErrorAlert(message: "Name and price cannot be empty. Please try again.", controller: self)
