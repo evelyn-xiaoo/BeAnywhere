@@ -137,7 +137,7 @@ class StoreDetailsView: UIView {
             
             totalCostLabel.topAnchor.constraint(equalTo: memberWithPaymentStatusTable.bottomAnchor, constant: 40),
             totalCostLabel.leadingAnchor.constraint(equalTo: memberWithPaymentStatusTable.leadingAnchor),
-            
+            totalCostLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
             totalCostAmountLabel.topAnchor.constraint(equalTo: totalCostLabel.topAnchor),
             totalCostAmountLabel.trailingAnchor.constraint(equalTo: memberWithPaymentStatusTable.trailingAnchor, constant: -20)

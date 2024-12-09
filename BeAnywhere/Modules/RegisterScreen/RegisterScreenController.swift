@@ -19,7 +19,6 @@ class RegisterScreenController: UIViewController, UIImagePickerControllerDelegat
     var loginDelegate: LoginScreenController!
     
     let registerView = RegisterScreenView()
-    
     let childProgressView = ProgressSpinnerViewController()
     
     let database = Firestore.firestore()

@@ -54,6 +54,9 @@ class LoginScreenController: UIViewController {
     // MARK: Navigate to the home screen after creating the account
     func delegateNavigateToHomeScreen(){
         self.dismiss(animated: false)
+        self.notificationCenter.post(
+            name: Notification.Name(NotificationConfigs.NewUserLoggedInObserverName),
+            object: nil)
     }
 
 
